@@ -326,49 +326,65 @@ export default function TutorialPage() {
                       />
                     </div>
 
-                    <div className="grid grid-cols-3 gap-4 mb-6 relative">
-                      <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-purple-600 text-white px-3 py-1 rounded-full text-sm font-semibold z-10">
-                        2. Autres joueurs
+                    <div className="flex justify-center mb-6 relative">
+                      <div className="absolute -top-8 bg-purple-600 text-white px-3 py-1 rounded-full text-sm font-semibold z-10">
+                        2. Joueur en face
                       </div>
-                      <PlayerSeat
-                        player={mockPlayers[1]}
-                        position="top"
-                        isCurrentPlayer={false}
-                        cardCount={15}
-                      />
                       <PlayerSeat
                         player={mockPlayers[2]}
                         position="top"
                         isCurrentPlayer={false}
                         cardCount={15}
                       />
-                      <PlayerSeat
-                        player={mockPlayers[3]}
-                        position="top"
-                        isCurrentPlayer={false}
-                        cardCount={15}
-                      />
                     </div>
 
-                    <div className="bg-green-700 rounded-xl p-6 mb-6 min-h-32 flex items-center justify-center relative">
-                      <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-3 py-1 rounded-full text-sm font-semibold z-10">
-                        3. Tapis (cartes jouées)
-                      </div>
-                      <div className="flex gap-4">
-                        <TarotCardComponent
-                          card={createCard('HEARTS', '10', 0.5)}
-                          size="md"
+                    <div className="flex items-center justify-between mb-6">
+                      <div className="relative">
+                        <div className="absolute -left-12 top-1/2 -translate-y-1/2 bg-purple-600 text-white px-3 py-1 rounded-full text-sm font-semibold z-10 whitespace-nowrap">
+                          3. Gauche
+                        </div>
+                        <PlayerSeat
+                          player={mockPlayers[1]}
+                          position="left"
+                          isCurrentPlayer={false}
+                          cardCount={15}
                         />
-                        <TarotCardComponent
-                          card={createCard('TRUMPS', 'TRUMP_12', 0.5)}
-                          size="md"
+                      </div>
+
+                      <div className="flex-1 mx-6 relative">
+                        <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-red-600 text-white px-3 py-1 rounded-full text-sm font-semibold z-10">
+                          4. Tapis
+                        </div>
+                        <div className="bg-green-700 rounded-xl p-6 min-h-[200px] flex items-center justify-center">
+                          <div className="flex gap-4">
+                            <TarotCardComponent
+                              card={createCard('HEARTS', '10', 0.5)}
+                              size="md"
+                            />
+                            <TarotCardComponent
+                              card={createCard('TRUMPS', 'TRUMP_12', 0.5)}
+                              size="md"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="relative">
+                        <div className="absolute -right-12 top-1/2 -translate-y-1/2 bg-purple-600 text-white px-3 py-1 rounded-full text-sm font-semibold z-10 whitespace-nowrap">
+                          5. Droite
+                        </div>
+                        <PlayerSeat
+                          player={mockPlayers[3]}
+                          position="right"
+                          isCurrentPlayer={false}
+                          cardCount={15}
                         />
                       </div>
                     </div>
 
                     <div className="relative">
                       <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-orange-600 text-white px-3 py-1 rounded-full text-sm font-semibold z-10">
-                        4. Votre main
+                        6. Votre main
                       </div>
                       <div className="bg-slate-800 rounded-xl p-4">
                         <div className="flex gap-2 justify-center flex-wrap">
@@ -402,12 +418,12 @@ export default function TutorialPage() {
                     <div className="bg-purple-50 p-6 rounded-lg border-2 border-purple-200">
                       <div className="flex items-center gap-2 mb-3">
                         <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold">
-                          2
+                          2-5
                         </div>
                         <h3 className="font-bold text-purple-900">Autres joueurs</h3>
                       </div>
                       <p className="text-slate-700 text-sm">
-                        Les trois autres joueurs avec leur nom et le nombre de cartes qu'il leur reste.
+                        Les trois autres joueurs positionnés en haut, à gauche et à droite avec leur nom et le nombre de cartes.
                         Un indicateur lumineux montre le joueur actif.
                       </p>
                     </div>
@@ -415,12 +431,12 @@ export default function TutorialPage() {
                     <div className="bg-red-50 p-6 rounded-lg border-2 border-red-200">
                       <div className="flex items-center gap-2 mb-3">
                         <div className="w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center font-bold">
-                          3
+                          4
                         </div>
                         <h3 className="font-bold text-red-900">Le tapis</h3>
                       </div>
                       <p className="text-slate-700 text-sm">
-                        Zone centrale où apparaissent les cartes jouées par chaque joueur pendant le pli.
+                        Zone centrale où apparaissent les cartes jouées. Les 4 cartes forment un carré centré.
                         Le gagnant du pli remporte toutes ces cartes.
                       </p>
                     </div>
@@ -428,7 +444,7 @@ export default function TutorialPage() {
                     <div className="bg-orange-50 p-6 rounded-lg border-2 border-orange-200">
                       <div className="flex items-center gap-2 mb-3">
                         <div className="w-8 h-8 bg-orange-600 text-white rounded-full flex items-center justify-center font-bold">
-                          4
+                          6
                         </div>
                         <h3 className="font-bold text-orange-900">Votre main</h3>
                       </div>
@@ -577,33 +593,54 @@ export default function TutorialPage() {
                         </p>
                       </div>
 
-                      <div className="grid grid-cols-3 gap-4 mb-6">
-                        {mockPlayers.slice(1).map((player, index) => (
-                          <PlayerSeat
-                            key={player.id}
-                            player={player}
-                            position="top"
-                            isCurrentPlayer={simulation.currentPlayer === index + 1}
-                            cardCount={15 - simulation.currentTrick * 4}
-                          />
-                        ))}
+                      <div className="flex justify-center mb-6">
+                        <PlayerSeat
+                          player={mockPlayers[2]}
+                          position="top"
+                          isCurrentPlayer={simulation.currentPlayer === 2}
+                          cardCount={15 - simulation.currentTrick * 4}
+                        />
                       </div>
 
-                      <div className="bg-green-700 rounded-xl p-6 mb-6 min-h-48 flex items-center justify-center">
-                        {simulation.trickCards.length > 0 ? (
-                          <div className="flex gap-4 flex-wrap justify-center">
-                            {simulation.trickCards.map((tc, index) => (
-                              <div key={index} className="text-center">
-                                <TarotCardComponent card={tc.card} size="md" />
-                                <p className="text-white text-xs mt-2">
-                                  {tc.player === 0 ? 'Vous' : botNames[tc.player - 1]}
-                                </p>
-                              </div>
-                            ))}
+                      <div className="flex items-center justify-between mb-6">
+                        <PlayerSeat
+                          player={mockPlayers[1]}
+                          position="left"
+                          isCurrentPlayer={simulation.currentPlayer === 1}
+                          cardCount={15 - simulation.currentTrick * 4}
+                        />
+
+                        <div className="flex-1 mx-6">
+
+                          <div className="bg-green-700 rounded-xl p-6 min-h-[200px] flex items-center justify-center relative">
+                            {simulation.trickCards.length > 0 ? (
+                              <>
+                                {simulation.trickCards.map((tc, index) => {
+                                  const positions = [
+                                    'left-1/2 -translate-x-1/2 bottom-4',
+                                    'left-1/2 -translate-x-[calc(50%+80px)] top-1/2 -translate-y-1/2',
+                                    'left-1/2 -translate-x-1/2 top-4',
+                                    'left-1/2 translate-x-[calc(-50%+80px)] top-1/2 -translate-y-1/2',
+                                  ];
+                                  return (
+                                    <div key={index} className={`absolute ${positions[tc.player]}`}>
+                                      <TarotCardComponent card={tc.card} size="md" />
+                                    </div>
+                                  );
+                                })}
+                              </>
+                            ) : (
+                              <p className="text-white text-lg">Aucune carte jouée</p>
+                            )}
                           </div>
-                        ) : (
-                          <p className="text-white text-lg">Aucune carte jouée</p>
-                        )}
+                        </div>
+
+                        <PlayerSeat
+                          player={mockPlayers[3]}
+                          position="right"
+                          isCurrentPlayer={simulation.currentPlayer === 3}
+                          cardCount={15 - simulation.currentTrick * 4}
+                        />
                       </div>
 
                       <div className="bg-slate-800 rounded-xl p-4">
