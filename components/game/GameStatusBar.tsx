@@ -53,26 +53,30 @@ export function GameStatusBar({
   };
 
   return (
-    <div className={cn('bg-transparent border border-white rounded-lg p-4', className)}>
+    <div className={cn('bg-white rounded-lg p-4', className)}>
       <div className="flex items-center justify-between">
-        <div className="space-y-1">
-          <div className="text-sm font-semibold text-white">
+        <div className="space-y-1 flex-1">
+          <div className="text-sm font-semibold text-slate-900">
             {getPhaseText()}
           </div>
           {contract && takerName && (
-            <div className="text-sm text-white">
+            <div className="text-sm text-slate-600">
               <span className="font-medium">Vous</span>
               {' joue '}
-              <span className="font-semibold text-blue-300">
+              <span className="font-semibold text-blue-600">
                 {getContractText(contract)}
               </span>
             </div>
           )}
         </div>
 
-        <div className="text-right">
-          <div className="text-xs text-white/70">Tour de</div>
-          <div className="text-sm font-semibold text-white">
+        <div className="flex-shrink-0 mx-4">
+          <img src="/img/icon.png" alt="Tarot" className="w-12 h-12" />
+        </div>
+
+        <div className="text-right flex-1">
+          <div className="text-xs text-slate-500">Tour de</div>
+          <div className="text-sm font-semibold text-slate-900">
             {currentPlayerName}
           </div>
         </div>
