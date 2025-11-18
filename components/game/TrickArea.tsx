@@ -11,9 +11,9 @@ export function TrickArea({ cards, className }: TrickAreaProps) {
   const getCardPosition = (index: number) => {
     const positions = [
       'left-1/2 -translate-x-1/2 bottom-4',
-      'left-4 top-1/2 -translate-y-1/2',
+      'left-1/2 -translate-x-[calc(50%+80px)] top-1/2 -translate-y-1/2',
       'left-1/2 -translate-x-1/2 top-4',
-      'right-1/2 translate-x-[-20px] top-1/2 -translate-y-1/2',
+      'left-1/2 translate-x-[calc(-50%+80px)] top-1/2 -translate-y-1/2',
     ];
 
     const seatIndex = cards[index].playerSeat;
