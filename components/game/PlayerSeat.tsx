@@ -45,8 +45,8 @@ export function PlayerSeat({
   return (
     <div
       className={cn(
-        'p-4 rounded-lg border-2 bg-white shadow-sm transition-all',
-        isCurrentPlayer ? 'border-blue-500 ring-2 ring-blue-200' : 'border-slate-200',
+        'p-4 rounded-lg border-2 transition-all',
+        isCurrentPlayer ? 'border-blue-400 ring-2 ring-blue-200 bg-blue-50/30' : 'border-white/20 bg-transparent',
         className
       )}
     >
@@ -54,7 +54,7 @@ export function PlayerSeat({
         <div className="relative">
           <Avatar className={cn(
             'w-12 h-12',
-            isCurrentPlayer && 'ring-2 ring-blue-500 ring-offset-2'
+            isCurrentPlayer && 'ring-2 ring-blue-400 ring-offset-2'
           )}>
             <AvatarFallback className="bg-slate-200">
               {getInitials(player.displayName)}
@@ -68,14 +68,9 @@ export function PlayerSeat({
         </div>
 
         <div className="text-center">
-          <div className="font-semibold text-sm text-slate-900">
+          <div className="font-semibold text-sm text-white">
             {player.displayName}
           </div>
-          {cardCount !== undefined && (
-            <div className="text-xs text-slate-500 mt-1">
-              {cardCount} carte{cardCount > 1 ? 's' : ''}
-            </div>
-          )}
         </div>
       </div>
     </div>

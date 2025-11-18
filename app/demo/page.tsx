@@ -63,14 +63,8 @@ export default function DemoPage() {
   };
 
   const handleCardSelect = (cardId: string) => {
-    setSelectedCard(cardId);
-  };
-
-  const handlePlayCard = () => {
-    if (selectedCard) {
-      setShowTrick(true);
-      setSelectedCard(null);
-    }
+    setShowTrick(true);
+    setSelectedCard(null);
   };
 
   const currentPlayerName = mockPlayers[0].displayName;
@@ -184,19 +178,16 @@ export default function DemoPage() {
                     player={mockPlayers[1]}
                     position="top"
                     isCurrentPlayer={false}
-                    cardCount={15}
                   />
                   <PlayerSeat
                     player={mockPlayers[2]}
                     position="top"
                     isCurrentPlayer={phase === 'PLAYING'}
-                    cardCount={15}
                   />
                   <PlayerSeat
                     player={mockPlayers[3]}
                     position="top"
                     isCurrentPlayer={false}
-                    cardCount={15}
                   />
                 </div>
 
@@ -228,31 +219,34 @@ export default function DemoPage() {
                 )}
 
                 <div className="bg-slate-800 rounded-xl p-6">
-                  <div className="mb-4 text-center">
-                    <Badge variant="outline" className="text-white border-white">
-                      Votre main ({mockHand.length} cartes)
-                    </Badge>
-                  </div>
-                  <div className="flex justify-center items-center mb-4">
-                    <div className="flex flex-col items-center gap-2" style={{ width: 'fit-content' }}>
-                      {/* Première ligne - 8 cartes */}
-                      <div className="relative flex justify-center" style={{ width: '100%', height: '220px' }}>
-                        <div className="relative" style={{ width: `${8 * 45 + 128}px`, height: '100%' }}>
-                          {mockHand.slice(0, 8).map((card, index) => (
+                  <div className="flex justify-center items-center">
+                    <div className="relative" style={{ width: 'fit-content', height: '320px' }}>
+                      {/* Deuxième ligne - 7 cartes (en haut) */}
+                      <div className="absolute top-0 left-1/2 -translate-x-1/2" style={{ zIndex: 20 }}>
+                        <div className="relative" style={{ width: `${7 * 45 + 128}px`, height: '200px' }}>
+                          {mockHand.slice(8).map((card, index) => (
                             <div
                               key={card.id}
-                              className="absolute transition-all duration-200 hover:z-50"
+                              className="absolute transition-all duration-200"
                               style={{
                                 left: `${index * 45}px`,
-                                bottom: selectedCard === card.id ? '20px' : '0',
-                                transform: selectedCard === card.id ? 'scale(1.05)' : 'scale(1)',
+                                bottom: '0',
+                                zIndex: 20 + index,
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.zIndex = '100';
+                                e.currentTarget.style.bottom = '20px';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.zIndex = `${20 + index}`;
+                                e.currentTarget.style.bottom = '0';
                               }}
                             >
                               <TarotCardComponent
                                 card={card}
                                 size="lg"
                                 selectable={phase === 'PLAYING'}
-                                selected={selectedCard === card.id}
+                                selected={false}
                                 onClick={() => handleCardSelect(card.id)}
                               />
                             </div>
@@ -260,24 +254,32 @@ export default function DemoPage() {
                         </div>
                       </div>
 
-                      {/* Deuxième ligne - 7 cartes */}
-                      <div className="relative flex justify-center" style={{ width: '100%', height: '220px' }}>
-                        <div className="relative" style={{ width: `${7 * 45 + 128}px`, height: '100%' }}>
-                          {mockHand.slice(8).map((card, index) => (
+                      {/* Première ligne - 8 cartes (en bas) */}
+                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2" style={{ zIndex: 10 }}>
+                        <div className="relative" style={{ width: `${8 * 45 + 128}px`, height: '200px' }}>
+                          {mockHand.slice(0, 8).map((card, index) => (
                             <div
                               key={card.id}
-                              className="absolute transition-all duration-200 hover:z-50"
+                              className="absolute transition-all duration-200"
                               style={{
                                 left: `${index * 45}px`,
-                                bottom: selectedCard === card.id ? '20px' : '0',
-                                transform: selectedCard === card.id ? 'scale(1.05)' : 'scale(1)',
+                                bottom: '0',
+                                zIndex: 10 + index,
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.zIndex = '100';
+                                e.currentTarget.style.bottom = '20px';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.zIndex = `${10 + index}`;
+                                e.currentTarget.style.bottom = '0';
                               }}
                             >
                               <TarotCardComponent
                                 card={card}
                                 size="lg"
                                 selectable={phase === 'PLAYING'}
-                                selected={selectedCard === card.id}
+                                selected={false}
                                 onClick={() => handleCardSelect(card.id)}
                               />
                             </div>
@@ -286,13 +288,6 @@ export default function DemoPage() {
                       </div>
                     </div>
                   </div>
-                  {phase === 'PLAYING' && selectedCard && (
-                    <div className="text-center">
-                      <Button onClick={handlePlayCard} size="lg" className="bg-orange-600 hover:bg-orange-700">
-                        Jouer la carte sélectionnée
-                      </Button>
-                    </div>
-                  )}
                 </div>
                 </div>
               </div>
