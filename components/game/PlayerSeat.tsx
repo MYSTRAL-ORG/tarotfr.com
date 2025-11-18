@@ -82,10 +82,10 @@ export function PlayerSeat({
         <div className="relative">
           <Avatar className={cn(
             'w-12 h-12 border-0',
-            isCurrentPlayer ? colorClasses.bgLight : colorClasses.bg
+            colorClasses.bg
           )}>
             <AvatarFallback className={cn(
-              isCurrentPlayer ? 'bg-white text-slate-900' : `${colorClasses.bg} text-white`
+              `${colorClasses.bg} text-white`
             )}>
               {getInitials(player.displayName)}
             </AvatarFallback>
