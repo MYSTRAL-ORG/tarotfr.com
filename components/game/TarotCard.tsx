@@ -24,7 +24,7 @@ export function TarotCard({
   const sizeClasses = {
     sm: 'w-16 h-24',
     md: 'w-20 h-32',
-    lg: 'w-24 h-40',
+    lg: 'w-32 h-52',
   };
 
   const getCardImagePath = () => {

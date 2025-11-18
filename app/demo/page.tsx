@@ -174,7 +174,11 @@ export default function DemoPage() {
                 takerName={phase === 'PLAYING' ? takerName : null}
               />
 
-              <div className="bg-gradient-to-b from-green-800 to-green-900 rounded-xl p-8 shadow-2xl">
+              <div className="bg-gradient-to-br from-green-700 via-green-800 to-green-900 rounded-xl p-8 shadow-2xl relative overflow-hidden">
+                <div className="absolute inset-0 opacity-20" style={{
+                  backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
+                }}></div>
+                <div className="relative z-10">
                 <div className="grid grid-cols-3 gap-4 mb-6">
                   <PlayerSeat
                     player={mockPlayers[1]}
@@ -229,25 +233,37 @@ export default function DemoPage() {
                       Votre main ({mockHand.length} cartes)
                     </Badge>
                   </div>
-                  <div className="flex gap-2 justify-center flex-wrap mb-4">
-                    {mockHand.map((card) => (
-                      <TarotCardComponent
-                        key={card.id}
-                        card={card}
-                        size="md"
-                        selectable={phase === 'PLAYING'}
-                        selected={selectedCard === card.id}
-                        onClick={() => handleCardSelect(card.id)}
-                      />
-                    ))}
+                  <div className="flex justify-center items-end mb-4 px-4">
+                    <div className="relative" style={{ width: 'fit-content', height: '240px' }}>
+                      {mockHand.map((card, index) => (
+                        <div
+                          key={card.id}
+                          className="absolute transition-all duration-200 hover:z-50"
+                          style={{
+                            left: `${index * 45}px`,
+                            bottom: selectedCard === card.id ? '20px' : '0',
+                            transform: selectedCard === card.id ? 'scale(1.05)' : 'scale(1)',
+                          }}
+                        >
+                          <TarotCardComponent
+                            card={card}
+                            size="lg"
+                            selectable={phase === 'PLAYING'}
+                            selected={selectedCard === card.id}
+                            onClick={() => handleCardSelect(card.id)}
+                          />
+                        </div>
+                      ))}
+                    </div>
                   </div>
                   {phase === 'PLAYING' && selectedCard && (
                     <div className="text-center">
-                      <Button onClick={handlePlayCard} size="lg" className="bg-orange-600">
+                      <Button onClick={handlePlayCard} size="lg" className="bg-orange-600 hover:bg-orange-700">
                         Jouer la carte sélectionnée
                       </Button>
                     </div>
                   )}
+                </div>
                 </div>
               </div>
             </div>
