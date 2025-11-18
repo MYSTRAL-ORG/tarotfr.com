@@ -220,7 +220,7 @@ export default function DemoPage() {
 
                 <div className="bg-slate-800 rounded-xl p-6 overflow-hidden" style={{ height: '220px' }}>
                   <div className="flex justify-center items-start h-full">
-                    <div className="relative" style={{ width: `${8 * 45 + 128}px`, height: '400px', marginTop: '-100px' }}>
+                    <div className="relative" style={{ width: `${8 * 45 + 128}px`, height: '400px', marginTop: '20px' }}>
                       {/* Deuxième ligne - 7 cartes (en haut, en arrière-plan) */}
                       <div className="absolute top-0 left-1/2 -translate-x-1/2">
                         <div className="relative" style={{ width: `${7 * 45 + 128}px`, height: '200px' }}>
@@ -234,11 +234,9 @@ export default function DemoPage() {
                                 zIndex: 10 + index,
                               }}
                               onMouseEnter={(e) => {
-                                e.currentTarget.style.zIndex = '100';
                                 e.currentTarget.style.top = '-20px';
                               }}
                               onMouseLeave={(e) => {
-                                e.currentTarget.style.zIndex = `${10 + index}`;
                                 e.currentTarget.style.top = '0';
                               }}
                             >
@@ -267,11 +265,9 @@ export default function DemoPage() {
                                 zIndex: 30 + index,
                               }}
                               onMouseEnter={(e) => {
-                                e.currentTarget.style.zIndex = '100';
                                 e.currentTarget.style.top = '-20px';
                               }}
                               onMouseLeave={(e) => {
-                                e.currentTarget.style.zIndex = `${30 + index}`;
                                 e.currentTarget.style.top = '0';
                               }}
                             >
