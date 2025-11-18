@@ -9,7 +9,8 @@ import { TarotCard as TarotCardComponent } from '@/components/game/TarotCard';
 import { PlayerSeat } from '@/components/game/PlayerSeat';
 import { BiddingPanel } from '@/components/game/BiddingPanel';
 import { GameStatusBar } from '@/components/game/GameStatusBar';
-import { TarotCard, Player, BidType } from '@/lib/types';
+import { TrickArea } from '@/components/game/TrickArea';
+import { TarotCard, Player, BidType, PlayedCard } from '@/lib/types';
 import {
   ArrowRight,
   ArrowLeft,
@@ -611,28 +612,18 @@ export default function TutorialPage() {
                         />
 
                         <div className="flex-1 mx-6">
-
-                          <div className="bg-green-700 rounded-xl p-6 min-h-[200px] flex items-center justify-center relative">
-                            {simulation.trickCards.length > 0 ? (
-                              <>
-                                {simulation.trickCards.map((tc, index) => {
-                                  const positions = [
-                                    'left-1/2 -translate-x-1/2 bottom-4',
-                                    'left-1/2 -translate-x-[calc(50%+80px)] top-1/2 -translate-y-1/2',
-                                    'left-1/2 -translate-x-1/2 top-4',
-                                    'left-1/2 translate-x-[calc(-50%+80px)] top-1/2 -translate-y-1/2',
-                                  ];
-                                  return (
-                                    <div key={index} className={`absolute ${positions[tc.player]}`}>
-                                      <TarotCardComponent card={tc.card} size="md" />
-                                    </div>
-                                  );
-                                })}
-                              </>
-                            ) : (
+                          {simulation.trickCards.length > 0 ? (
+                            <TrickArea
+                              cards={simulation.trickCards.map(tc => ({
+                                playerSeat: tc.player,
+                                card: tc.card
+                              }))}
+                            />
+                          ) : (
+                            <div className="bg-green-700 rounded-xl p-6 min-h-[200px] flex items-center justify-center">
                               <p className="text-white text-lg">Aucune carte jouée</p>
-                            )}
-                          </div>
+                            </div>
+                          )}
                         </div>
 
                         <PlayerSeat
