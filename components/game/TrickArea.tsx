@@ -10,10 +10,10 @@ interface TrickAreaProps {
 export function TrickArea({ cards, className }: TrickAreaProps) {
   const getCardPosition = (index: number) => {
     const positions = [
-      'left-1/2 -translate-x-1/2 bottom-0',
-      'left-0 top-1/2 -translate-y-1/2',
-      'left-1/2 -translate-x-1/2 top-0',
-      'right-0 top-1/2 -translate-y-1/2',
+      'left-1/2 -translate-x-1/2 bottom-4',
+      'left-4 top-1/2 -translate-y-1/2',
+      'left-1/2 -translate-x-1/2 top-4',
+      'right-1/2 translate-x-[-20px] top-1/2 -translate-y-1/2',
     ];
 
     const seatIndex = cards[index].playerSeat;
@@ -21,7 +21,7 @@ export function TrickArea({ cards, className }: TrickAreaProps) {
   };
 
   return (
-    <div className={cn('relative w-full h-full min-h-[200px] bg-green-700 rounded-xl my-6 flex items-center justify-center', className)}>
+    <div className={cn('relative w-full h-full min-h-[200px] bg-green-700 rounded-xl my-6 flex items-center justify-center p-6', className)}>
       {cards.map((playedCard, index) => (
         <div
           key={`${playedCard.card.id}-${index}`}
