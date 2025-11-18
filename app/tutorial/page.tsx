@@ -162,10 +162,6 @@ export default function TutorialPage() {
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-800 px-4 py-2 rounded-full mb-4">
-              <PlayCircle className="w-5 h-5" />
-              <span className="font-semibold">Tutoriel interactif</span>
-            </div>
             <h1 className="text-5xl font-bold mb-4 text-slate-900">
               Comment jouer sur TarotFR
             </h1>
@@ -510,21 +506,21 @@ export default function TutorialPage() {
                     <h3 className="text-xl font-bold text-purple-900 mb-4">Instructions</h3>
                     <div className="grid md:grid-cols-3 gap-4">
                       <div className="bg-white p-4 rounded-lg">
-                        <div className="text-2xl mb-2">1️⃣</div>
+                        <div className="text-2xl mb-2 font-bold text-blue-600">1</div>
                         <h4 className="font-semibold text-slate-900 mb-2">Évaluez votre main</h4>
                         <p className="text-sm text-slate-600">
                           Avec 8+ atouts dont le 21, 18 et 15, vous avez une bonne main !
                         </p>
                       </div>
                       <div className="bg-white p-4 rounded-lg">
-                        <div className="text-2xl mb-2">2️⃣</div>
+                        <div className="text-2xl mb-2 font-bold text-blue-600">2</div>
                         <h4 className="font-semibold text-slate-900 mb-2">Choisissez</h4>
                         <p className="text-sm text-slate-600">
                           Cliquez sur Petite ou Garde pour prendre, ou Passer si vous préférez.
                         </p>
                       </div>
                       <div className="bg-white p-4 rounded-lg">
-                        <div className="text-2xl mb-2">3️⃣</div>
+                        <div className="text-2xl mb-2 font-bold text-blue-600">3</div>
                         <h4 className="font-semibold text-slate-900 mb-2">Observez</h4>
                         <p className="text-sm text-slate-600">
                           Les autres joueurs enchérissent automatiquement après vous.
@@ -638,21 +634,21 @@ export default function TutorialPage() {
                     <h3 className="text-xl font-bold text-orange-900 mb-4">Comment jouer</h3>
                     <div className="grid md:grid-cols-3 gap-4">
                       <div className="bg-white p-4 rounded-lg text-center">
-                        <div className="text-3xl mb-2">👆</div>
+                        <div className="text-2xl mb-2 font-bold text-orange-600">1</div>
                         <h4 className="font-semibold text-slate-900 mb-2">Cliquez sur une carte</h4>
                         <p className="text-sm text-slate-600">
                           La carte se soulève pour indiquer votre sélection.
                         </p>
                       </div>
                       <div className="bg-white p-4 rounded-lg text-center">
-                        <div className="text-3xl mb-2">✅</div>
+                        <div className="text-2xl mb-2 font-bold text-orange-600">2</div>
                         <h4 className="font-semibold text-slate-900 mb-2">Validez</h4>
                         <p className="text-sm text-slate-600">
                           Cliquez sur "Jouer la carte" pour confirmer.
                         </p>
                       </div>
                       <div className="bg-white p-4 rounded-lg text-center">
-                        <div className="text-3xl mb-2">⏱️</div>
+                        <div className="text-2xl mb-2 font-bold text-orange-600">3</div>
                         <h4 className="font-semibold text-slate-900 mb-2">Attendez</h4>
                         <p className="text-sm text-slate-600">
                           Les autres joueurs jouent automatiquement.
@@ -714,7 +710,7 @@ export default function TutorialPage() {
                     <h3 className="text-xl font-bold text-green-900 mb-4">Le déroulement d'un pli</h3>
                     <div className="grid md:grid-cols-4 gap-4">
                       <div className="bg-white p-4 rounded-lg text-center">
-                        <div className="text-3xl mb-2">1️⃣</div>
+                        <div className="text-2xl mb-2 font-bold text-green-600">1</div>
                         <div className="text-sm font-semibold text-green-800 mb-2">Premier joueur</div>
                         <TarotCardComponent
                           card={createCard('HEARTS', '7', 0.5)}
@@ -723,7 +719,7 @@ export default function TutorialPage() {
                         <p className="text-xs text-slate-600 mt-2">Joue un 7 de Cœur</p>
                       </div>
                       <div className="bg-white p-4 rounded-lg text-center">
-                        <div className="text-3xl mb-2">2️⃣</div>
+                        <div className="text-2xl mb-2 font-bold text-green-600">2</div>
                         <div className="text-sm font-semibold text-green-800 mb-2">Deuxième joueur</div>
                         <TarotCardComponent
                           card={createCard('HEARTS', 'ROI', 4.5)}
@@ -732,7 +728,7 @@ export default function TutorialPage() {
                         <p className="text-xs text-slate-600 mt-2">Fournit un Roi</p>
                       </div>
                       <div className="bg-white p-4 rounded-lg text-center">
-                        <div className="text-3xl mb-2">3️⃣</div>
+                        <div className="text-2xl mb-2 font-bold text-green-600">3</div>
                         <div className="text-sm font-semibold text-green-800 mb-2">Troisième joueur</div>
                         <TarotCardComponent
                           card={createCard('TRUMPS', 'TRUMP_5', 0.5)}
@@ -741,7 +737,7 @@ export default function TutorialPage() {
                         <p className="text-xs text-slate-600 mt-2">Coupe avec un 5</p>
                       </div>
                       <div className="bg-white p-4 rounded-lg text-center border-4 border-yellow-400">
-                        <div className="text-3xl mb-2">4️⃣</div>
+                        <div className="text-2xl mb-2 font-bold text-green-600">4</div>
                         <div className="text-sm font-semibold text-yellow-800 mb-2">Quatrième joueur</div>
                         <TarotCardComponent
                           card={createCard('TRUMPS', 'TRUMP_15', 0.5)}
