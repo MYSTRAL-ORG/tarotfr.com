@@ -221,10 +221,10 @@ export default function DemoPage() {
                 <div className="bg-slate-800 rounded-xl p-6 overflow-hidden" style={{ height: '220px' }}>
                   <div className="flex justify-center items-end h-full">
                     <div className="relative" style={{ width: 'fit-content', height: '320px' }}>
-                      {/* Première ligne - 8 cartes (en bas, z-index bas) */}
-                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2" style={{ zIndex: 10 }}>
-                        <div className="relative" style={{ width: `${8 * 45 + 128}px`, height: '200px' }}>
-                          {mockHand.slice(0, 8).map((card, index) => (
+                      {/* Deuxième ligne - 7 cartes (en arrière-plan, z-index BAS) */}
+                      <div className="absolute top-0 left-1/2 -translate-x-1/2" style={{ zIndex: 10 }}>
+                        <div className="relative" style={{ width: `${7 * 45 + 128}px`, height: '200px' }}>
+                          {mockHand.slice(8).map((card, index) => (
                             <div
                               key={card.id}
                               className="absolute transition-all duration-200"
@@ -254,10 +254,10 @@ export default function DemoPage() {
                         </div>
                       </div>
 
-                      {/* Deuxième ligne - 7 cartes (au-dessus, z-index haut) */}
-                      <div className="absolute top-0 left-1/2 -translate-x-1/2" style={{ zIndex: 20 }}>
-                        <div className="relative" style={{ width: `${7 * 45 + 128}px`, height: '200px' }}>
-                          {mockHand.slice(8).map((card, index) => (
+                      {/* Première ligne - 8 cartes (au premier plan, z-index HAUT) */}
+                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2" style={{ zIndex: 30 }}>
+                        <div className="relative" style={{ width: `${8 * 45 + 128}px`, height: '200px' }}>
+                          {mockHand.slice(0, 8).map((card, index) => (
                             <div
                               key={card.id}
                               className="absolute transition-all duration-200"
