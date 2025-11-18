@@ -38,6 +38,9 @@ export function Navigation() {
           <Link href="/rules" className="text-white/90 hover:text-white font-medium transition-colors">
             Règles
           </Link>
+          <Link href="/tutorial" className="text-white/90 hover:text-white font-medium transition-colors">
+            Tutoriel
+          </Link>
           <Link href="/play" className="text-white/90 hover:text-white font-medium transition-colors">
             Jouer
           </Link>
