@@ -15,6 +15,7 @@ import {
   revealDog,
   calculateScores,
 } from '../lib/tarotEngine';
+import { createClient } from '@supabase/supabase-js';
 
 interface ConnectedClient {
   ws: WebSocket;
@@ -27,16 +28,20 @@ const clients = new Map<WebSocket, ConnectedClient>();
 const tableGames = new Map<string, TarotGameState>();
 const tablePlayers = new Map<string, Player[]>();
 
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const supabase = createClient(supabaseUrl, supabaseKey);
+
 const httpServer = createServer();
 const wss = new WebSocketServer({ server: httpServer });
 
 wss.on('connection', (ws: WebSocket) => {
   console.log('New WebSocket connection');
 
-  ws.on('message', (data: Buffer) => {
+  ws.on('message', async (data: Buffer) => {
     try {
       const message: WSClientMessage = JSON.parse(data.toString());
-      handleClientMessage(ws, message);
+      await handleClientMessage(ws, message);
     } catch (error) {
       console.error('Error parsing message:', error);
       sendError(ws, 'Invalid message format');
@@ -52,16 +57,16 @@ wss.on('connection', (ws: WebSocket) => {
   });
 });
 
-function handleClientMessage(ws: WebSocket, message: WSClientMessage) {
+async function handleClientMessage(ws: WebSocket, message: WSClientMessage) {
   switch (message.type) {
     case 'JOIN_TABLE':
-      handleJoinTable(ws, message.payload);
+      await handleJoinTable(ws, message.payload);
       break;
     case 'LEAVE_TABLE':
       handleLeaveTable(ws);
       break;
     case 'READY':
-      handleReady(ws);
+      await handleReady(ws);
       break;
     case 'BID':
       handleBid(ws, message.payload);
@@ -77,7 +82,7 @@ function handleClientMessage(ws: WebSocket, message: WSClientMessage) {
   }
 }
 
-function handleJoinTable(ws: WebSocket, payload: any) {
+async function handleJoinTable(ws: WebSocket, payload: any) {
   const { tableId, userId, displayName } = payload;
 
   if (!tableId || !userId || !displayName) {
@@ -94,44 +99,49 @@ function handleJoinTable(ws: WebSocket, payload: any) {
 
   clients.set(ws, client);
 
-  let players = tablePlayers.get(tableId) || [];
+  try {
+    const { data: dbPlayers, error } = await supabase
+      .from('table_players')
+      .select('*, users!inner(id, display_name)')
+      .eq('table_id', tableId)
+      .order('seat_index', { ascending: true });
 
-  const existingPlayer = players.find(p => p.userId === userId);
-  if (!existingPlayer) {
-    const seatIndex = players.length;
-    if (seatIndex >= 4) {
-      sendError(ws, 'Table is full');
+    if (error) {
+      console.error('Error fetching players from DB:', error);
+      sendError(ws, 'Failed to load table players');
       return;
     }
 
-    const newPlayer: Player = {
-      id: userId,
-      userId,
-      displayName,
-      seatIndex,
-      isReady: false,
-    };
+    const players: Player[] = (dbPlayers || []).map((dbPlayer: any) => ({
+      id: dbPlayer.user_id,
+      userId: dbPlayer.user_id,
+      displayName: dbPlayer.users.display_name,
+      seatIndex: dbPlayer.seat_index,
+      isReady: dbPlayer.is_ready,
+    }));
 
-    players.push(newPlayer);
     tablePlayers.set(tableId, players);
+
+    sendMessage(ws, {
+      type: 'TABLE_STATE',
+      payload: {
+        tableId,
+        players,
+      },
+    });
 
     broadcastToTable(tableId, {
       type: 'PLAYER_JOINED',
-      payload: { player: newPlayer },
+      payload: { player: players.find(p => p.userId === userId) },
     });
-  }
 
-  sendMessage(ws, {
-    type: 'TABLE_STATE',
-    payload: {
-      tableId,
-      players,
-    },
-  });
-
-  const gameState = tableGames.get(tableId);
-  if (gameState) {
-    sendGameState(ws, gameState);
+    const gameState = tableGames.get(tableId);
+    if (gameState) {
+      sendGameState(ws, gameState);
+    }
+  } catch (error) {
+    console.error('Error in handleJoinTable:', error);
+    sendError(ws, 'Failed to join table');
   }
 }
 
@@ -156,24 +166,41 @@ function handleLeaveTable(ws: WebSocket) {
   client.tableId = null;
 }
 
-function handleReady(ws: WebSocket) {
+async function handleReady(ws: WebSocket) {
   const client = clients.get(ws);
   if (!client || !client.tableId) return;
 
-  const players = tablePlayers.get(client.tableId) || [];
-  const player = players.find(p => p.userId === client.userId);
-  if (!player) return;
+  try {
+    const { error } = await supabase
+      .from('table_players')
+      .update({ is_ready: true })
+      .eq('table_id', client.tableId)
+      .eq('user_id', client.userId);
 
-  player.isReady = true;
-  tablePlayers.set(client.tableId, players);
+    if (error) {
+      console.error('Error updating ready status:', error);
+      sendError(ws, 'Failed to update ready status');
+      return;
+    }
 
-  broadcastToTable(client.tableId, {
-    type: 'PLAYER_READY',
-    payload: { userId: client.userId },
-  });
+    const players = tablePlayers.get(client.tableId) || [];
+    const player = players.find(p => p.userId === client.userId);
+    if (!player) return;
 
-  if (players.length === 4 && players.every(p => p.isReady)) {
-    startGame(client.tableId, players);
+    player.isReady = true;
+    tablePlayers.set(client.tableId, players);
+
+    broadcastToTable(client.tableId, {
+      type: 'PLAYER_READY',
+      payload: { userId: client.userId },
+    });
+
+    if (players.length === 4 && players.every(p => p.isReady)) {
+      startGame(client.tableId, players);
+    }
+  } catch (error) {
+    console.error('Error in handleReady:', error);
+    sendError(ws, 'Failed to set ready status');
   }
 }
 
