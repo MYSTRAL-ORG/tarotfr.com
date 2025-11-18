@@ -10,11 +10,12 @@ import { PlayerSeat } from '@/components/game/PlayerSeat';
 import { TrickArea } from '@/components/game/TrickArea';
 import { GameStatusBar } from '@/components/game/GameStatusBar';
 import { BiddingPanel } from '@/components/game/BiddingPanel';
+import { BotSelector } from '@/components/game/BotSelector';
 import { useAuth } from '@/contexts/AuthContext';
 import { useWebSocket } from '@/contexts/WebSocketContext';
 import { BidType, Player } from '@/lib/types';
 import { toast } from 'sonner';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Bot } from 'lucide-react';
 
 export default function TablePage() {
   const params = useParams();
@@ -28,6 +29,8 @@ export default function TablePage() {
     ready,
     placeBid,
     playCard,
+    addBot,
+    removeBot,
     error,
   } = useWebSocket();
 
@@ -227,6 +230,15 @@ export default function TablePage() {
                 />
               )}
 
+              {!gameState && (
+                <BotSelector
+                  players={players}
+                  onAddBot={addBot}
+                  onRemoveBot={removeBot}
+                  disabled={false}
+                />
+              )}
+
               <Card className="p-6">
                 <h3 className="text-lg font-semibold mb-4 text-slate-900">
                   Joueurs
@@ -237,10 +249,15 @@ export default function TablePage() {
                       key={player.id}
                       className="flex items-center justify-between p-3 bg-slate-50 rounded-lg"
                     >
-                      <span className="font-medium text-slate-900">
-                        {player.displayName}
-                        {player.userId === user?.id && ' (Vous)'}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        {player.isBot && (
+                          <Bot className="w-4 h-4 text-blue-600" />
+                        )}
+                        <span className="font-medium text-slate-900">
+                          {player.displayName}
+                          {player.userId === user?.id && ' (Vous)'}
+                        </span>
+                      </div>
                       {player.isReady && (
                         <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
                           Prêt

@@ -15,6 +15,8 @@ interface WebSocketContextType {
   ready: () => void;
   placeBid: (bidType: BidType) => void;
   playCard: (cardId: string) => void;
+  addBot: (difficulty: 'EASY' | 'MEDIUM' | 'HARD') => void;
+  removeBot: (botId: string) => void;
   error: string | null;
 }
 
@@ -134,6 +136,14 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
         );
         break;
 
+      case 'BOT_ADDED':
+        setPlayers(prev => [...prev, message.payload.player]);
+        break;
+
+      case 'BOT_REMOVED':
+        setPlayers(prev => prev.filter(p => p.userId !== message.payload.botId));
+        break;
+
       case 'BID_PLACED':
         break;
 
@@ -202,6 +212,20 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
     });
   }, [sendMessage]);
 
+  const addBot = useCallback((difficulty: 'EASY' | 'MEDIUM' | 'HARD') => {
+    sendMessage({
+      type: 'ADD_BOT',
+      payload: { difficulty },
+    });
+  }, [sendMessage]);
+
+  const removeBot = useCallback((botId: string) => {
+    sendMessage({
+      type: 'REMOVE_BOT',
+      payload: { botId },
+    });
+  }, [sendMessage]);
+
   return (
     <WebSocketContext.Provider
       value={{
@@ -214,6 +238,8 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
         ready,
         placeBid,
         playCard,
+        addBot,
+        removeBot,
         error,
       }}
     >

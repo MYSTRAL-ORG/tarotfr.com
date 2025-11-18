@@ -13,6 +13,7 @@ Une application web moderne pour jouer au Tarot à 4 joueurs en temps réel.
 - ✅ Moteur de jeu avec validation des coups
 - ✅ Vraies images de cartes de Tarot français
 - ✅ Logo et branding personnalisés
+- ✅ **Joueurs bots avec 3 niveaux de difficulté (Faible, Moyen, Fort)**
 
 ## Stack Technique
 
@@ -107,10 +108,14 @@ Le schéma inclut :
 ### Flux de Jeu
 
 1. **Lobby** : Les joueurs rejoignent une table (4 joueurs requis)
+   - Possibilité d'ajouter des bots pour compléter la table
+   - 3 niveaux de difficulté : Faible, Moyen, Fort
 2. **Distribution** : Les cartes sont distribuées automatiquement
 3. **Enchères** : Chaque joueur enchérit à tour de rôle
+   - Les bots enchérissent automatiquement selon leur niveau
 4. **Révélation du chien** : Le preneur voit et intègre le chien
 5. **Jeu** : Les joueurs jouent leurs cartes à tour de rôle
+   - Les bots jouent automatiquement avec un délai d'1 seconde
 6. **Scoring** : Les scores sont calculés automatiquement
 
 ## Moteur de Jeu
@@ -157,6 +162,32 @@ L'application supporte :
 - **Comptes permanents** : Email/mot de passe via Supabase Auth
 - **Conversion** : Les invités peuvent créer un compte permanent (à implémenter)
 
+## Joueurs Bots
+
+Le jeu inclut maintenant un système de bots IA avec 3 niveaux de difficulté :
+
+### Faible
+- Joue de manière aléatoire
+- Stratégie minimale
+- Idéal pour les débutants
+
+### Moyen
+- Évalue sa main
+- Joue stratégiquement
+- Respecte les règles de base
+
+### Fort
+- Stratégie avancée
+- Analyse complète du jeu
+- Compte les atouts et oudlers
+- Optimise chaque coup
+
+**Utilisation** :
+1. Sur la page d'une table, utilisez le panneau "Joueurs Bots"
+2. Sélectionnez le niveau de difficulté
+3. Cliquez sur "Ajouter un bot"
+4. Les bots jouent automatiquement leurs tours
+
 ## Prochaines Étapes (V2)
 
 - [ ] Implémenter l'écart du chien
@@ -165,7 +196,6 @@ L'application supporte :
 - [ ] Historique complet des parties
 - [ ] Statistiques avancées
 - [ ] Système de matchmaking
-- [ ] IA pour remplacer les joueurs déconnectés
 - [ ] Mode spectateur
 - [ ] Tournois et classements
 

@@ -28,6 +28,8 @@ export interface Player {
   displayName: string;
   seatIndex: number;
   isReady: boolean;
+  isBot?: boolean;
+  difficulty?: 'EASY' | 'MEDIUM' | 'HARD';
 }
 
 export interface Bid {
@@ -130,7 +132,9 @@ export interface WSClientMessage extends WSMessage {
     | 'READY'
     | 'BID'
     | 'PLAY_CARD'
-    | 'PING';
+    | 'PING'
+    | 'ADD_BOT'
+    | 'REMOVE_BOT';
 }
 
 export interface WSServerMessage extends WSMessage {
@@ -145,5 +149,7 @@ export interface WSServerMessage extends WSMessage {
     | 'TRICK_COMPLETE'
     | 'GAME_PHASE_CHANGE'
     | 'ERROR'
-    | 'PONG';
+    | 'PONG'
+    | 'BOT_ADDED'
+    | 'BOT_REMOVED';
 }

@@ -15,6 +15,12 @@ import {
   revealDog,
   calculateScores,
 } from '../lib/tarotEngine';
+import {
+  createBotPlayer,
+  decideBid,
+  chooseCardToPlay,
+  BotDifficulty,
+} from '../lib/botPlayer';
 import { createClient } from '@supabase/supabase-js';
 
 interface ConnectedClient {
@@ -73,6 +79,12 @@ async function handleClientMessage(ws: WebSocket, message: WSClientMessage) {
       break;
     case 'PLAY_CARD':
       handlePlayCard(ws, message.payload);
+      break;
+    case 'ADD_BOT':
+      await handleAddBot(ws, message.payload);
+      break;
+    case 'REMOVE_BOT':
+      await handleRemoveBot(ws, message.payload);
       break;
     case 'PING':
       sendMessage(ws, { type: 'PONG' });
@@ -243,6 +255,7 @@ function handleBid(ws: WebSocket, payload: any) {
       const revealedState = revealDog(newState);
       tableGames.set(client.tableId, revealedState);
       broadcastGameState(client.tableId, revealedState);
+      executeBotTurn(client.tableId, revealedState);
     } else if (newState.phase === 'END') {
       broadcastToTable(client.tableId, {
         type: 'GAME_PHASE_CHANGE',
@@ -250,6 +263,7 @@ function handleBid(ws: WebSocket, payload: any) {
       });
     } else {
       broadcastGameState(client.tableId, newState);
+      executeBotTurn(client.tableId, newState);
     }
   } catch (error: any) {
     sendError(ws, error.message);
@@ -302,6 +316,7 @@ function handlePlayCard(ws: WebSocket, payload: any) {
     }
 
     broadcastGameState(client.tableId, newState);
+    executeBotTurn(client.tableId, newState);
   } catch (error: any) {
     sendError(ws, error.message);
   }
@@ -319,6 +334,8 @@ function startGame(tableId: string, players: Player[]) {
     type: 'GAME_PHASE_CHANGE',
     payload: { phase: 'BIDDING' },
   });
+
+  executeBotTurn(tableId, biddingState);
 }
 
 function handleDisconnect(ws: WebSocket) {
@@ -373,6 +390,229 @@ function broadcastToTable(tableId: string, message: WSServerMessage) {
       sendMessage(client.ws, message);
     }
   });
+}
+
+async function handleAddBot(ws: WebSocket, payload: any) {
+  const client = clients.get(ws);
+  if (!client || !client.tableId) return;
+
+  const { difficulty } = payload;
+  if (!difficulty || !['EASY', 'MEDIUM', 'HARD'].includes(difficulty)) {
+    sendError(ws, 'Invalid difficulty level');
+    return;
+  }
+
+  const players = tablePlayers.get(client.tableId) || [];
+  if (players.length >= 4) {
+    sendError(ws, 'Table is full');
+    return;
+  }
+
+  const availableSeats = [0, 1, 2, 3].filter(
+    seat => !players.some(p => p.seatIndex === seat)
+  );
+
+  if (availableSeats.length === 0) {
+    sendError(ws, 'No available seats');
+    return;
+  }
+
+  const seatIndex = availableSeats[0];
+  const bot = createBotPlayer(seatIndex, difficulty as BotDifficulty);
+
+  try {
+    const { error } = await supabase
+      .from('table_players')
+      .insert({
+        table_id: client.tableId,
+        user_id: bot.userId,
+        seat_index: seatIndex,
+        is_ready: true,
+      });
+
+    if (error) {
+      console.error('Error adding bot to database:', error);
+      sendError(ws, 'Failed to add bot');
+      return;
+    }
+
+    players.push(bot);
+    tablePlayers.set(client.tableId, players);
+
+    broadcastToTable(client.tableId, {
+      type: 'BOT_ADDED',
+      payload: { player: bot },
+    });
+
+    broadcastToTable(client.tableId, {
+      type: 'TABLE_STATE',
+      payload: {
+        tableId: client.tableId,
+        players,
+      },
+    });
+
+    if (players.length === 4 && players.every(p => p.isReady)) {
+      setTimeout(() => startGame(client.tableId!, players), 1000);
+    }
+  } catch (error) {
+    console.error('Error in handleAddBot:', error);
+    sendError(ws, 'Failed to add bot');
+  }
+}
+
+async function handleRemoveBot(ws: WebSocket, payload: any) {
+  const client = clients.get(ws);
+  if (!client || !client.tableId) return;
+
+  const { botId } = payload;
+  if (!botId) {
+    sendError(ws, 'Missing bot ID');
+    return;
+  }
+
+  const players = tablePlayers.get(client.tableId) || [];
+  const botPlayer = players.find(p => p.userId === botId && p.isBot);
+
+  if (!botPlayer) {
+    sendError(ws, 'Bot not found');
+    return;
+  }
+
+  const gameState = tableGames.get(client.tableId);
+  if (gameState && gameState.phase !== 'DEALING') {
+    sendError(ws, 'Cannot remove bot during active game');
+    return;
+  }
+
+  try {
+    const { error } = await supabase
+      .from('table_players')
+      .delete()
+      .eq('table_id', client.tableId)
+      .eq('user_id', botId);
+
+    if (error) {
+      console.error('Error removing bot from database:', error);
+    }
+
+    const filteredPlayers = players.filter(p => p.userId !== botId);
+    tablePlayers.set(client.tableId, filteredPlayers);
+
+    broadcastToTable(client.tableId, {
+      type: 'BOT_REMOVED',
+      payload: { botId },
+    });
+
+    broadcastToTable(client.tableId, {
+      type: 'TABLE_STATE',
+      payload: {
+        tableId: client.tableId,
+        players: filteredPlayers,
+      },
+    });
+  } catch (error) {
+    console.error('Error in handleRemoveBot:', error);
+    sendError(ws, 'Failed to remove bot');
+  }
+}
+
+function executeBotTurn(tableId: string, gameState: TarotGameState) {
+  const currentPlayer = gameState.players.find(
+    p => p.seatIndex === gameState.currentPlayerSeat
+  );
+
+  if (!currentPlayer || !currentPlayer.isBot) return;
+
+  setTimeout(() => {
+    const updatedGameState = tableGames.get(tableId);
+    if (!updatedGameState) return;
+
+    if (updatedGameState.phase === 'BIDDING') {
+      const currentHighestBid = updatedGameState.bids.length > 0
+        ? updatedGameState.bids.reduce((highest, bid) =>
+            bid.bidType !== 'PASS' ? bid : highest
+          ).bidType
+        : null;
+
+      const hand = updatedGameState.hands[currentPlayer.seatIndex];
+      const bidDecision = decideBid(
+        hand,
+        currentPlayer.difficulty!,
+        currentHighestBid
+      );
+
+      try {
+        const newState = applyBid(updatedGameState, currentPlayer.seatIndex, bidDecision);
+        tableGames.set(tableId, newState);
+
+        broadcastToTable(tableId, {
+          type: 'BID_PLACED',
+          payload: { playerSeat: currentPlayer.seatIndex, bidType: bidDecision },
+        });
+
+        if (newState.phase === 'DOG_REVEAL') {
+          const revealedState = revealDog(newState);
+          tableGames.set(tableId, revealedState);
+          broadcastGameState(tableId, revealedState);
+          executeBotTurn(tableId, revealedState);
+        } else if (newState.phase === 'END') {
+          broadcastToTable(tableId, {
+            type: 'GAME_PHASE_CHANGE',
+            payload: { phase: 'END' },
+          });
+        } else {
+          broadcastGameState(tableId, newState);
+          executeBotTurn(tableId, newState);
+        }
+      } catch (error: any) {
+        console.error('Bot bid error:', error.message);
+      }
+    } else if (updatedGameState.phase === 'PLAYING') {
+      const cardToPlay = chooseCardToPlay(
+        updatedGameState,
+        currentPlayer.seatIndex,
+        currentPlayer.difficulty!
+      );
+
+      if (cardToPlay) {
+        try {
+          const newState = playCard(updatedGameState, currentPlayer.seatIndex, cardToPlay);
+          tableGames.set(tableId, newState);
+
+          broadcastToTable(tableId, {
+            type: 'CARD_PLAYED',
+            payload: { playerSeat: currentPlayer.seatIndex, cardId: cardToPlay },
+          });
+
+          if (newState.currentTrick.length === 0 && newState.completedTricks.length > updatedGameState.completedTricks.length) {
+            broadcastToTable(tableId, {
+              type: 'TRICK_COMPLETE',
+              payload: {
+                trick: newState.completedTricks[newState.completedTricks.length - 1]
+              },
+            });
+          }
+
+          if (newState.phase === 'SCORING') {
+            const scores = calculateScores(newState);
+            newState.scores = scores;
+            tableGames.set(tableId, newState);
+
+            broadcastToTable(tableId, {
+              type: 'GAME_PHASE_CHANGE',
+              payload: { phase: 'SCORING', scores },
+            });
+          }
+
+          broadcastGameState(tableId, newState);
+          executeBotTurn(tableId, newState);
+        } catch (error: any) {
+          console.error('Bot play error:', error.message);
+        }
+      }
+    }
+  }, 1000);
 }
 
 const PORT = process.env.WS_PORT || 3001;
