@@ -74,7 +74,7 @@ export function PlayerSeat({
     <div
       className={cn(
         'p-4 rounded-lg transition-all',
-        isCurrentPlayer ? `border-4 ${colorClasses.border} bg-transparent` : 'border-2 border-white/20 bg-transparent',
+        isCurrentPlayer ? `border-4 ${colorClasses.border} bg-transparent` : 'bg-transparent',
         className
       )}
     >

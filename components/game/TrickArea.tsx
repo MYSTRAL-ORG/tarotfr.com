@@ -21,7 +21,7 @@ export function TrickArea({ cards, className }: TrickAreaProps) {
   };
 
   return (
-    <div className={cn('relative w-full h-full min-h-[200px] bg-green-700/40 rounded-xl border-2 border-green-600/50 flex items-center justify-center', className)}>
+    <div className={cn('relative w-full h-full min-h-[200px] bg-green-700 rounded-xl my-6 flex items-center justify-center', className)}>
       {cards.map((playedCard, index) => (
         <div
           key={`${playedCard.card.id}-${index}`}

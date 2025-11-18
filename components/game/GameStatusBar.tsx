@@ -53,7 +53,7 @@ export function GameStatusBar({
   };
 
   return (
-    <div className={cn('bg-transparent border-2 border-white rounded-lg p-4', className)}>
+    <div className={cn('bg-transparent border border-white rounded-lg p-4', className)}>
       <div className="flex items-center justify-between">
         <div className="space-y-1">
           <div className="text-sm font-semibold text-white">
