@@ -218,43 +218,10 @@ export default function DemoPage() {
                   </div>
                 )}
 
-                <div className="bg-slate-800 rounded-xl p-6">
-                  <div className="flex justify-center items-center">
+                <div className="bg-slate-800 rounded-xl p-6 overflow-hidden" style={{ height: '220px' }}>
+                  <div className="flex justify-center items-end h-full">
                     <div className="relative" style={{ width: 'fit-content', height: '320px' }}>
-                      {/* Deuxième ligne - 7 cartes (en haut) */}
-                      <div className="absolute top-0 left-1/2 -translate-x-1/2" style={{ zIndex: 20 }}>
-                        <div className="relative" style={{ width: `${7 * 45 + 128}px`, height: '200px' }}>
-                          {mockHand.slice(8).map((card, index) => (
-                            <div
-                              key={card.id}
-                              className="absolute transition-all duration-200"
-                              style={{
-                                left: `${index * 45}px`,
-                                bottom: '0',
-                                zIndex: 20 + index,
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.zIndex = '100';
-                                e.currentTarget.style.bottom = '20px';
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.zIndex = `${20 + index}`;
-                                e.currentTarget.style.bottom = '0';
-                              }}
-                            >
-                              <TarotCardComponent
-                                card={card}
-                                size="lg"
-                                selectable={phase === 'PLAYING'}
-                                selected={false}
-                                onClick={() => handleCardSelect(card.id)}
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Première ligne - 8 cartes (en bas) */}
+                      {/* Première ligne - 8 cartes (en bas, z-index bas) */}
                       <div className="absolute bottom-0 left-1/2 -translate-x-1/2" style={{ zIndex: 10 }}>
                         <div className="relative" style={{ width: `${8 * 45 + 128}px`, height: '200px' }}>
                           {mockHand.slice(0, 8).map((card, index) => (
@@ -272,6 +239,39 @@ export default function DemoPage() {
                               }}
                               onMouseLeave={(e) => {
                                 e.currentTarget.style.zIndex = `${10 + index}`;
+                                e.currentTarget.style.bottom = '0';
+                              }}
+                            >
+                              <TarotCardComponent
+                                card={card}
+                                size="lg"
+                                selectable={phase === 'PLAYING'}
+                                selected={false}
+                                onClick={() => handleCardSelect(card.id)}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Deuxième ligne - 7 cartes (au-dessus, z-index haut) */}
+                      <div className="absolute top-0 left-1/2 -translate-x-1/2" style={{ zIndex: 20 }}>
+                        <div className="relative" style={{ width: `${7 * 45 + 128}px`, height: '200px' }}>
+                          {mockHand.slice(8).map((card, index) => (
+                            <div
+                              key={card.id}
+                              className="absolute transition-all duration-200"
+                              style={{
+                                left: `${index * 45}px`,
+                                bottom: '0',
+                                zIndex: 30 + index,
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.zIndex = '100';
+                                e.currentTarget.style.bottom = '20px';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.zIndex = `${30 + index}`;
                                 e.currentTarget.style.bottom = '0';
                               }}
                             >
