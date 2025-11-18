@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Navigation } from '@/components/Navigation';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,7 +9,7 @@ import { TarotCard as TarotCardComponent } from '@/components/game/TarotCard';
 import { PlayerSeat } from '@/components/game/PlayerSeat';
 import { BiddingPanel } from '@/components/game/BiddingPanel';
 import { GameStatusBar } from '@/components/game/GameStatusBar';
-import { TarotCard, Player } from '@/lib/types';
+import { TarotCard, Player, BidType } from '@/lib/types';
 import {
   ArrowRight,
   ArrowLeft,
@@ -20,8 +20,19 @@ import {
   Trophy,
   MessageSquare,
   CheckCircle,
-  PlayCircle
+  PlayCircle,
+  RotateCcw
 } from 'lucide-react';
+import {
+  SimulationState,
+  initialSimulationState,
+  processBid,
+  playCard,
+  completeTrick,
+  nextTrick,
+  getBidDisplayName,
+  botNames,
+} from '@/lib/tutorialSimulation';
 
 const createCard = (suit: any, rank: any, points: number): TarotCard => ({
   id: `${suit}_${rank}`,
@@ -32,6 +43,8 @@ const createCard = (suit: any, rank: any, points: number): TarotCard => ({
 
 export default function TutorialPage() {
   const [currentStep, setCurrentStep] = useState(0);
+  const [simulation, setSimulation] = useState<SimulationState>(initialSimulationState);
+  const [autoPlayTimeout, setAutoPlayTimeout] = useState<NodeJS.Timeout | null>(null);
 
   const mockPlayers: Player[] = [
     { id: '1', userId: '1', displayName: 'Vous', seatIndex: 0, isReady: true },
@@ -48,6 +61,52 @@ export default function TutorialPage() {
     createCard('TRUMPS', 'TRUMP_21', 4.5),
     createCard('DIAMONDS', '7', 0.5),
   ];
+
+  useEffect(() => {
+    return () => {
+      if (autoPlayTimeout) {
+        clearTimeout(autoPlayTimeout);
+      }
+    };
+  }, [autoPlayTimeout]);
+
+  const resetSimulation = () => {
+    if (autoPlayTimeout) {
+      clearTimeout(autoPlayTimeout);
+    }
+    setSimulation(initialSimulationState);
+  };
+
+  const handleBid = (bid: BidType) => {
+    const newState = processBid(simulation, bid);
+    setSimulation(newState);
+  };
+
+  const handleCardSelect = (index: number) => {
+    if (!simulation.canPlay) return;
+    setSimulation({ ...simulation, selectedCard: index });
+  };
+
+  const handlePlayCard = () => {
+    if (simulation.selectedCard === null) return;
+
+    const afterPlay = playCard(simulation, simulation.selectedCard);
+    setSimulation(afterPlay);
+
+    const timeout = setTimeout(() => {
+      const afterBots = completeTrick(afterPlay);
+      setSimulation(afterBots);
+
+      const timeout2 = setTimeout(() => {
+        const afterTrick = nextTrick(afterBots);
+        setSimulation(afterTrick);
+      }, 2000);
+
+      setAutoPlayTimeout(timeout2);
+    }, 1000);
+
+    setAutoPlayTimeout(timeout);
+  };
 
   const steps = [
     {
@@ -82,8 +141,19 @@ export default function TutorialPage() {
     },
   ];
 
-  const nextStep = () => setCurrentStep(Math.min(currentStep + 1, steps.length - 1));
+  const nextStep = () => {
+    setCurrentStep(Math.min(currentStep + 1, steps.length - 1));
+    if (currentStep === 1) {
+      resetSimulation();
+    }
+  };
+
   const prevStep = () => setCurrentStep(Math.max(currentStep - 1, 0));
+
+  const getCurrentPlayerName = () => {
+    if (simulation.currentPlayer === 0) return 'Vous';
+    return botNames[simulation.currentPlayer - 1];
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
@@ -104,7 +174,6 @@ export default function TutorialPage() {
             </p>
           </div>
 
-          {/* Progress Steps */}
           <div className="mb-12">
             <div className="flex items-center justify-between max-w-4xl mx-auto">
               {steps.map((step, index) => {
@@ -148,9 +217,7 @@ export default function TutorialPage() {
             </div>
           </div>
 
-          {/* Step Content */}
           <div className="space-y-8">
-            {/* Step 0: Rejoindre une partie */}
             {currentStep === 0 && (
               <Card className="p-8">
                 <div className="flex items-center gap-3 mb-6">
@@ -236,7 +303,6 @@ export default function TutorialPage() {
               </Card>
             )}
 
-            {/* Step 1: Interface de jeu */}
             {currentStep === 1 && (
               <Card className="p-8">
                 <div className="flex items-center gap-3 mb-6">
@@ -250,13 +316,11 @@ export default function TutorialPage() {
                 </div>
 
                 <div className="space-y-6">
-                  {/* Simulation de l'interface */}
                   <div className="bg-gradient-to-b from-green-800 to-green-900 rounded-xl p-8 relative">
                     <div className="absolute top-4 left-4 bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold z-10">
                       1. Barre de statut
                     </div>
 
-                    {/* Status Bar */}
                     <div className="mb-6">
                       <GameStatusBar
                         phase="PLAYING"
@@ -266,7 +330,6 @@ export default function TutorialPage() {
                       />
                     </div>
 
-                    {/* Players */}
                     <div className="grid grid-cols-3 gap-4 mb-6 relative">
                       <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-purple-600 text-white px-3 py-1 rounded-full text-sm font-semibold z-10">
                         2. Autres joueurs
@@ -291,7 +354,6 @@ export default function TutorialPage() {
                       />
                     </div>
 
-                    {/* Trick Area */}
                     <div className="bg-green-700 rounded-xl p-6 mb-6 min-h-32 flex items-center justify-center relative">
                       <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-3 py-1 rounded-full text-sm font-semibold z-10">
                         3. Tapis (cartes jouées)
@@ -308,7 +370,6 @@ export default function TutorialPage() {
                       </div>
                     </div>
 
-                    {/* Player Hand */}
                     <div className="relative">
                       <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-orange-600 text-white px-3 py-1 rounded-full text-sm font-semibold z-10">
                         4. Votre main
@@ -328,7 +389,6 @@ export default function TutorialPage() {
                     </div>
                   </div>
 
-                  {/* Explications */}
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="bg-blue-50 p-6 rounded-lg border-2 border-blue-200">
                       <div className="flex items-center gap-2 mb-3">
@@ -386,171 +446,216 @@ export default function TutorialPage() {
               </Card>
             )}
 
-            {/* Step 2: Phase d'enchères */}
             {currentStep === 2 && (
               <Card className="p-8">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="p-3 bg-purple-600 rounded-lg">
                     <MessageSquare className="w-8 h-8 text-white" />
                   </div>
-                  <div>
+                  <div className="flex-1">
                     <h2 className="text-3xl font-bold text-slate-900">{steps[2].title}</h2>
                     <p className="text-slate-600">{steps[2].description}</p>
                   </div>
+                  <Button onClick={resetSimulation} variant="outline" size="sm" className="gap-2">
+                    <RotateCcw className="w-4 h-4" />
+                    Recommencer
+                  </Button>
                 </div>
 
                 <div className="space-y-6">
+                  <div className="bg-gradient-to-b from-green-800 to-green-900 rounded-xl p-8">
+                    <div className="bg-yellow-100 border-2 border-yellow-400 rounded-lg p-4 mb-6">
+                      <p className="text-yellow-900 font-semibold text-center">
+                        {simulation.message}
+                      </p>
+                    </div>
+
+                    {simulation.phase === 'bidding' && simulation.playerBid === null && (
+                      <div className="bg-white rounded-lg p-6">
+                        <BiddingPanel
+                          onBid={handleBid}
+                          isMyTurn={true}
+                          availableBids={['PASS', 'PETITE', 'GARDE']}
+                        />
+                      </div>
+                    )}
+
+                    {simulation.playerBid !== null && (
+                      <div className="bg-white rounded-lg p-6">
+                        <h3 className="font-bold text-slate-900 mb-4 text-center">Résultat des enchères</h3>
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-center p-3 bg-blue-50 rounded">
+                            <span className="font-medium">Vous</span>
+                            <Badge>{getBidDisplayName(simulation.playerBid)}</Badge>
+                          </div>
+                          {simulation.botBids.map((bid, index) => (
+                            <div key={index} className="flex justify-between items-center p-3 bg-slate-50 rounded">
+                              <span className="font-medium">{botNames[index]}</span>
+                              <Badge variant="outline">{getBidDisplayName(bid)}</Badge>
+                            </div>
+                          ))}
+                        </div>
+                        {simulation.phase === 'playing' && (
+                          <div className="mt-4 text-center">
+                            <Button onClick={() => nextStep()} className="bg-green-600">
+                              Continuer vers le jeu
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
                   <div className="bg-purple-50 border-2 border-purple-200 rounded-xl p-6">
-                    <h3 className="text-xl font-bold text-purple-900 mb-4">Comprendre les enchères</h3>
-                    <p className="text-slate-700 mb-4">
-                      Au début de chaque partie, les joueurs enchérissent à tour de rôle. Le but est
-                      d'annoncer si vous pensez pouvoir gagner avec votre main.
-                    </p>
-                    <div className="bg-white p-6 rounded-lg">
-                      <BiddingPanel
-                        onBid={() => {}}
-                        isMyTurn={true}
-                        availableBids={['PASS', 'PETITE', 'GARDE']}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-lg border-2 border-blue-300">
-                      <h4 className="font-bold text-blue-900 mb-3 flex items-center gap-2">
-                        <span className="text-2xl">1️⃣</span>
-                        Attendez votre tour
-                      </h4>
-                      <p className="text-slate-700 text-sm">
-                        La barre de statut indique quel joueur doit enchérir. Attendez que ce soit votre tour.
-                      </p>
-                    </div>
-
-                    <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-lg border-2 border-purple-300">
-                      <h4 className="font-bold text-purple-900 mb-3 flex items-center gap-2">
-                        <span className="text-2xl">2️⃣</span>
-                        Évaluez votre main
-                      </h4>
-                      <p className="text-slate-700 text-sm">
-                        Comptez vos atouts, oudlers et figures. Une bonne main a au moins 8 atouts.
-                      </p>
-                    </div>
-
-                    <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-lg border-2 border-green-300">
-                      <h4 className="font-bold text-green-900 mb-3 flex items-center gap-2">
-                        <span className="text-2xl">3️⃣</span>
-                        Choisissez votre enchère
-                      </h4>
-                      <p className="text-slate-700 text-sm">
-                        Cliquez sur un bouton : <strong>Passer</strong>, <strong>Petite</strong>, <strong>Garde</strong>, etc.
-                      </p>
-                    </div>
-
-                    <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-6 rounded-lg border-2 border-orange-300">
-                      <h4 className="font-bold text-orange-900 mb-3 flex items-center gap-2">
-                        <span className="text-2xl">4️⃣</span>
-                        Validez votre choix
-                      </h4>
-                      <p className="text-slate-700 text-sm">
-                        Cliquez sur "Valider l'enchère". Attention, c'est irréversible !
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-6">
-                    <h3 className="text-xl font-bold text-yellow-900 mb-4">💡 Conseil pour débuter</h3>
-                    <div className="space-y-2 text-slate-700">
-                      <p>• <strong>Avec moins de 6 atouts</strong> : Passez toujours</p>
-                      <p>• <strong>Avec 6-8 atouts et 1 oudler</strong> : Prenez une Petite</p>
-                      <p>• <strong>Avec 9+ atouts et 2 oudlers</strong> : Tentez une Garde</p>
-                      <p>• <strong>Si vous n'êtes pas sûr</strong> : Passez ! C'est moins risqué</p>
+                    <h3 className="text-xl font-bold text-purple-900 mb-4">Instructions</h3>
+                    <div className="grid md:grid-cols-3 gap-4">
+                      <div className="bg-white p-4 rounded-lg">
+                        <div className="text-2xl mb-2">1️⃣</div>
+                        <h4 className="font-semibold text-slate-900 mb-2">Évaluez votre main</h4>
+                        <p className="text-sm text-slate-600">
+                          Avec 8+ atouts dont le 21, 18 et 15, vous avez une bonne main !
+                        </p>
+                      </div>
+                      <div className="bg-white p-4 rounded-lg">
+                        <div className="text-2xl mb-2">2️⃣</div>
+                        <h4 className="font-semibold text-slate-900 mb-2">Choisissez</h4>
+                        <p className="text-sm text-slate-600">
+                          Cliquez sur Petite ou Garde pour prendre, ou Passer si vous préférez.
+                        </p>
+                      </div>
+                      <div className="bg-white p-4 rounded-lg">
+                        <div className="text-2xl mb-2">3️⃣</div>
+                        <h4 className="font-semibold text-slate-900 mb-2">Observez</h4>
+                        <p className="text-sm text-slate-600">
+                          Les autres joueurs enchérissent automatiquement après vous.
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
               </Card>
             )}
 
-            {/* Step 3: Jouer vos cartes */}
             {currentStep === 3 && (
               <Card className="p-8">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="p-3 bg-orange-600 rounded-lg">
                     <Hand className="w-8 h-8 text-white" />
                   </div>
-                  <div>
+                  <div className="flex-1">
                     <h2 className="text-3xl font-bold text-slate-900">{steps[3].title}</h2>
                     <p className="text-slate-600">{steps[3].description}</p>
                   </div>
+                  <Button onClick={resetSimulation} variant="outline" size="sm" className="gap-2">
+                    <RotateCcw className="w-4 h-4" />
+                    Recommencer
+                  </Button>
                 </div>
 
                 <div className="space-y-6">
-                  <div className="bg-orange-50 border-2 border-orange-200 rounded-xl p-6">
-                    <h3 className="text-xl font-bold text-orange-900 mb-4">Comment jouer une carte</h3>
-                    <div className="grid md:grid-cols-3 gap-4">
-                      <div className="bg-white p-6 rounded-lg text-center">
-                        <div className="text-4xl mb-3">👆</div>
-                        <h4 className="font-bold text-slate-900 mb-2">1. Cliquez sur la carte</h4>
-                        <p className="text-sm text-slate-600">
-                          Dans votre main, cliquez sur la carte que vous voulez jouer. Elle se soulève légèrement.
-                        </p>
-                      </div>
-                      <div className="bg-white p-6 rounded-lg text-center">
-                        <div className="text-4xl mb-3">✅</div>
-                        <h4 className="font-bold text-slate-900 mb-2">2. Vérifiez votre choix</h4>
-                        <p className="text-sm text-slate-600">
-                          Assurez-vous que c'est la bonne carte. Vous pouvez cliquer sur une autre carte pour changer.
-                        </p>
-                      </div>
-                      <div className="bg-white p-6 rounded-lg text-center">
-                        <div className="text-4xl mb-3">🎯</div>
-                        <h4 className="font-bold text-slate-900 mb-2">3. Validez</h4>
-                        <p className="text-sm text-slate-600">
-                          Cliquez sur le bouton "Jouer la carte" qui apparaît. La carte ira sur le tapis.
-                        </p>
-                      </div>
+                  {simulation.phase === 'bidding' && (
+                    <div className="bg-yellow-100 border-2 border-yellow-300 rounded-lg p-6 text-center">
+                      <p className="text-yellow-900 font-semibold mb-4">
+                        Vous devez d'abord faire une enchère !
+                      </p>
+                      <Button onClick={() => setCurrentStep(2)} variant="outline">
+                        Retour aux enchères
+                      </Button>
                     </div>
-                  </div>
+                  )}
 
-                  <div className="bg-white p-6 rounded-lg border-2 border-slate-200">
-                    <h3 className="text-lg font-bold text-slate-900 mb-4">Exemple visuel</h3>
-                    <div className="space-y-4">
-                      <div>
-                        <p className="text-sm text-slate-600 mb-2">Votre main :</p>
-                        <div className="flex gap-2 justify-center p-4 bg-slate-800 rounded-lg">
-                          {exampleHand.map((card, index) => (
+                  {simulation.phase === 'playing' && (
+                    <div className="bg-gradient-to-b from-green-800 to-green-900 rounded-xl p-8">
+                      <div className="mb-4">
+                        <GameStatusBar
+                          phase="PLAYING"
+                          currentPlayerName={getCurrentPlayerName()}
+                          contract={simulation.contract as BidType}
+                          takerName={simulation.contractWinner === 0 ? 'Vous' : botNames[simulation.contractWinner - 1]}
+                        />
+                      </div>
+
+                      <div className="bg-yellow-100 border-2 border-yellow-400 rounded-lg p-4 mb-6">
+                        <p className="text-yellow-900 font-semibold text-center">
+                          {simulation.message}
+                        </p>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-4 mb-6">
+                        {mockPlayers.slice(1).map((player, index) => (
+                          <PlayerSeat
+                            key={player.id}
+                            player={player}
+                            position="top"
+                            isCurrentPlayer={simulation.currentPlayer === index + 1}
+                            cardCount={15 - simulation.currentTrick * 4}
+                          />
+                        ))}
+                      </div>
+
+                      <div className="bg-green-700 rounded-xl p-6 mb-6 min-h-48 flex items-center justify-center">
+                        {simulation.trickCards.length > 0 ? (
+                          <div className="flex gap-4 flex-wrap justify-center">
+                            {simulation.trickCards.map((tc, index) => (
+                              <div key={index} className="text-center">
+                                <TarotCardComponent card={tc.card} size="md" />
+                                <p className="text-white text-xs mt-2">
+                                  {tc.player === 0 ? 'Vous' : botNames[tc.player - 1]}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-white text-lg">Aucune carte jouée</p>
+                        )}
+                      </div>
+
+                      <div className="bg-slate-800 rounded-xl p-4">
+                        <div className="flex gap-2 justify-center flex-wrap mb-4">
+                          {simulation.playerHand.map((card, index) => (
                             <TarotCardComponent
-                              key={index}
+                              key={card.id}
                               card={card}
                               size="md"
-                              selectable={true}
-                              selected={index === 2}
+                              selectable={simulation.canPlay}
+                              selected={simulation.selectedCard === index}
+                              onClick={() => handleCardSelect(index)}
                             />
                           ))}
                         </div>
-                      </div>
-                      <div className="flex justify-center">
-                        <Button className="bg-orange-600" size="lg">
-                          Jouer la carte sélectionnée
-                        </Button>
+                        {simulation.canPlay && simulation.selectedCard !== null && (
+                          <div className="text-center">
+                            <Button onClick={handlePlayCard} size="lg" className="bg-orange-600">
+                              Jouer la carte sélectionnée
+                            </Button>
+                          </div>
+                        )}
                       </div>
                     </div>
-                  </div>
+                  )}
 
-                  <div className="bg-red-50 border-2 border-red-200 rounded-xl p-6">
-                    <h3 className="text-xl font-bold text-red-900 mb-4">⚠️ Règles importantes</h3>
-                    <div className="space-y-3">
-                      <div className="bg-white p-4 rounded-lg">
-                        <h4 className="font-semibold text-red-800 mb-2">Vous devez fournir la couleur</h4>
-                        <p className="text-sm text-slate-700">
-                          Si un joueur joue un Cœur, vous devez jouer un Cœur si vous en avez.
-                          Sinon, vous devez couper avec un atout.
+                  <div className="bg-orange-50 border-2 border-orange-200 rounded-xl p-6">
+                    <h3 className="text-xl font-bold text-orange-900 mb-4">Comment jouer</h3>
+                    <div className="grid md:grid-cols-3 gap-4">
+                      <div className="bg-white p-4 rounded-lg text-center">
+                        <div className="text-3xl mb-2">👆</div>
+                        <h4 className="font-semibold text-slate-900 mb-2">Cliquez sur une carte</h4>
+                        <p className="text-sm text-slate-600">
+                          La carte se soulève pour indiquer votre sélection.
                         </p>
                       </div>
-                      <div className="bg-white p-4 rounded-lg">
-                        <h4 className="font-semibold text-red-800 mb-2">Les cartes injouables sont grisées</h4>
-                        <p className="text-sm text-slate-700">
-                          Le jeu grise automatiquement les cartes que vous ne pouvez pas jouer selon les règles.
-                          Vous ne pouvez sélectionner que les cartes jouables.
+                      <div className="bg-white p-4 rounded-lg text-center">
+                        <div className="text-3xl mb-2">✅</div>
+                        <h4 className="font-semibold text-slate-900 mb-2">Validez</h4>
+                        <p className="text-sm text-slate-600">
+                          Cliquez sur "Jouer la carte" pour confirmer.
+                        </p>
+                      </div>
+                      <div className="bg-white p-4 rounded-lg text-center">
+                        <div className="text-3xl mb-2">⏱️</div>
+                        <h4 className="font-semibold text-slate-900 mb-2">Attendez</h4>
+                        <p className="text-sm text-slate-600">
+                          Les autres joueurs jouent automatiquement.
                         </p>
                       </div>
                     </div>
@@ -559,7 +664,6 @@ export default function TutorialPage() {
               </Card>
             )}
 
-            {/* Step 4: Suivre la partie */}
             {currentStep === 4 && (
               <Card className="p-8">
                 <div className="flex items-center gap-3 mb-6">
@@ -573,6 +677,39 @@ export default function TutorialPage() {
                 </div>
 
                 <div className="space-y-6">
+                  {simulation.phase !== 'playing' ? (
+                    <div className="bg-yellow-100 border-2 border-yellow-300 rounded-lg p-6 text-center">
+                      <p className="text-yellow-900 font-semibold mb-4">
+                        Jouez quelques plis à l'étape précédente pour voir le déroulement !
+                      </p>
+                      <Button onClick={() => setCurrentStep(3)} variant="outline">
+                        Retour au jeu
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="bg-green-50 border-2 border-green-200 rounded-xl p-6">
+                      <h3 className="text-xl font-bold text-green-900 mb-4">État actuel de la partie</h3>
+                      <div className="bg-white p-4 rounded-lg mb-4">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="font-medium">Pli actuel</span>
+                          <Badge>{simulation.currentTrick + 1} / 3</Badge>
+                        </div>
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="font-medium">Cartes jouées dans ce pli</span>
+                          <Badge>{simulation.trickCards.length} / 4</Badge>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="font-medium">Cartes restantes</span>
+                          <Badge>{simulation.playerHand.length}</Badge>
+                        </div>
+                      </div>
+                      <p className="text-slate-700 text-sm">
+                        Continuez à jouer pour voir comment les plis se résolvent. Le joueur avec la carte
+                        la plus forte remporte le pli et commence le suivant !
+                      </p>
+                    </div>
+                  )}
+
                   <div className="bg-green-50 border-2 border-green-200 rounded-xl p-6">
                     <h3 className="text-xl font-bold text-green-900 mb-4">Le déroulement d'un pli</h3>
                     <div className="grid md:grid-cols-4 gap-4">
@@ -622,44 +759,18 @@ export default function TutorialPage() {
 
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="bg-blue-50 p-6 rounded-lg border-2 border-blue-200">
-                      <h4 className="font-bold text-blue-900 mb-3">👀 Observez le tapis</h4>
+                      <h4 className="font-bold text-blue-900 mb-3">Observez le tapis</h4>
                       <p className="text-slate-700 text-sm mb-3">
                         Les cartes jouées apparaissent au centre. Regardez bien quelle est la couleur
                         demandée et quels atouts ont été joués.
                       </p>
-                      <div className="bg-white p-3 rounded">
-                        <p className="text-xs text-slate-600 italic">
-                          "Si un gros atout a été joué, inutile de surcouper avec votre 21 !"
-                        </p>
-                      </div>
                     </div>
 
                     <div className="bg-purple-50 p-6 rounded-lg border-2 border-purple-200">
-                      <h4 className="font-bold text-purple-900 mb-3">📊 Comptez les cartes</h4>
+                      <h4 className="font-bold text-purple-900 mb-3">Comptez les cartes</h4>
                       <p className="text-slate-700 text-sm mb-3">
                         Essayez de mémoriser les cartes importantes jouées : le Petit, le 21, l'Excuse,
                         et les Rois.
-                      </p>
-                      <div className="bg-white p-3 rounded">
-                        <p className="text-xs text-slate-600 italic">
-                          "Si le 21 est déjà passé, vos gros atouts sont plus sûrs !"
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-slate-50 border-2 border-slate-200 rounded-xl p-6">
-                    <h3 className="text-xl font-bold text-slate-900 mb-4">Animation du pli</h3>
-                    <p className="text-slate-700 mb-4">
-                      Quand les 4 cartes sont jouées, une courte animation montre le gagnant du pli.
-                      Les cartes sont ensuite collectées et le jeu continue.
-                    </p>
-                    <div className="bg-white p-4 rounded-lg text-center">
-                      <p className="text-sm text-green-700 font-semibold mb-2">
-                        ✓ Joueur 2 remporte le pli !
-                      </p>
-                      <p className="text-xs text-slate-600">
-                        Les cartes disparaissent et le Joueur 2 commence le prochain pli
                       </p>
                     </div>
                   </div>
@@ -667,7 +778,6 @@ export default function TutorialPage() {
               </Card>
             )}
 
-            {/* Step 5: Voir les scores */}
             {currentStep === 5 && (
               <Card className="p-8">
                 <div className="flex items-center gap-3 mb-6">
@@ -681,41 +791,58 @@ export default function TutorialPage() {
                 </div>
 
                 <div className="space-y-6">
-                  <div className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-6">
-                    <h3 className="text-xl font-bold text-yellow-900 mb-4">Fin de partie</h3>
-                    <p className="text-slate-700 mb-4">
-                      Après que les 18 plis ont été joués, le jeu passe automatiquement en phase de scoring.
-                      Les points sont calculés et affichés.
-                    </p>
-                    <div className="bg-white rounded-lg p-6">
-                      <h4 className="font-bold text-slate-900 mb-4 text-center">Résultats de la partie</h4>
-                      <div className="space-y-3">
-                        <div className="flex justify-between items-center p-4 bg-green-50 rounded-lg border-2 border-green-300">
-                          <div>
-                            <span className="font-bold text-green-900">Vous (Preneur)</span>
-                            <Badge className="ml-2 bg-green-600">Contrat réussi !</Badge>
-                          </div>
-                          <span className="text-2xl font-bold text-green-700">+75</span>
+                  {simulation.phase === 'scoring' ? (
+                    <div className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-6">
+                      <h3 className="text-xl font-bold text-yellow-900 mb-4">Résultats de la partie</h3>
+                      <div className="bg-white rounded-lg p-6">
+                        <div className="space-y-3">
+                          {simulation.scores.map((score) => (
+                            <div
+                              key={score.player}
+                              className={`flex justify-between items-center p-4 rounded-lg border-2 ${
+                                score.score > 0
+                                  ? 'bg-green-50 border-green-300'
+                                  : 'bg-red-50 border-red-300'
+                              }`}
+                            >
+                              <div>
+                                <span className="font-bold text-slate-900">{score.displayName}</span>
+                                {score.player === simulation.contractWinner && (
+                                  <Badge className="ml-2 bg-blue-600">Preneur</Badge>
+                                )}
+                              </div>
+                              <span
+                                className={`text-2xl font-bold ${
+                                  score.score > 0 ? 'text-green-700' : 'text-red-600'
+                                }`}
+                              >
+                                {score.score > 0 ? '+' : ''}
+                                {score.score}
+                              </span>
+                            </div>
+                          ))}
                         </div>
-                        <div className="flex justify-between items-center p-3 bg-red-50 rounded-lg">
-                          <span className="font-medium text-slate-700">Joueur 2</span>
-                          <span className="text-xl font-bold text-red-600">-25</span>
-                        </div>
-                        <div className="flex justify-between items-center p-3 bg-red-50 rounded-lg">
-                          <span className="font-medium text-slate-700">Joueur 3</span>
-                          <span className="text-xl font-bold text-red-600">-25</span>
-                        </div>
-                        <div className="flex justify-between items-center p-3 bg-red-50 rounded-lg">
-                          <span className="font-medium text-slate-700">Joueur 4</span>
-                          <span className="text-xl font-bold text-red-600">-25</span>
+                        <div className="mt-6 text-center">
+                          <Button onClick={resetSimulation} className="bg-blue-600">
+                            Rejouer le tutoriel
+                          </Button>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="bg-yellow-100 border-2 border-yellow-300 rounded-lg p-6 text-center">
+                      <p className="text-yellow-900 font-semibold mb-4">
+                        Terminez les plis pour voir les scores !
+                      </p>
+                      <Button onClick={() => setCurrentStep(3)} variant="outline">
+                        Retour au jeu
+                      </Button>
+                    </div>
+                  )}
 
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="bg-green-50 p-6 rounded-lg border-2 border-green-200">
-                      <h4 className="font-bold text-green-900 mb-3">🎉 Contrat réussi</h4>
+                      <h4 className="font-bold text-green-900 mb-3">Contrat réussi</h4>
                       <p className="text-slate-700 text-sm">
                         Si vous êtes le preneur et que vous avez fait votre contrat, vous gagnez des points.
                         Plus le contrat est difficile (Garde, Garde Sans...), plus vous gagnez de points !
@@ -723,7 +850,7 @@ export default function TutorialPage() {
                     </div>
 
                     <div className="bg-red-50 p-6 rounded-lg border-2 border-red-200">
-                      <h4 className="font-bold text-red-900 mb-3">😔 Contrat échoué</h4>
+                      <h4 className="font-bold text-red-900 mb-3">Contrat échoué</h4>
                       <p className="text-slate-700 text-sm">
                         Si le preneur échoue, il perd des points et les défenseurs en gagnent.
                         C'est pourquoi il ne faut enchérir que si vous avez confiance en votre main !
@@ -731,20 +858,8 @@ export default function TutorialPage() {
                     </div>
                   </div>
 
-                  <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-6">
-                    <h3 className="text-xl font-bold text-blue-900 mb-4">Continuer à jouer</h3>
-                    <p className="text-slate-700 mb-4">
-                      Après avoir vu les scores, vous pouvez soit :
-                    </p>
-                    <div className="flex gap-4 justify-center flex-wrap">
-                      <Button className="bg-blue-600">Nouvelle partie</Button>
-                      <Button variant="outline">Retour au lobby</Button>
-                      <Button variant="outline">Quitter la table</Button>
-                    </div>
-                  </div>
-
                   <div className="bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-xl p-8 text-center">
-                    <h3 className="text-2xl font-bold mb-4">🎊 Félicitations !</h3>
+                    <h3 className="text-2xl font-bold mb-4">Félicitations !</h3>
                     <p className="text-slate-300 mb-6">
                       Vous savez maintenant comment jouer sur TarotFR. Il ne vous reste plus qu'à pratiquer !
                     </p>
@@ -761,7 +876,6 @@ export default function TutorialPage() {
             )}
           </div>
 
-          {/* Navigation Buttons */}
           <div className="flex justify-between items-center mt-8">
             <Button
               variant="outline"
