@@ -219,10 +219,10 @@ export default function DemoPage() {
                 )}
 
                 <div className="bg-slate-800 rounded-xl p-6 overflow-hidden" style={{ height: '220px' }}>
-                  <div className="flex justify-center items-end h-full">
-                    <div className="relative" style={{ width: 'fit-content', height: '320px' }}>
-                      {/* Deuxième ligne - 7 cartes (en arrière-plan, z-index BAS) */}
-                      <div className="absolute top-0 left-1/2 -translate-x-1/2" style={{ zIndex: 10 }}>
+                  <div className="flex justify-center items-start h-full">
+                    <div className="relative" style={{ width: `${8 * 45 + 128}px`, height: '400px', marginTop: '-100px' }}>
+                      {/* Deuxième ligne - 7 cartes (en haut, en arrière-plan) */}
+                      <div className="absolute top-0 left-1/2 -translate-x-1/2">
                         <div className="relative" style={{ width: `${7 * 45 + 128}px`, height: '200px' }}>
                           {mockHand.slice(8).map((card, index) => (
                             <div
@@ -230,16 +230,16 @@ export default function DemoPage() {
                               className="absolute transition-all duration-200"
                               style={{
                                 left: `${index * 45}px`,
-                                bottom: '0',
+                                top: '0',
                                 zIndex: 10 + index,
                               }}
                               onMouseEnter={(e) => {
                                 e.currentTarget.style.zIndex = '100';
-                                e.currentTarget.style.bottom = '20px';
+                                e.currentTarget.style.top = '-20px';
                               }}
                               onMouseLeave={(e) => {
                                 e.currentTarget.style.zIndex = `${10 + index}`;
-                                e.currentTarget.style.bottom = '0';
+                                e.currentTarget.style.top = '0';
                               }}
                             >
                               <TarotCardComponent
@@ -254,8 +254,8 @@ export default function DemoPage() {
                         </div>
                       </div>
 
-                      {/* Première ligne - 8 cartes (au premier plan, z-index HAUT) */}
-                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2" style={{ zIndex: 30 }}>
+                      {/* Première ligne - 8 cartes (en bas, au premier plan) */}
+                      <div className="absolute left-1/2 -translate-x-1/2" style={{ top: '100px' }}>
                         <div className="relative" style={{ width: `${8 * 45 + 128}px`, height: '200px' }}>
                           {mockHand.slice(0, 8).map((card, index) => (
                             <div
@@ -263,16 +263,16 @@ export default function DemoPage() {
                               className="absolute transition-all duration-200"
                               style={{
                                 left: `${index * 45}px`,
-                                bottom: '0',
+                                top: '0',
                                 zIndex: 30 + index,
                               }}
                               onMouseEnter={(e) => {
                                 e.currentTarget.style.zIndex = '100';
-                                e.currentTarget.style.bottom = '20px';
+                                e.currentTarget.style.top = '-20px';
                               }}
                               onMouseLeave={(e) => {
                                 e.currentTarget.style.zIndex = `${30 + index}`;
-                                e.currentTarget.style.bottom = '0';
+                                e.currentTarget.style.top = '0';
                               }}
                             >
                               <TarotCardComponent
