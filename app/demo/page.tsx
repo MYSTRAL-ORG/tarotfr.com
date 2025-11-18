@@ -220,7 +220,7 @@ export default function DemoPage() {
 
                 <div className="bg-slate-800 rounded-xl p-6 overflow-hidden" style={{ height: '220px' }}>
                   <div className="flex justify-center items-start h-full">
-                    <div className="relative" style={{ width: `${8 * 45 + 128}px`, height: '400px', marginTop: '20px' }}>
+                    <div className="relative" style={{ width: '100%', height: '400px', marginTop: '0' }}>
                       {/* Deuxième ligne - 7 cartes (en haut, en arrière-plan) */}
                       <div className="absolute top-0 left-1/2 -translate-x-1/2">
                         <div className="relative" style={{ width: `${7 * 45 + 128}px`, height: '200px' }}>
@@ -253,7 +253,7 @@ export default function DemoPage() {
                       </div>
 
                       {/* Première ligne - 8 cartes (en bas, au premier plan) */}
-                      <div className="absolute left-1/2 -translate-x-1/2" style={{ top: '100px' }}>
+                      <div className="absolute left-1/2 -translate-x-1/2" style={{ top: '80px' }}>
                         <div className="relative" style={{ width: `${8 * 45 + 128}px`, height: '200px' }}>
                           {mockHand.slice(0, 8).map((card, index) => (
                             <div
