@@ -80,3 +80,24 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .game-table-bg {
+    background: linear-gradient(135deg, #16803c 0%, #0f5c2b 50%, #16803c 100%);
+    position: relative;
+  }
+
+  .game-table-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 40px,
+      rgba(255, 255, 255, 0.03) 40px,
+      rgba(255, 255, 255, 0.03) 80px
+    );
+    pointer-events: none;
+  }
+}

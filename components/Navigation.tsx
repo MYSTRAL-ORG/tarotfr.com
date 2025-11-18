@@ -10,8 +10,11 @@ export function Navigation() {
   const { user, logout } = useAuth();
 
   return (
-    <nav className="border-b bg-white">
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+    <nav className="border-b bg-gradient-to-br from-green-700 via-green-800 to-green-900 relative overflow-hidden">
+      <div className="absolute inset-0 opacity-20" style={{
+        backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
+      }}></div>
+      <div className="container mx-auto px-4 h-16 flex items-center justify-between relative z-10">
         <Link href="/" className="flex items-center gap-3">
           <Image
             src="/img/icon.png"
@@ -32,10 +35,10 @@ export function Navigation() {
         </Link>
 
         <div className="flex items-center gap-6">
-          <Link href="/rules" className="text-slate-600 hover:text-slate-900">
+          <Link href="/rules" className="text-white/90 hover:text-white font-medium transition-colors">
             Règles
           </Link>
-          <Link href="/play" className="text-slate-600 hover:text-slate-900">
+          <Link href="/play" className="text-white/90 hover:text-white font-medium transition-colors">
             Jouer
           </Link>
 

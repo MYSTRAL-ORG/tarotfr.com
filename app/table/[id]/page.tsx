@@ -97,7 +97,7 @@ export default function TablePage() {
   const availableBids: BidType[] = ['PASS', 'PETITE', 'GARDE', 'GARDE_SANS', 'GARDE_CONTRE'];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-800 to-green-900">
+    <div className="min-h-screen game-table-bg">
       <Navigation />
 
       <div className="container mx-auto px-4 py-6">
@@ -147,7 +147,7 @@ export default function TablePage() {
                 />
               )}
 
-              <div className="bg-green-700 rounded-lg p-6 shadow-xl">
+              <div className="game-table-bg rounded-lg p-6 shadow-xl border border-green-600/50">
                 <div className="flex justify-center mb-6">
                   <PlayerSeat
                     player={getPlayerAtPosition('top')}
