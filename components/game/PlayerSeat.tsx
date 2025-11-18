@@ -9,6 +9,7 @@ interface PlayerSeatProps {
   isCurrentPlayer?: boolean;
   cardCount?: number;
   className?: string;
+  playerColor?: 'yellow' | 'red' | 'purple';
 }
 
 export function PlayerSeat({
@@ -17,6 +18,7 @@ export function PlayerSeat({
   isCurrentPlayer = false,
   cardCount,
   className,
+  playerColor = 'yellow',
 }: PlayerSeatProps) {
   if (!player) {
     return (
@@ -42,21 +44,49 @@ export function PlayerSeat({
       .slice(0, 2);
   };
 
+  const getColorClasses = () => {
+    const colors = {
+      yellow: {
+        bg: 'bg-yellow-500',
+        bgLight: 'bg-white',
+        border: 'border-yellow-500',
+        ring: 'ring-yellow-500',
+      },
+      red: {
+        bg: 'bg-red-500',
+        bgLight: 'bg-white',
+        border: 'border-red-500',
+        ring: 'ring-red-500',
+      },
+      purple: {
+        bg: 'bg-purple-500',
+        bgLight: 'bg-white',
+        border: 'border-purple-500',
+        ring: 'ring-purple-500',
+      },
+    };
+    return colors[playerColor];
+  };
+
+  const colorClasses = getColorClasses();
+
   return (
     <div
       className={cn(
-        'p-4 rounded-lg border-2 transition-all',
-        isCurrentPlayer ? 'border-blue-400 ring-2 ring-blue-200 bg-blue-50/30' : 'border-white/20 bg-transparent',
+        'p-4 rounded-lg transition-all',
+        isCurrentPlayer ? `border-4 ${colorClasses.border} bg-transparent` : 'border-2 border-white/20 bg-transparent',
         className
       )}
     >
       <div className="flex flex-col items-center gap-2">
         <div className="relative">
           <Avatar className={cn(
-            'w-12 h-12',
-            isCurrentPlayer && 'ring-2 ring-blue-400 ring-offset-2'
+            'w-12 h-12 border-0',
+            isCurrentPlayer ? colorClasses.bgLight : colorClasses.bg
           )}>
-            <AvatarFallback className="bg-slate-200">
+            <AvatarFallback className={cn(
+              isCurrentPlayer ? 'bg-white text-slate-900' : `${colorClasses.bg} text-white`
+            )}>
               {getInitials(player.displayName)}
             </AvatarFallback>
           </Avatar>

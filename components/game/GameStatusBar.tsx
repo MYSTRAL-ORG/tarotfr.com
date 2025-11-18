@@ -53,17 +53,17 @@ export function GameStatusBar({
   };
 
   return (
-    <div className={cn('bg-white border rounded-lg p-4 shadow-sm', className)}>
+    <div className={cn('bg-transparent border-2 border-white rounded-lg p-4', className)}>
       <div className="flex items-center justify-between">
         <div className="space-y-1">
-          <div className="text-sm font-semibold text-slate-900">
+          <div className="text-sm font-semibold text-white">
             {getPhaseText()}
           </div>
           {contract && takerName && (
-            <div className="text-sm text-slate-600">
-              <span className="font-medium">{takerName}</span>
+            <div className="text-sm text-white">
+              <span className="font-medium">Vous</span>
               {' joue '}
-              <span className="font-semibold text-blue-600">
+              <span className="font-semibold text-blue-300">
                 {getContractText(contract)}
               </span>
             </div>
@@ -71,8 +71,8 @@ export function GameStatusBar({
         </div>
 
         <div className="text-right">
-          <div className="text-xs text-slate-500">Tour de</div>
-          <div className="text-sm font-semibold text-slate-900">
+          <div className="text-xs text-white/70">Tour de</div>
+          <div className="text-sm font-semibold text-white">
             {currentPlayerName}
           </div>
         </div>

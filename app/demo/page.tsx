@@ -161,33 +161,36 @@ export default function DemoPage() {
 
           {(phase === 'BIDDING' || phase === 'PLAYING') && (
             <div className="space-y-6">
-              <GameStatusBar
-                phase={phase}
-                currentPlayerName={currentPlayerName}
-                contract={phase === 'PLAYING' ? 'GARDE' : null}
-                takerName={phase === 'PLAYING' ? takerName : null}
-              />
-
               <div className="bg-gradient-to-br from-green-700 via-green-800 to-green-900 rounded-xl p-8 shadow-2xl relative overflow-hidden">
                 <div className="absolute inset-0 opacity-20" style={{
                   backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
                 }}></div>
                 <div className="relative z-10">
+                <GameStatusBar
+                  phase={phase}
+                  currentPlayerName={currentPlayerName}
+                  contract={phase === 'PLAYING' ? 'GARDE' : null}
+                  takerName={phase === 'PLAYING' ? takerName : null}
+                  className="mb-6"
+                />
                 <div className="grid grid-cols-3 gap-4 mb-6">
                   <PlayerSeat
                     player={mockPlayers[1]}
                     position="top"
                     isCurrentPlayer={false}
+                    playerColor="yellow"
                   />
                   <PlayerSeat
                     player={mockPlayers[2]}
                     position="top"
                     isCurrentPlayer={phase === 'PLAYING'}
+                    playerColor="red"
                   />
                   <PlayerSeat
                     player={mockPlayers[3]}
                     position="top"
                     isCurrentPlayer={false}
+                    playerColor="purple"
                   />
                 </div>
 
