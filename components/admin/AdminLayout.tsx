@@ -4,7 +4,7 @@ import { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Navigation } from '@/components/Navigation';
-import { LayoutDashboard, Database, Settings, FileText } from 'lucide-react';
+import { LayoutDashboard, Database, Settings, Shuffle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface AdminLayoutProps {
@@ -14,6 +14,7 @@ interface AdminLayoutProps {
 const adminNavItems = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/admin/distributions', label: 'Distributions', icon: Database },
+  { href: '/admin/seed', label: 'Générer Seeds', icon: Shuffle },
   { href: '/admin/settings', label: 'Paramètres', icon: Settings },
 ];
 
