@@ -1,51 +1,260 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, Bot, BookOpen, Settings } from 'lucide-react';
+import { Database, Activity, Clock, CheckCircle2, TrendingUp, AlertCircle } from 'lucide-react';
+import { createClient } from '@supabase/supabase-js';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
+interface Stats {
+  totalDistributions: number;
+  usedDistributions: number;
+  totalGames: number;
+  activeGames: number;
+  completedGames: number;
+  todayDistributions: number;
+}
+
+interface DailyData {
+  date: string;
+  count: number;
+}
 
 export default function DashboardPage() {
-  const stats = [
-    { icon: Users, label: 'Membres', value: '0', color: 'text-blue-600' },
-    { icon: Bot, label: 'Bots', value: '3', color: 'text-green-600' },
-    { icon: BookOpen, label: 'Règles', value: '1', color: 'text-purple-600' },
-    { icon: Settings, label: 'Paramètres', value: 'OK', color: 'text-orange-600' },
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState<Stats>({
+    totalDistributions: 0,
+    usedDistributions: 0,
+    totalGames: 0,
+    activeGames: 0,
+    completedGames: 0,
+    todayDistributions: 0,
+  });
+  const [dailyData, setDailyData] = useState<DailyData[]>([]);
+
+  useEffect(() => {
+    loadStats();
+  }, []);
+
+  const loadStats = async () => {
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    const { data: distributions } = await supabase
+      .from('card_distributions')
+      .select('id, used_count, created_at');
+
+    const { data: games } = await supabase
+      .from('game_tables')
+      .select('id, status, created_at');
+
+    if (distributions) {
+      const totalDist = distributions.length;
+      const usedDist = distributions.filter(d => d.used_count > 0).length;
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const todayDist = distributions.filter(
+        d => new Date(d.created_at) >= today
+      ).length;
+
+      const last7Days: DailyData[] = [];
+      for (let i = 6; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        date.setHours(0, 0, 0, 0);
+
+        const nextDate = new Date(date);
+        nextDate.setDate(nextDate.getDate() + 1);
+
+        const count = distributions.filter(d => {
+          const created = new Date(d.created_at);
+          return created >= date && created < nextDate;
+        }).length;
+
+        last7Days.push({
+          date: date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }),
+          count
+        });
+      }
+      setDailyData(last7Days);
+
+      const totalGames = games?.length || 0;
+      const activeGames = games?.filter(g => g.status === 'in_progress').length || 0;
+      const completedGames = games?.filter(g => g.status === 'completed').length || 0;
+
+      setStats({
+        totalDistributions: totalDist,
+        usedDistributions: usedDist,
+        totalGames,
+        activeGames,
+        completedGames,
+        todayDistributions: todayDist,
+      });
+    }
+
+    setLoading(false);
+  };
+
+  const statCards = [
+    {
+      icon: Database,
+      label: 'Total Distributions',
+      value: stats.totalDistributions.toLocaleString(),
+      color: 'text-blue-600',
+      bgColor: 'bg-blue-50',
+      description: `${stats.usedDistributions} utilisées`,
+    },
+    {
+      icon: Activity,
+      label: 'Parties Totales',
+      value: stats.totalGames.toLocaleString(),
+      color: 'text-green-600',
+      bgColor: 'bg-green-50',
+      description: `${stats.activeGames} en cours`,
+    },
+    {
+      icon: CheckCircle2,
+      label: 'Parties Terminées',
+      value: stats.completedGames.toLocaleString(),
+      color: 'text-purple-600',
+      bgColor: 'bg-purple-50',
+      description: `${Math.round((stats.completedGames / (stats.totalGames || 1)) * 100)}% du total`,
+    },
+    {
+      icon: TrendingUp,
+      label: 'Aujourd\'hui',
+      value: stats.todayDistributions.toLocaleString(),
+      color: 'text-orange-600',
+      bgColor: 'bg-orange-50',
+      description: 'Nouvelles distributions',
+    },
   ];
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="text-center py-12">
+          <p className="text-slate-600">Chargement des statistiques...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold text-slate-900">Tableau de bord</h1>
-        <p className="text-slate-600 mt-2">Vue d'ensemble de votre application</p>
+        <p className="text-slate-600 mt-2">Statistiques en temps réel du système de distributions</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat) => {
+        {statCards.map((stat) => {
           const Icon = stat.icon;
           return (
             <Card key={stat.label}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">{stat.label}</CardTitle>
-                <Icon className={`h-4 w-4 ${stat.color}`} />
+                <div className={`p-2 rounded-lg ${stat.bgColor}`}>
+                  <Icon className={`h-5 w-5 ${stat.color}`} />
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stat.value}</div>
+                <div className="text-3xl font-bold text-slate-900">{stat.value}</div>
+                <p className="text-xs text-slate-600 mt-1">{stat.description}</p>
               </CardContent>
             </Card>
           );
         })}
       </div>
 
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Distributions créées (7 derniers jours)</CardTitle>
+            <CardDescription>Nombre de distributions générées par jour</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={dailyData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" />
+                <YAxis />
+                <Tooltip />
+                <Bar dataKey="count" fill="#3b82f6" />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Évolution des distributions</CardTitle>
+            <CardDescription>Tendance de création sur 7 jours</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={dailyData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" />
+                <YAxis />
+                <Tooltip />
+                <Line type="monotone" dataKey="count" stroke="#8b5cf6" strokeWidth={2} />
+              </LineChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      </div>
+
       <Card>
         <CardHeader>
-          <CardTitle>Bienvenue dans le panneau d'administration</CardTitle>
-          <CardDescription>
-            Gérez tous les aspects de votre application de Tarot depuis cet espace
-          </CardDescription>
+          <CardTitle>Résumé</CardTitle>
+          <CardDescription>Informations clés du système</CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-slate-600">
-            Utilisez le menu latéral pour accéder aux différentes sections de l'administration.
-          </p>
+          <div className="space-y-4">
+            <div className="flex items-start gap-3">
+              <div className="p-2 bg-blue-50 rounded-lg">
+                <Database className="w-5 h-5 text-blue-600" />
+              </div>
+              <div>
+                <p className="font-semibold text-slate-900">Taux d'utilisation des distributions</p>
+                <p className="text-sm text-slate-600">
+                  {stats.totalDistributions > 0
+                    ? `${Math.round((stats.usedDistributions / stats.totalDistributions) * 100)}% des distributions ont été utilisées`
+                    : 'Aucune distribution générée'}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <div className="p-2 bg-green-50 rounded-lg">
+                <Activity className="w-5 h-5 text-green-600" />
+              </div>
+              <div>
+                <p className="font-semibold text-slate-900">Parties actives</p>
+                <p className="text-sm text-slate-600">
+                  {stats.activeGames} partie{stats.activeGames > 1 ? 's' : ''} en cours de jeu
+                </p>
+              </div>
+            </div>
+
+            {stats.totalDistributions < 100 && (
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-orange-50 rounded-lg">
+                  <AlertCircle className="w-5 h-5 text-orange-600" />
+                </div>
+                <div>
+                  <p className="font-semibold text-slate-900">Action recommandée</p>
+                  <p className="text-sm text-slate-600">
+                    Niveau de distributions faible. Il est recommandé de générer plus de distributions via la page "Générer Seeds".
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
         </CardContent>
       </Card>
     </div>
