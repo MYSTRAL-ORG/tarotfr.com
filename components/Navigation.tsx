@@ -74,22 +74,22 @@ export function Navigation() {
         </Link>
 
         <div className="flex items-center gap-6">
-          <Link href="/rules" className="text-white/90 hover:text-white font-medium transition-colors">
+          <Link href="/regles" className="text-white/90 hover:text-white font-medium transition-colors">
             Règles
           </Link>
-          <Link href="/tutorial" className="text-white/90 hover:text-white font-medium transition-colors">
+          <Link href="/tutoriel" className="text-white/90 hover:text-white font-medium transition-colors">
             Tutoriel
           </Link>
           <Link href="/distributions" className="text-white/90 hover:text-white font-medium transition-colors">
             Distributions
           </Link>
-          <Link href="/play" className="text-white/90 hover:text-white font-medium transition-colors">
+          <Link href="/jouer" className="text-white/90 hover:text-white font-medium transition-colors">
             Jouer
           </Link>
 
           {user ? (
             <div className="flex items-center gap-4">
-              <Link href="/account">
+              <Link href="/compte">
                 <Button variant="ghost" size="sm">
                   <User className="w-4 h-4 mr-2" />
                   {user.displayName}
@@ -100,7 +100,7 @@ export function Navigation() {
               </Button>
             </div>
           ) : (
-            <Link href="/account">
+            <Link href="/compte">
               <Button size="sm">Se connecter</Button>
             </Link>
           )}

@@ -73,11 +73,11 @@ export default function Home() {
                   <Button
                     size="lg"
                     className="text-xl px-10 py-7 w-full sm:w-auto bg-red-600 hover:bg-red-700"
-                    onClick={() => router.push(user ? '/play' : '/account')}
+                    onClick={() => router.push(user ? '/jouer' : '/compte')}
                   >
                     Jouer maintenant
                   </Button>
-                  <Link href="/rules">
+                  <Link href="/regles">
                     <Button size="lg" variant="outline" className="text-xl px-10 py-7 w-full sm:w-auto bg-white text-green-800 hover:bg-white/90 border-2 border-white">
                       Voir les règles
                     </Button>
@@ -355,7 +355,7 @@ export default function Home() {
               </div>
 
               <div className="pt-4">
-                <Link href="/tutorial">
+                <Link href="/tutoriel">
                   <Button size="lg" className="text-lg px-8 py-6 bg-red-600 hover:bg-red-700">
                     <BookOpen className="mr-2 h-5 w-5" />
                     Découvrir le tutoriel
@@ -405,7 +405,7 @@ export default function Home() {
                   </div>
 
                   <div className="pt-4">
-                    <Link href="/rules">
+                    <Link href="/regles">
                       <Button size="lg" className="text-lg px-8 py-6 bg-red-600 hover:bg-red-700">
                         <FileText className="mr-2 h-5 w-5" />
                         Consulter les règles
@@ -487,9 +487,9 @@ export default function Home() {
           <div className="text-center text-slate-600 text-sm">
             <p>© 2024 TarotFR - Jeu de Tarot en ligne gratuit</p>
             <div className="flex gap-4 justify-center mt-2">
-              <Link href="/rules" className="hover:text-slate-900">Règles</Link>
-              <Link href="/play" className="hover:text-slate-900">Jouer</Link>
-              <Link href="/account" className="hover:text-slate-900">Compte</Link>
+              <Link href="/regles" className="hover:text-slate-900">Règles</Link>
+              <Link href="/jouer" className="hover:text-slate-900">Jouer</Link>
+              <Link href="/compte" className="hover:text-slate-900">Compte</Link>
             </div>
           </div>
         </div>

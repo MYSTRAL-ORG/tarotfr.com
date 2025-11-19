@@ -86,7 +86,7 @@ export default function TablePage() {
   };
 
   const handleLeave = () => {
-    router.push('/play');
+    router.push('/jouer');
   };
 
   const myHand = currentPlayer && gameState?.hands[currentPlayer.seatIndex];
