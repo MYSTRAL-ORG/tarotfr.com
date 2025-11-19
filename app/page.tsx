@@ -79,9 +79,9 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-center">
-                <div className="relative w-64 h-96">
-                  <div className="absolute inset-0 flex items-center justify-center">
+              <div className="flex items-center justify-center overflow-visible">
+                <div className="relative w-64 h-96 overflow-visible">
+                  <div className="absolute inset-0 flex items-center justify-center overflow-visible">
                     <div
                       className="absolute w-full transition-all duration-700 hover:scale-110 hover:rotate-12 hover:translate-x-16 hover:z-30"
                       style={{
