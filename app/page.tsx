@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Navigation } from '@/components/Navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Spade, Users, Clock, Shield } from 'lucide-react';
+import { Spade, Users, Clock, Shield, Hash, Check, Trophy } from 'lucide-react';
 import LandingPage from '@/components/LandingPage';
 import { supabase } from '@/lib/supabase';
 
@@ -212,6 +212,90 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="container mx-auto px-4" style={{ paddingTop: '2rem', paddingBottom: '2rem' }}>
+        <div className="max-w-5xl mx-auto">
+          <div className="relative bg-gradient-to-br from-green-700 via-green-800 to-green-900 rounded-2xl overflow-hidden">
+            <div className="absolute inset-0 opacity-20" style={{
+              backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
+            }}></div>
+
+            <div className="relative z-10 grid lg:grid-cols-2 gap-8 p-12">
+              <div className="flex flex-col justify-center space-y-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-red-600 rounded-lg flex items-center justify-center">
+                    <Hash className="w-7 h-7 text-white" />
+                  </div>
+                  <h2 className="text-4xl md:text-5xl font-bold text-white">
+                    Distributions
+                  </h2>
+                </div>
+                <p className="text-xl text-white/90 leading-relaxed">
+                  Rejouez les donnes célèbres ou entraînez-vous sur des distributions spécifiques avec notre système unique de codes de distribution.
+                </p>
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <Check className="w-6 h-6 text-green-300 flex-shrink-0 mt-1" />
+                    <p className="text-white/90 text-lg">
+                      <span className="font-semibold">Code unique</span> - Chaque distribution possède un code partageable
+                    </p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <Check className="w-6 h-6 text-green-300 flex-shrink-0 mt-1" />
+                    <p className="text-white/90 text-lg">
+                      <span className="font-semibold">Reproductible</span> - Rejouez la même donne à l'infini
+                    </p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <Check className="w-6 h-6 text-green-300 flex-shrink-0 mt-1" />
+                    <p className="text-white/90 text-lg">
+                      <span className="font-semibold">Analyse</span> - Comparez vos résultats avec d'autres joueurs
+                    </p>
+                  </div>
+                </div>
+                <div>
+                  <Link href="/distributions">
+                    <Button size="lg" className="text-xl px-10 py-7 bg-red-600 hover:bg-red-700">
+                      Découvrir les distributions
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-center">
+                <div className="relative w-full max-w-md">
+                  <div className="bg-white/10 backdrop-blur-sm border-2 border-white/30 rounded-2xl p-8 space-y-6">
+                    <div className="text-center space-y-2">
+                      <div className="text-white/70 text-sm font-medium">Code de distribution</div>
+                      <div className="text-white text-3xl font-mono font-bold tracking-wider bg-black/20 rounded-lg py-4 px-6">
+                        #A7K9B2
+                      </div>
+                    </div>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between text-white/90 bg-white/5 rounded-lg p-4">
+                        <span className="text-sm">Parties jouées</span>
+                        <span className="font-bold text-lg flex items-center gap-2">
+                          <Trophy className="w-5 h-5 text-yellow-400" />
+                          247
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="bg-white/5 rounded-lg p-3 text-center">
+                          <div className="text-white/70 text-xs mb-1">Difficulté</div>
+                          <div className="text-white font-bold">★★★☆☆</div>
+                        </div>
+                        <div className="bg-white/5 rounded-lg p-3 text-center">
+                          <div className="text-white/70 text-xs mb-1">Taux de réussite</div>
+                          <div className="text-white font-bold">42%</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <footer className="border-t bg-white mt-16">
         <div className="container mx-auto px-4 py-8">
