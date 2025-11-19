@@ -2,14 +2,18 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Navigation } from '@/components/Navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Spade, Users, Clock, Shield, Hash, Check, Trophy } from 'lucide-react';
+import { Spade, Users, Clock, Shield, Hash, Check, Trophy, BookOpen, FileText } from 'lucide-react';
 import LandingPage from '@/components/LandingPage';
 import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Home() {
+  const router = useRouter();
+  const { user } = useAuth();
   const [landingMode, setLandingMode] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -66,11 +70,13 @@ export default function Home() {
                   Parties de Tarot à 4 en temps réel. Gratuit, rapide et sans inscription obligatoire.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <Link href="/play">
-                    <Button size="lg" className="text-xl px-10 py-7 w-full sm:w-auto bg-red-600 hover:bg-red-700">
-                      Jouer maintenant
-                    </Button>
-                  </Link>
+                  <Button
+                    size="lg"
+                    className="text-xl px-10 py-7 w-full sm:w-auto bg-red-600 hover:bg-red-700"
+                    onClick={() => router.push(user ? '/play' : '/account')}
+                  >
+                    Jouer maintenant
+                  </Button>
                   <Link href="/rules">
                     <Button size="lg" variant="outline" className="text-xl px-10 py-7 w-full sm:w-auto bg-white text-green-800 hover:bg-white/90 border-2 border-white">
                       Voir les règles
@@ -301,7 +307,7 @@ export default function Home() {
         <div className="max-w-5xl mx-auto">
           <Card className="bg-white rounded-2xl p-12">
             <div className="space-y-8">
-              <div className="text-center space-y-4">
+              <div className="space-y-4">
                 <h2 className="text-4xl md:text-5xl font-bold text-slate-900">
                   Votre plateforme complète de Tarot en ligne
                 </h2>
@@ -347,6 +353,15 @@ export default function Home() {
                   </p>
                 </div>
               </div>
+
+              <div className="pt-4">
+                <Link href="/tutorial">
+                  <Button size="lg" className="text-lg px-8 py-6 bg-red-600 hover:bg-red-700">
+                    <BookOpen className="mr-2 h-5 w-5" />
+                    Découvrir le tutoriel
+                  </Button>
+                </Link>
+              </div>
             </div>
           </Card>
         </div>
@@ -355,8 +370,8 @@ export default function Home() {
       <section className="container mx-auto px-4" style={{ paddingTop: '2rem', paddingBottom: '4rem' }}>
         <div className="max-w-5xl mx-auto">
           <Card className="bg-white rounded-2xl p-12">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <div className="space-y-6">
+            <div className="grid lg:grid-cols-2 gap-12">
+              <div className="space-y-6 lg:col-span-2">
                 <h2 className="text-4xl md:text-5xl font-bold text-slate-900">
                   Le Tarot français, un patrimoine ludique
                 </h2>
@@ -387,9 +402,18 @@ export default function Home() {
                     Le Tarot combine habilement hasard et réflexion, mémoire et psychologie. Se jouant traditionnellement à quatre, il oppose un preneur contre trois défenseurs, créant une dynamique unique où alliance et confrontation se mêlent à chaque pli. Cette richesse tactique en fait un jeu inépuisable qui continue de passionner des millions de joueurs.
                   </p>
                 </div>
+
+                <div className="pt-4">
+                  <Link href="/rules">
+                    <Button size="lg" className="text-lg px-8 py-6 bg-red-600 hover:bg-red-700">
+                      <FileText className="mr-2 h-5 w-5" />
+                      Consulter les règles
+                    </Button>
+                  </Link>
+                </div>
               </div>
 
-              <div className="relative">
+              <div className="relative lg:col-span-2">
                 <div className="relative bg-gradient-to-br from-green-700 via-green-800 to-green-900 rounded-2xl overflow-hidden p-8">
                   <div className="absolute inset-0 opacity-20" style={{
                     backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
