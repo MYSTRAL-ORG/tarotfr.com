@@ -60,6 +60,11 @@ export async function registerUser(email: string, password: string, displayName:
   const { data: authData, error: authError } = await supabase.auth.signUp({
     email,
     password,
+    options: {
+      data: {
+        display_name: displayName,
+      }
+    }
   });
 
   if (authError || !authData.user) {
@@ -101,11 +106,34 @@ export async function loginUser(email: string, password: string): Promise<User> 
     throw new Error(authError?.message || 'Failed to login');
   }
 
-  const { data: user, error: userError } = await supabase
+  let { data: user, error: userError } = await supabase
     .from('users')
     .select()
     .eq('id', authData.user.id)
     .maybeSingle();
+
+  if (!user && !userError) {
+    const displayName = authData.user.user_metadata?.display_name ||
+                        authData.user.email?.split('@')[0] ||
+                        'Utilisateur';
+
+    const { data: newUser, error: createError } = await supabase
+      .from('users')
+      .insert({
+        id: authData.user.id,
+        email: authData.user.email,
+        display_name: displayName,
+        is_guest: false,
+      })
+      .select()
+      .single();
+
+    if (createError || !newUser) {
+      throw new Error('Failed to create user profile');
+    }
+
+    user = newUser;
+  }
 
   if (userError || !user) {
     throw new Error('Failed to fetch user profile');
@@ -135,11 +163,32 @@ export async function getCurrentUser(): Promise<User | null> {
     return null;
   }
 
-  const { data: user, error } = await supabase
+  let { data: user, error } = await supabase
     .from('users')
     .select()
     .eq('id', session.user.id)
     .maybeSingle();
+
+  if (!user && !error) {
+    const displayName = session.user.user_metadata?.display_name ||
+                        session.user.email?.split('@')[0] ||
+                        'Utilisateur';
+
+    const { data: newUser } = await supabase
+      .from('users')
+      .insert({
+        id: session.user.id,
+        email: session.user.email,
+        display_name: displayName,
+        is_guest: false,
+      })
+      .select()
+      .single();
+
+    if (newUser) {
+      user = newUser;
+    }
+  }
 
   if (error || !user) {
     return null;
