@@ -16,8 +16,8 @@ export async function POST(request: NextRequest) {
     const { data: distributionData, error: distError } = await supabase
       .from('card_distributions')
       .insert({
-        distribution_number: distribution.metadata.distributionNumber,
-        sequence_number: distribution.metadata.sequenceNumber,
+        distribution_number: distribution.metadata.distributionNumber.toString(),
+        sequence_number: distribution.metadata.sequenceNumber.toString(),
         hash_code: distribution.metadata.hashCode,
         deck_order: distribution.metadata.deckOrder,
         used_count: 0,
