@@ -67,17 +67,35 @@ Vercel est la plateforme officielle pour Next.js et offre la meilleure compatibi
      package = "@netlify/plugin-nextjs"
    ```
 
-4. **Variables d'environnement**
-   Dans les settings Netlify, ajoutez :
+4. **⚠️ Variables d'environnement (OBLIGATOIRE)**
+
+   **IMPORTANT** : Sans ces variables, l'application ne fonctionnera pas !
+
+   Allez dans : **Site settings → Environment variables → Add a variable**
+
+   Ajoutez ces 2 variables :
+
    ```
-   NEXT_PUBLIC_SUPABASE_URL=votre_url_supabase
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=votre_anon_key
-   SUPABASE_SERVICE_ROLE_KEY=votre_service_role_key
+   NEXT_PUBLIC_SUPABASE_URL
+   Valeur: https://amwwthdjnsnociqbodtz.supabase.co
+
+   NEXT_PUBLIC_SUPABASE_ANON_KEY
+   Valeur: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFtd3d0aGRqbnNub2NpcWJvZHR6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0NDAxNzAsImV4cCI6MjA3OTAxNjE3MH0.y7624P1g_GfqvXAGXJbmib1coM_UGPyNbMd7La4GD-U
    ```
+
+   **Attention** :
+   - Les variables doivent être ajoutées AVANT le premier déploiement
+   - Si vous avez déjà déployé, ajoutez les variables puis cliquez sur "Trigger deploy" pour redéployer
 
 5. **Déployer**
    - Cliquez sur "Deploy site"
    - Le site sera disponible sur `https://votre-site.netlify.app`
+
+6. **Vérifier le déploiement**
+   - Allez sur votre site
+   - Ouvrez la console (F12)
+   - Vous ne devriez PAS voir "Supabase URL is not configured"
+   - Si vous voyez cette erreur, retournez à l'étape 4
 
 ## 🔧 Configuration WebSocket en Production
 
