@@ -13,7 +13,8 @@ import {
   BookOpen,
   LogOut,
   Menu,
-  X
+  X,
+  Home
 } from 'lucide-react';
 
 export default function OperationLayout({
@@ -91,7 +92,16 @@ export default function OperationLayout({
           </nav>
         </ScrollArea>
 
-        <div className="p-4 border-t border-slate-700">
+        <div className="p-4 border-t border-slate-700 space-y-2">
+          <Link href="/">
+            <Button
+              variant="ghost"
+              className="w-full justify-start hover:bg-slate-800"
+            >
+              <Home className="mr-2 h-4 w-4" />
+              Voir le site
+            </Button>
+          </Link>
           <Button
             variant="ghost"
             className="w-full justify-start hover:bg-slate-800"
