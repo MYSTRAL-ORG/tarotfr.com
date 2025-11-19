@@ -298,55 +298,63 @@ export default function Home() {
       </section>
 
       <section className="container mx-auto px-4" style={{ paddingTop: '4rem', paddingBottom: '4rem' }}>
-        <div className="max-w-5xl mx-auto space-y-12">
-          <div className="text-center space-y-4">
-            <h2 className="text-4xl md:text-5xl font-bold text-slate-900">
-              Votre plateforme complète de Tarot en ligne
-            </h2>
-            <p className="text-xl text-slate-600">
-              Découvrez toutes les fonctionnalités qui font de notre site la référence pour jouer au Tarot français
-            </p>
-          </div>
+        <div className="max-w-5xl mx-auto">
+          <Card className="bg-white rounded-2xl p-12">
+            <div className="space-y-8">
+              <div className="text-center space-y-4">
+                <h2 className="text-4xl md:text-5xl font-bold text-slate-900">
+                  Votre plateforme complète de Tarot en ligne
+                </h2>
+                <p className="text-xl text-slate-600">
+                  Découvrez toutes les fonctionnalités qui font de notre site la référence pour jouer au Tarot français
+                </p>
+              </div>
 
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="space-y-4">
-              <h3 className="text-2xl font-bold text-slate-900">
-                Modes de jeu variés
-              </h3>
-              <p className="text-lg text-slate-700 leading-relaxed">
-                Que vous soyez débutant ou joueur confirmé, notre plateforme s'adapte à votre niveau. Jouez contre des adversaires du monde entier en multijoueur temps réel, ou affinez votre stratégie face à nos bots intelligents dotés de différents niveaux de difficulté. Le mode tutoriel interactif vous guide pas à pas dans l'apprentissage des règles et des stratégies gagnantes.
-              </p>
+              <div className="space-y-6">
+                <div className="space-y-4">
+                  <h3 className="text-2xl font-bold text-slate-900">
+                    Modes de jeu variés
+                  </h3>
+                  <p className="text-lg text-slate-700 leading-relaxed">
+                    Que vous soyez débutant ou joueur confirmé, notre plateforme s'adapte à votre niveau. Jouez contre des adversaires du monde entier en multijoueur temps réel, ou affinez votre stratégie face à nos bots intelligents dotés de différents niveaux de difficulté. Le mode tutoriel interactif vous guide pas à pas dans l'apprentissage des règles et des stratégies gagnantes.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="text-2xl font-bold text-slate-900">
+                    Système de distributions unique
+                  </h3>
+                  <p className="text-lg text-slate-700 leading-relaxed">
+                    Notre système innovant de codes de distribution vous permet de rejouer les donnes célèbres, de partager vos parties mémorables avec vos amis, et d'analyser vos performances sur des configurations spécifiques. Chaque distribution est reproductible à l'infini grâce à son code unique partageable.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="text-2xl font-bold text-slate-900">
+                    Espace membre et statistiques
+                  </h3>
+                  <p className="text-lg text-slate-700 leading-relaxed">
+                    Créez votre compte pour suivre vos performances, consulter votre historique de parties, et comparer vos statistiques avec d'autres joueurs. Visualisez votre progression, votre taux de réussite selon les contrats, et identifiez les domaines à améliorer grâce à nos outils d'analyse détaillés.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="text-2xl font-bold text-slate-900">
+                    Parties personnalisables
+                  </h3>
+                  <p className="text-lg text-slate-700 leading-relaxed">
+                    Créez votre propre table de jeu, invitez vos amis via un lien unique, et personnalisez les règles selon vos préférences. Notre interface intuitive permet de gérer facilement les tables privées et publiques, avec un système de chat intégré pour communiquer avec les autres joueurs.
+                  </p>
+                </div>
+              </div>
             </div>
+          </Card>
+        </div>
+      </section>
 
-            <div className="space-y-4">
-              <h3 className="text-2xl font-bold text-slate-900">
-                Système de distributions unique
-              </h3>
-              <p className="text-lg text-slate-700 leading-relaxed">
-                Notre système innovant de codes de distribution vous permet de rejouer les donnes célèbres, de partager vos parties mémorables avec vos amis, et d'analyser vos performances sur des configurations spécifiques. Chaque distribution est reproductible à l'infini grâce à son code unique partageable.
-              </p>
-            </div>
-
-            <div className="space-y-4">
-              <h3 className="text-2xl font-bold text-slate-900">
-                Espace membre et statistiques
-              </h3>
-              <p className="text-lg text-slate-700 leading-relaxed">
-                Créez votre compte pour suivre vos performances, consulter votre historique de parties, et comparer vos statistiques avec d'autres joueurs. Visualisez votre progression, votre taux de réussite selon les contrats, et identifiez les domaines à améliorer grâce à nos outils d'analyse détaillés.
-              </p>
-            </div>
-
-            <div className="space-y-4">
-              <h3 className="text-2xl font-bold text-slate-900">
-                Parties personnalisables
-              </h3>
-              <p className="text-lg text-slate-700 leading-relaxed">
-                Créez votre propre table de jeu, invitez vos amis via un lien unique, et personnalisez les règles selon vos préférences. Notre interface intuitive permet de gérer facilement les tables privées et publiques, avec un système de chat intégré pour communiquer avec les autres joueurs.
-              </p>
-            </div>
-          </div>
-
-          <div className="border-t border-slate-200 pt-12">
+      <section className="container mx-auto px-4" style={{ paddingTop: '2rem', paddingBottom: '4rem' }}>
+        <div className="max-w-5xl mx-auto">
+          <Card className="bg-white rounded-2xl p-12">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               <div className="space-y-6">
                 <h2 className="text-4xl md:text-5xl font-bold text-slate-900">
@@ -441,7 +449,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
-          </div>
+          </Card>
         </div>
       </section>
 
