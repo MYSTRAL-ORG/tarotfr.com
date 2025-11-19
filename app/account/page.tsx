@@ -162,7 +162,15 @@ export default function AccountPage() {
 
       <div className="flex items-center justify-center px-4 py-12 min-h-[calc(100vh-80px)]">
         <div className="w-full max-w-5xl">
-          <Tabs defaultValue="guest" className="w-full">
+          <Tabs defaultValue="login" className="w-full">
+            <div className="mb-6">
+              <TabsList className="grid w-full grid-cols-3 h-14">
+                <TabsTrigger value="login" className="text-lg">Connexion</TabsTrigger>
+                <TabsTrigger value="register" className="text-lg">Inscription</TabsTrigger>
+                <TabsTrigger value="guest" className="text-lg">Invité</TabsTrigger>
+              </TabsList>
+            </div>
+
             <TabsContent value="guest" className="mt-0">
               <div className="grid md:grid-cols-2 gap-0 rounded-xl overflow-hidden shadow-2xl bg-white h-[600px]">
                 <div className="relative bg-gradient-to-br from-green-700 via-green-800 to-green-900 p-12 flex flex-col items-center justify-center">
@@ -192,15 +200,6 @@ export default function AccountPage() {
                     >
                       Commencer à jouer
                     </Button>
-                    <div className="text-center">
-                      <p className="text-sm text-slate-500 mb-4">Ou</p>
-                      <div className="flex gap-3">
-                        <TabsList className="grid w-full grid-cols-2">
-                          <TabsTrigger value="login">Connexion</TabsTrigger>
-                          <TabsTrigger value="register">Inscription</TabsTrigger>
-                        </TabsList>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -213,10 +212,10 @@ export default function AccountPage() {
                     backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
                   }}></div>
                   <div className="relative z-10 text-center">
-                    <div className="mb-8 animate-pulse">
+                    <div className="mb-8 animate-bounce">
                       <img src="/img/cards/trumps/21.png" alt="Atout 21" className="w-48 h-auto mx-auto shadow-2xl rounded-lg" />
                     </div>
-                    <h2 className="text-4xl font-bold text-white mb-4">21</h2>
+                    <h2 className="text-4xl font-bold text-white mb-4">Enfin de retour !</h2>
                     <p className="text-xl text-white/90">Tu es le véritable atout du jeu</p>
                   </div>
                 </div>
@@ -258,14 +257,6 @@ export default function AccountPage() {
                     >
                       Se connecter
                     </Button>
-                    <div className="text-center">
-                      <p className="text-sm text-slate-600">
-                        Pas encore de compte ?{' '}
-                        <TabsList className="inline-flex">
-                          <TabsTrigger value="register" className="text-sm">S'inscrire</TabsTrigger>
-                        </TabsList>
-                      </p>
-                    </div>
                   </form>
                 </div>
               </div>
@@ -281,8 +272,8 @@ export default function AccountPage() {
                     <div className="mb-8 animate-bounce">
                       <img src="/img/cards/trumps/1.png" alt="Atout 1" className="w-48 h-auto mx-auto shadow-2xl rounded-lg" />
                     </div>
-                    <h2 className="text-4xl font-bold text-white mb-4">1</h2>
-                    <p className="text-xl text-white/90">Rejoins la communauté</p>
+                    <h2 className="text-4xl font-bold text-white mb-4">Rejoins la communauté</h2>
+                    <p className="text-xl text-white/90">Des milliers de vrais joueurs de tarot français</p>
                   </div>
                 </div>
 
@@ -336,14 +327,6 @@ export default function AccountPage() {
                     >
                       S'inscrire
                     </Button>
-                    <div className="text-center">
-                      <p className="text-sm text-slate-600">
-                        Déjà un compte ?{' '}
-                        <TabsList className="inline-flex">
-                          <TabsTrigger value="login" className="text-sm">Se connecter</TabsTrigger>
-                        </TabsList>
-                      </p>
-                    </div>
                   </form>
                 </div>
               </div>
