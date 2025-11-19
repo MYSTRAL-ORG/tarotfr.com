@@ -132,7 +132,7 @@ export default function Home() {
       <section className="container mx-auto px-4 py-16">
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
           <Card className="overflow-hidden hover:shadow-xl transition-shadow">
-            <div className="relative bg-gradient-to-br from-green-700 via-green-800 to-green-900 p-6">
+            <div className="relative bg-gradient-to-br from-green-700 via-green-800 to-green-900 p-6 border-b-4 border-red-600">
               <div className="absolute inset-0 opacity-20" style={{
                 backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
               }}></div>
@@ -149,7 +149,7 @@ export default function Home() {
           </Card>
 
           <Card className="overflow-hidden hover:shadow-xl transition-shadow">
-            <div className="relative bg-gradient-to-br from-green-700 via-green-800 to-green-900 p-6">
+            <div className="relative bg-gradient-to-br from-green-700 via-green-800 to-green-900 p-6 border-b-4 border-red-600">
               <div className="absolute inset-0 opacity-20" style={{
                 backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
               }}></div>
@@ -166,7 +166,7 @@ export default function Home() {
           </Card>
 
           <Card className="overflow-hidden hover:shadow-xl transition-shadow">
-            <div className="relative bg-gradient-to-br from-green-700 via-green-800 to-green-900 p-6">
+            <div className="relative bg-gradient-to-br from-green-700 via-green-800 to-green-900 p-6 border-b-4 border-red-600">
               <div className="absolute inset-0 opacity-20" style={{
                 backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
               }}></div>
@@ -183,7 +183,7 @@ export default function Home() {
           </Card>
 
           <Card className="overflow-hidden hover:shadow-xl transition-shadow">
-            <div className="relative bg-gradient-to-br from-green-700 via-green-800 to-green-900 p-6">
+            <div className="relative bg-gradient-to-br from-green-700 via-green-800 to-green-900 p-6 border-b-4 border-red-600">
               <div className="absolute inset-0 opacity-20" style={{
                 backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
               }}></div>
