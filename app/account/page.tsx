@@ -165,9 +165,9 @@ export default function AccountPage() {
           <Tabs defaultValue="login" className="w-full">
             <div className="mb-6">
               <TabsList className="grid w-full grid-cols-3 h-14">
-                <TabsTrigger value="login" className="text-lg">Connexion</TabsTrigger>
-                <TabsTrigger value="register" className="text-lg">Inscription</TabsTrigger>
-                <TabsTrigger value="guest" className="text-lg">Invité</TabsTrigger>
+                <TabsTrigger value="login" className="text-lg data-[state=active]:bg-red-600 data-[state=active]:text-white">Connexion</TabsTrigger>
+                <TabsTrigger value="register" className="text-lg data-[state=active]:bg-red-600 data-[state=active]:text-white">Inscription</TabsTrigger>
+                <TabsTrigger value="guest" className="text-lg data-[state=active]:bg-red-600 data-[state=active]:text-white">Invité</TabsTrigger>
               </TabsList>
             </div>
 
