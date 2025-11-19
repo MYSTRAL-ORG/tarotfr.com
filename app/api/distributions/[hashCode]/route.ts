@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import { dealCardsWithSeed, sortHand } from '@/lib/distributionSeeder';
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 export async function GET(
   request: NextRequest,
@@ -11,9 +8,8 @@ export async function GET(
 ) {
   try {
     const { hashCode } = params;
-    const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const { data: distribution, error: distError } = await supabase
+    const { data: distribution, error: distError } = await supabaseAdmin
       .from('card_distributions')
       .select('*')
       .eq('hash_code', hashCode)
@@ -34,7 +30,7 @@ export async function GET(
       );
     }
 
-    const { data: games, error: gamesError } = await supabase
+    const { data: games, error: gamesError } = await supabaseAdmin
       .from('games')
       .select('id, status, created_at')
       .eq('distribution_id', distribution.id);

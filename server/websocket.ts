@@ -22,7 +22,7 @@ import {
   BotDifficulty,
 } from '../lib/botPlayer';
 import { generateNewDistribution, sortHand } from '../lib/distributionSeeder';
-import { createClient } from '@supabase/supabase-js';
+import { supabaseAdmin } from '../lib/supabaseAdmin';
 
 interface ConnectedClient {
   ws: WebSocket;
@@ -35,9 +35,7 @@ const clients = new Map<WebSocket, ConnectedClient>();
 const tableGames = new Map<string, TarotGameState>();
 const tablePlayers = new Map<string, Player[]>();
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
-const supabase = createClient(supabaseUrl, supabaseKey);
+const supabase = supabaseAdmin;
 
 const httpServer = createServer();
 const wss = new WebSocketServer({ server: httpServer });

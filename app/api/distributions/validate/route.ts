@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+import { supabaseAdmin } from '@/lib/supabaseAdmin';
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,9 +13,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('card_distributions')
       .select('id, hash_code, distribution_number, sequence_number, created_at')
       .eq('hash_code', hashCode)

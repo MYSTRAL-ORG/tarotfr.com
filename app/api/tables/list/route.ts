@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabaseAdmin';
 
 export async function GET(request: NextRequest) {
   try {
-    const { data: tables, error: tablesError } = await supabase
+    const { data: tables, error: tablesError } = await supabaseAdmin
       .from('tables')
       .select('*')
       .in('status', ['WAITING', 'IN_GAME'])
@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
 
     const tablesWithPlayers = await Promise.all(
       (tables || []).map(async (table) => {
-        const { data: players, error: playersError } = await supabase
+        const { data: players, error: playersError } = await supabaseAdmin
           .from('table_players')
           .select('*')
           .eq('table_id', table.id);

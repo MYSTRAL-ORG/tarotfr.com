@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabaseAdmin';
 
 export async function POST(
   request: NextRequest,
@@ -16,7 +16,7 @@ export async function POST(
       );
     }
 
-    const { data: existingPlayers } = await supabase
+    const { data: existingPlayers } = await supabaseAdmin
       .from('table_players')
       .select('*')
       .eq('table_id', tableId);
@@ -35,7 +35,7 @@ export async function POST(
 
     const seatIndex = existingPlayers?.length || 0;
 
-    const { data: tablePlayer, error } = await supabase
+    const { data: tablePlayer, error } = await supabaseAdmin
       .from('table_players')
       .insert({
         table_id: tableId,
