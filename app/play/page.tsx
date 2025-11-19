@@ -146,14 +146,15 @@ export default function PlayPage() {
       <Navigation />
 
       <div className="container mx-auto px-4 py-12">
-        <div className="max-w-4xl mx-auto space-y-8">
-          <div className="text-center space-y-4">
-            <h1 className="text-4xl font-bold text-slate-900">Rejoindre une partie</h1>
-            <p className="text-slate-600">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h1 className="text-5xl font-bold mb-4 text-slate-900">Rejoindre une partie</h1>
+            <p className="text-xl text-slate-600">
               Créez une nouvelle table ou rejoignez une partie en attente de joueurs
             </p>
           </div>
 
+          <div className="space-y-8">
           <div className="flex justify-center">
             <Button
               size="lg"
@@ -165,8 +166,8 @@ export default function PlayPage() {
             </Button>
           </div>
 
-          <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-slate-900">Tables disponibles</h2>
+          <Card className="p-8">
+            <h2 className="text-2xl font-bold text-slate-900 mb-6">Tables disponibles</h2>
 
             {loading ? (
               <Card className="p-8 text-center text-slate-600">
@@ -220,6 +221,7 @@ export default function PlayPage() {
                 ))}
               </div>
             )}
+          </Card>
           </div>
         </div>
       </div>

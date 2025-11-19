@@ -161,7 +161,7 @@ export default function TutorialPage() {
       <Navigation />
 
       <div className="container mx-auto px-4 py-12">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <h1 className="text-5xl font-bold mb-4 text-slate-900">
               Comment jouer sur TarotFR

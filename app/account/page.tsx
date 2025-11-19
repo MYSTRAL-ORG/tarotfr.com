@@ -69,16 +69,26 @@ export default function AccountPage() {
         <Navigation />
 
         <div className="container mx-auto px-4 py-12">
-          <div className="max-w-4xl mx-auto space-y-6">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <h1 className="text-5xl font-bold mb-4 text-slate-900">
+                Mon Compte
+              </h1>
+              <p className="text-xl text-slate-600">
+                Gérez votre profil et consultez vos statistiques
+              </p>
+            </div>
+
+            <div className="space-y-8">
             <Card className="p-8">
               <div className="flex items-center gap-4 mb-6">
                 <div className="w-16 h-16 bg-slate-200 rounded-full flex items-center justify-center">
                   <User className="w-8 h-8 text-slate-600" />
                 </div>
                 <div>
-                  <h1 className="text-3xl font-bold text-slate-900">
+                  <h2 className="text-3xl font-bold text-slate-900">
                     {user.displayName}
-                  </h1>
+                  </h2>
                   {user.isGuest ? (
                     <p className="text-slate-600">Compte invité</p>
                   ) : (
@@ -140,6 +150,7 @@ export default function AccountPage() {
               </div>
             </Card>
           </div>
+          </div>
         </div>
       </div>
     );
@@ -150,12 +161,19 @@ export default function AccountPage() {
       <Navigation />
 
       <div className="container mx-auto px-4 py-12">
-        <div className="max-w-md mx-auto">
-          <Card className="p-8">
-            <h1 className="text-3xl font-bold text-center mb-6 text-slate-900">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h1 className="text-5xl font-bold mb-4 text-slate-900">
               Bienvenue sur TarotFR
             </h1>
+            <p className="text-xl text-slate-600">
+              Connectez-vous ou jouez en tant qu'invité
+            </p>
+          </div>
 
+          <div className="space-y-8">
+          <div className="max-w-md mx-auto">
+          <Card className="p-8">
             <Tabs defaultValue="guest" className="w-full">
               <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="guest">Invité</TabsTrigger>
@@ -260,6 +278,8 @@ export default function AccountPage() {
               </TabsContent>
             </Tabs>
           </Card>
+          </div>
+          </div>
         </div>
       </div>
     </div>

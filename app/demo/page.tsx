@@ -74,8 +74,8 @@ export default function DemoPage() {
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
       <Navigation />
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-7xl mx-auto">
+      <div className="container mx-auto px-4 py-12">
+        <div className="max-w-6xl mx-auto">
           <div className="mb-6 flex items-center justify-between">
             <Button variant="outline" onClick={() => window.history.back()}>
               <ArrowLeft className="w-4 h-4 mr-2" />
