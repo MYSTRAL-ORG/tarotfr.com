@@ -370,48 +370,49 @@ export default function Home() {
       <section className="container mx-auto px-4" style={{ paddingTop: '2rem', paddingBottom: '4rem' }}>
         <div className="max-w-5xl mx-auto">
           <Card className="bg-white rounded-2xl p-12">
-            <div className="grid lg:grid-cols-2 gap-12">
-              <div className="space-y-6">
-                <h2 className="text-4xl md:text-5xl font-bold text-slate-900">
-                  Le Tarot français, un patrimoine ludique
-                </h2>
+            <div className="space-y-8">
+              <h2 className="text-4xl md:text-5xl font-bold text-slate-900">
+                Le Tarot français, un patrimoine ludique
+              </h2>
 
-                <div className="space-y-4">
-                  <h3 className="text-2xl font-bold text-slate-900">
-                    Origines historiques
-                  </h3>
-                  <p className="text-lg text-slate-700 leading-relaxed">
-                    Le Tarot trouve ses origines en Italie au XVe siècle, où il était initialement un jeu de cartes aristocratique. Il s'est progressivement répandu en France à partir du XVIe siècle, où il a connu une évolution majeure pour devenir le jeu que nous connaissons aujourd'hui.
-                  </p>
-                </div>
+              <div className="grid lg:grid-cols-2 gap-12">
+                <div className="space-y-6">
+                  <div className="space-y-4">
+                    <h3 className="text-2xl font-bold text-slate-900">
+                      Origines historiques
+                    </h3>
+                    <p className="text-lg text-slate-700 leading-relaxed">
+                      Le Tarot trouve ses origines en Italie au XVe siècle, où il était initialement un jeu de cartes aristocratique. Il s'est progressivement répandu en France à partir du XVIe siècle, où il a connu une évolution majeure pour devenir le jeu que nous connaissons aujourd'hui.
+                    </p>
+                  </div>
 
-                <div className="space-y-4">
-                  <h3 className="text-2xl font-bold text-slate-900">
-                    Le Tarot en France
-                  </h3>
-                  <p className="text-lg text-slate-700 leading-relaxed">
-                    En France, le Tarot s'est particulièrement développé au XVIIIe siècle et est devenu un véritable phénomène culturel au XXe siècle. Avec ses 78 cartes dont 21 atouts, l'Excuse, et quatre couleurs traditionnelles, le Tarot français se distingue par sa richesse stratégique et la complexité de ses annonces. Aujourd'hui, il reste l'un des jeux de cartes les plus populaires dans l'Hexagone, pratiqué aussi bien en famille qu'en compétition.
-                  </p>
-                </div>
+                  <div className="space-y-4">
+                    <h3 className="text-2xl font-bold text-slate-900">
+                      Le Tarot en France
+                    </h3>
+                    <p className="text-lg text-slate-700 leading-relaxed">
+                      En France, le Tarot s'est particulièrement développé au XVIIIe siècle et est devenu un véritable phénomène culturel au XXe siècle. Avec ses 78 cartes dont 21 atouts, l'Excuse, et quatre couleurs traditionnelles, le Tarot français se distingue par sa richesse stratégique et la complexité de ses annonces. Aujourd'hui, il reste l'un des jeux de cartes les plus populaires dans l'Hexagone, pratiqué aussi bien en famille qu'en compétition.
+                    </p>
+                  </div>
 
-                <div className="space-y-4">
-                  <h3 className="text-2xl font-bold text-slate-900">
-                    Un jeu de stratégie et de convivialité
-                  </h3>
-                  <p className="text-lg text-slate-700 leading-relaxed">
-                    Le Tarot combine habilement hasard et réflexion, mémoire et psychologie. Se jouant traditionnellement à quatre, il oppose un preneur contre trois défenseurs, créant une dynamique unique où alliance et confrontation se mêlent à chaque pli. Cette richesse tactique en fait un jeu inépuisable qui continue de passionner des millions de joueurs.
-                  </p>
-                </div>
+                  <div className="space-y-4">
+                    <h3 className="text-2xl font-bold text-slate-900">
+                      Un jeu de stratégie et de convivialité
+                    </h3>
+                    <p className="text-lg text-slate-700 leading-relaxed">
+                      Le Tarot combine habilement hasard et réflexion, mémoire et psychologie. Se jouant traditionnellement à quatre, il oppose un preneur contre trois défenseurs, créant une dynamique unique où alliance et confrontation se mêlent à chaque pli. Cette richesse tactique en fait un jeu inépuisable qui continue de passionner des millions de joueurs.
+                    </p>
+                  </div>
 
-                <div className="pt-4">
-                  <Link href="/rules">
-                    <Button size="lg" className="text-lg px-8 py-6 bg-red-600 hover:bg-red-700">
-                      <FileText className="mr-2 h-5 w-5" />
-                      Consulter les règles
-                    </Button>
-                  </Link>
+                  <div className="pt-4">
+                    <Link href="/rules">
+                      <Button size="lg" className="text-lg px-8 py-6 bg-red-600 hover:bg-red-700">
+                        <FileText className="mr-2 h-5 w-5" />
+                        Consulter les règles
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
-              </div>
 
               <div className="flex items-center justify-center">
                 <div className="relative w-full rounded-2xl overflow-hidden">
@@ -474,6 +475,7 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
+              </div>
               </div>
             </div>
           </Card>
