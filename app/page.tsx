@@ -1,12 +1,48 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Navigation } from '@/components/Navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Spade, Users, Clock, Shield } from 'lucide-react';
+import LandingPage from '@/components/LandingPage';
+import { supabase } from '@/lib/supabase';
 
 export default function Home() {
+  const [landingMode, setLandingMode] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    checkLandingMode();
+  }, []);
+
+  const checkLandingMode = async () => {
+    try {
+      const { data } = await supabase
+        .from('site_settings')
+        .select('landing_page_mode')
+        .limit(1)
+        .maybeSingle();
+
+      if (data) {
+        setLandingMode(data.landing_page_mode);
+      }
+    } catch (error) {
+      console.error('Error checking landing mode:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return null;
+  }
+
+  if (landingMode) {
+    return <LandingPage />;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
       <Navigation />
