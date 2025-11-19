@@ -141,7 +141,7 @@ export default function Home() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="overflow-hidden hover:border-red-600 transition-colors border-4 border-transparent">
+          <Card className="overflow-hidden hover:border-red-600 transition-colors border-4 border-transparent rounded-2xl">
             <div className="relative bg-gradient-to-br from-green-700 via-green-800 to-green-900 p-6 border-b-4 border-red-600">
               <div className="absolute inset-0 opacity-20" style={{
                 backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
@@ -158,7 +158,7 @@ export default function Home() {
             </div>
           </Card>
 
-          <Card className="overflow-hidden hover:border-red-600 transition-colors border-4 border-transparent">
+          <Card className="overflow-hidden hover:border-red-600 transition-colors border-4 border-transparent rounded-2xl">
             <div className="relative bg-gradient-to-br from-green-700 via-green-800 to-green-900 p-6 border-b-4 border-red-600">
               <div className="absolute inset-0 opacity-20" style={{
                 backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
@@ -175,7 +175,7 @@ export default function Home() {
             </div>
           </Card>
 
-          <Card className="overflow-hidden hover:border-red-600 transition-colors border-4 border-transparent">
+          <Card className="overflow-hidden hover:border-red-600 transition-colors border-4 border-transparent rounded-2xl">
             <div className="relative bg-gradient-to-br from-green-700 via-green-800 to-green-900 p-6 border-b-4 border-red-600">
               <div className="absolute inset-0 opacity-20" style={{
                 backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
@@ -192,7 +192,7 @@ export default function Home() {
             </div>
           </Card>
 
-          <Card className="overflow-hidden hover:border-red-600 transition-colors border-4 border-transparent">
+          <Card className="overflow-hidden hover:border-red-600 transition-colors border-4 border-transparent rounded-2xl">
             <div className="relative bg-gradient-to-br from-green-700 via-green-800 to-green-900 p-6 border-b-4 border-red-600">
               <div className="absolute inset-0 opacity-20" style={{
                 backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
@@ -214,7 +214,7 @@ export default function Home() {
 
       <section className="container mx-auto px-4" style={{ paddingTop: '2rem', paddingBottom: '2rem' }}>
         <div className="max-w-5xl mx-auto">
-          <Card className="overflow-hidden hover:border-red-600 transition-colors border-4 border-transparent">
+          <Card className="overflow-hidden hover:border-red-600 transition-colors border-4 border-transparent rounded-2xl">
           <div className="grid lg:grid-cols-2 gap-8">
             <div className="flex flex-col justify-center space-y-6 p-12">
               <h2 className="text-4xl md:text-5xl font-bold text-slate-900">
