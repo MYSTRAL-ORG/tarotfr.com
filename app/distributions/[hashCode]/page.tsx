@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { TarotCard as TarotCardComponent } from '@/components/game/TarotCard';
 import { TarotCard } from '@/lib/types';
-import { ArrowLeft, Copy, CheckCircle2, Lock, Calendar, Hash } from 'lucide-react';
+import { ArrowLeft, Copy, CircleCheck as CheckCircle2, Lock, Calendar, Hash } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface DistributionData {
