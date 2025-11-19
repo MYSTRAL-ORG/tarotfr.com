@@ -9,6 +9,7 @@ export default function LandingPage() {
         backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
       }}></div>
       <header className="w-full border-b-4 border-red-600 bg-gradient-to-br from-green-700 via-green-800 to-green-900 relative z-10 overflow-hidden">
+        <div className="absolute inset-0 bg-black/10"></div>
         <div className="absolute inset-0 opacity-20" style={{
           backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
         }}></div>
@@ -58,6 +59,7 @@ export default function LandingPage() {
       </main>
 
       <footer className="w-full border-t-4 border-red-600 bg-gradient-to-br from-green-700 via-green-800 to-green-900 py-6 relative z-10 overflow-hidden">
+        <div className="absolute inset-0 bg-black/10"></div>
         <div className="absolute inset-0 opacity-20" style={{
           backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
         }}></div>
