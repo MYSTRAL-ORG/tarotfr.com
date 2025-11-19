@@ -108,11 +108,11 @@
       z-index: 3;
     }
     20% {
-      transform: translateX(120px) translateY(0px) rotate(5deg);
+      transform: translateX(200px) translateY(0px) rotate(8deg);
       z-index: 3;
     }
     25% {
-      transform: translateX(120px) translateY(0px) rotate(5deg);
+      transform: translateX(200px) translateY(0px) rotate(8deg);
       z-index: 1;
     }
     30% {
@@ -143,11 +143,11 @@
       z-index: 2;
     }
     53% {
-      transform: translateX(120px) translateY(0px) rotate(5deg);
+      transform: translateX(200px) translateY(0px) rotate(8deg);
       z-index: 3;
     }
     58% {
-      transform: translateX(120px) translateY(0px) rotate(5deg);
+      transform: translateX(200px) translateY(0px) rotate(8deg);
       z-index: 1;
     }
     63% {
@@ -174,11 +174,11 @@
       z-index: 1;
     }
     86% {
-      transform: translateX(120px) translateY(0px) rotate(5deg);
+      transform: translateX(200px) translateY(0px) rotate(8deg);
       z-index: 3;
     }
     91% {
-      transform: translateX(120px) translateY(0px) rotate(5deg);
+      transform: translateX(200px) translateY(0px) rotate(8deg);
       z-index: 1;
     }
     96% {
