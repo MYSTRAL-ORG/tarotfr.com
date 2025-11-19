@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
-import { User, Trophy, TrendingUp } from 'lucide-react';
+import { User, Trophy, TrendingUp, LogIn, UserPlus, UserCheck } from 'lucide-react';
 
 export default function AccountPage() {
   const { user, login, register, logout, createGuest, loading } = useAuth();
@@ -164,10 +164,28 @@ export default function AccountPage() {
         <div className="w-full max-w-5xl">
           <Tabs defaultValue="login" className="w-full">
             <div className="mb-6">
-              <TabsList className="grid w-full grid-cols-3 h-14">
-                <TabsTrigger value="login" className="text-lg data-[state=active]:bg-red-600 data-[state=active]:text-white">Connexion</TabsTrigger>
-                <TabsTrigger value="register" className="text-lg data-[state=active]:bg-red-600 data-[state=active]:text-white">Inscription</TabsTrigger>
-                <TabsTrigger value="guest" className="text-lg data-[state=active]:bg-red-600 data-[state=active]:text-white">Invité</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-3 h-auto bg-white shadow-lg rounded-xl border-2 border-slate-200 p-2">
+                <TabsTrigger
+                  value="login"
+                  className="flex flex-col items-center gap-2 py-4 rounded-lg transition-all data-[state=active]:bg-red-600 data-[state=active]:text-white data-[state=active]:shadow-md"
+                >
+                  <LogIn className="w-6 h-6" />
+                  <span className="font-semibold">Connexion</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="register"
+                  className="flex flex-col items-center gap-2 py-4 rounded-lg transition-all data-[state=active]:bg-red-600 data-[state=active]:text-white data-[state=active]:shadow-md"
+                >
+                  <UserPlus className="w-6 h-6" />
+                  <span className="font-semibold">Inscription</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="guest"
+                  className="flex flex-col items-center gap-2 py-4 rounded-lg transition-all data-[state=active]:bg-red-600 data-[state=active]:text-white data-[state=active]:shadow-md"
+                >
+                  <UserCheck className="w-6 h-6" />
+                  <span className="font-semibold">Invité</span>
+                </TabsTrigger>
               </TabsList>
             </div>
 
