@@ -101,4 +101,49 @@
     );
     pointer-events: none;
   }
+
+  @keyframes cardFloat1 {
+    0%, 100% {
+      transform: translateX(-8px) translateY(-8px) rotate(8deg);
+      z-index: 3;
+    }
+    33% {
+      transform: translateX(0px) translateY(8px) rotate(0deg);
+      z-index: 1;
+    }
+    66% {
+      transform: translateX(8px) translateY(-8px) rotate(-8deg);
+      z-index: 2;
+    }
+  }
+
+  @keyframes cardFloat2 {
+    0%, 100% {
+      transform: translateX(0px) translateY(8px) rotate(0deg);
+      z-index: 2;
+    }
+    33% {
+      transform: translateX(8px) translateY(-8px) rotate(-8deg);
+      z-index: 3;
+    }
+    66% {
+      transform: translateX(-8px) translateY(-8px) rotate(8deg);
+      z-index: 1;
+    }
+  }
+
+  @keyframes cardFloat3 {
+    0%, 100% {
+      transform: translateX(8px) translateY(-8px) rotate(-8deg);
+      z-index: 1;
+    }
+    33% {
+      transform: translateX(-8px) translateY(-8px) rotate(8deg);
+      z-index: 2;
+    }
+    66% {
+      transform: translateX(0px) translateY(8px) rotate(0deg);
+      z-index: 3;
+    }
+  }
 }

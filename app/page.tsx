@@ -79,28 +79,50 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-4 gap-3">
-                {[
-                  { suit: 'hearts', rank: 14 },
-                  { suit: 'spades', rank: 14 },
-                  { suit: 'diamonds', rank: 14 },
-                  { suit: 'clubs', rank: 14 },
-                  { suit: 'hearts', rank: 1 },
-                  { suit: 'spades', rank: 1 },
-                  { suit: 'diamonds', rank: 1 },
-                  { suit: 'clubs', rank: 1 },
-                ].map((card, idx) => (
-                  <div
-                    key={idx}
-                    className="group cursor-pointer transition-all duration-300 hover:-translate-y-4"
-                  >
-                    <img
-                      src={`/img/cards/base/${card.suit}/${card.rank}.png`}
-                      alt={`${card.suit} ${card.rank}`}
-                      className="w-full h-auto rounded-lg shadow-xl"
-                    />
+              <div className="flex items-center justify-center">
+                <div className="relative w-64 h-96">
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div
+                      className="absolute w-full transition-all duration-700 hover:scale-110 hover:rotate-12 hover:translate-x-16 hover:z-30"
+                      style={{
+                        animation: 'cardFloat1 8s ease-in-out infinite',
+                        zIndex: 3,
+                      }}
+                    >
+                      <img
+                        src="/img/cards/trumps/21.png"
+                        alt="Trump 21"
+                        className="w-full h-auto rounded-xl shadow-2xl"
+                      />
+                    </div>
+                    <div
+                      className="absolute w-full transition-all duration-700 hover:scale-110 hover:-rotate-0 hover:translate-y-8 hover:z-30"
+                      style={{
+                        animation: 'cardFloat2 8s ease-in-out infinite',
+                        zIndex: 2,
+                      }}
+                    >
+                      <img
+                        src="/img/cards/excuse.png"
+                        alt="Excuse"
+                        className="w-full h-auto rounded-xl shadow-2xl"
+                      />
+                    </div>
+                    <div
+                      className="absolute w-full transition-all duration-700 hover:scale-110 hover:-rotate-12 hover:-translate-x-16 hover:z-30"
+                      style={{
+                        animation: 'cardFloat3 8s ease-in-out infinite',
+                        zIndex: 1,
+                      }}
+                    >
+                      <img
+                        src="/img/cards/trumps/1.png"
+                        alt="Trump 1"
+                        className="w-full h-auto rounded-xl shadow-2xl"
+                      />
+                    </div>
                   </div>
-                ))}
+                </div>
               </div>
             </div>
           </div>
