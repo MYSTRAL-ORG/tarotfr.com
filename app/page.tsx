@@ -297,6 +297,154 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="container mx-auto px-4" style={{ paddingTop: '4rem', paddingBottom: '4rem' }}>
+        <div className="max-w-5xl mx-auto space-y-12">
+          <div className="text-center space-y-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-900">
+              Votre plateforme complète de Tarot en ligne
+            </h2>
+            <p className="text-xl text-slate-600">
+              Découvrez toutes les fonctionnalités qui font de notre site la référence pour jouer au Tarot français
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            <div className="space-y-4">
+              <h3 className="text-2xl font-bold text-slate-900">
+                Modes de jeu variés
+              </h3>
+              <p className="text-lg text-slate-700 leading-relaxed">
+                Que vous soyez débutant ou joueur confirmé, notre plateforme s'adapte à votre niveau. Jouez contre des adversaires du monde entier en multijoueur temps réel, ou affinez votre stratégie face à nos bots intelligents dotés de différents niveaux de difficulté. Le mode tutoriel interactif vous guide pas à pas dans l'apprentissage des règles et des stratégies gagnantes.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-2xl font-bold text-slate-900">
+                Système de distributions unique
+              </h3>
+              <p className="text-lg text-slate-700 leading-relaxed">
+                Notre système innovant de codes de distribution vous permet de rejouer les donnes célèbres, de partager vos parties mémorables avec vos amis, et d'analyser vos performances sur des configurations spécifiques. Chaque distribution est reproductible à l'infini grâce à son code unique partageable.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-2xl font-bold text-slate-900">
+                Espace membre et statistiques
+              </h3>
+              <p className="text-lg text-slate-700 leading-relaxed">
+                Créez votre compte pour suivre vos performances, consulter votre historique de parties, et comparer vos statistiques avec d'autres joueurs. Visualisez votre progression, votre taux de réussite selon les contrats, et identifiez les domaines à améliorer grâce à nos outils d'analyse détaillés.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-2xl font-bold text-slate-900">
+                Parties personnalisables
+              </h3>
+              <p className="text-lg text-slate-700 leading-relaxed">
+                Créez votre propre table de jeu, invitez vos amis via un lien unique, et personnalisez les règles selon vos préférences. Notre interface intuitive permet de gérer facilement les tables privées et publiques, avec un système de chat intégré pour communiquer avec les autres joueurs.
+              </p>
+            </div>
+          </div>
+
+          <div className="border-t border-slate-200 pt-12">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              <div className="space-y-6">
+                <h2 className="text-4xl md:text-5xl font-bold text-slate-900">
+                  Le Tarot français, un patrimoine ludique
+                </h2>
+
+                <div className="space-y-4">
+                  <h3 className="text-2xl font-bold text-slate-900">
+                    Origines historiques
+                  </h3>
+                  <p className="text-lg text-slate-700 leading-relaxed">
+                    Le Tarot trouve ses origines en Italie au XVe siècle, où il était initialement un jeu de cartes aristocratique. Il s'est progressivement répandu en France à partir du XVIe siècle, où il a connu une évolution majeure pour devenir le jeu que nous connaissons aujourd'hui.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="text-2xl font-bold text-slate-900">
+                    Le Tarot en France
+                  </h3>
+                  <p className="text-lg text-slate-700 leading-relaxed">
+                    En France, le Tarot s'est particulièrement développé au XVIIIe siècle et est devenu un véritable phénomène culturel au XXe siècle. Avec ses 78 cartes dont 21 atouts, l'Excuse, et quatre couleurs traditionnelles, le Tarot français se distingue par sa richesse stratégique et la complexité de ses annonces. Aujourd'hui, il reste l'un des jeux de cartes les plus populaires dans l'Hexagone, pratiqué aussi bien en famille qu'en compétition.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="text-2xl font-bold text-slate-900">
+                    Un jeu de stratégie et de convivialité
+                  </h3>
+                  <p className="text-lg text-slate-700 leading-relaxed">
+                    Le Tarot combine habilement hasard et réflexion, mémoire et psychologie. Se jouant traditionnellement à quatre, il oppose un preneur contre trois défenseurs, créant une dynamique unique où alliance et confrontation se mêlent à chaque pli. Cette richesse tactique en fait un jeu inépuisable qui continue de passionner des millions de joueurs.
+                  </p>
+                </div>
+              </div>
+
+              <div className="relative">
+                <div className="relative bg-gradient-to-br from-green-700 via-green-800 to-green-900 rounded-2xl overflow-hidden p-8">
+                  <div className="absolute inset-0 opacity-20" style={{
+                    backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
+                  }}></div>
+
+                  <div className="relative z-10 space-y-6">
+                    <div className="bg-white/10 backdrop-blur-sm border-2 border-white/30 rounded-xl p-6">
+                      <h4 className="text-white text-xl font-bold mb-3">Le saviez-vous ?</h4>
+                      <ul className="space-y-3 text-white/90 text-base">
+                        <li className="flex items-start gap-2">
+                          <span className="text-yellow-400 mt-1">•</span>
+                          <span>Le Tarot utilise 78 cartes, dont 21 atouts numérotés</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-yellow-400 mt-1">•</span>
+                          <span>L'Excuse est la seule carte sans valeur fixe</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-yellow-400 mt-1">•</span>
+                          <span>Une partie se joue en 18 plis de 4 cartes</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-yellow-400 mt-1">•</span>
+                          <span>Le preneur doit réaliser 41 points minimum avec le Petit au bout pour gagner une Petite</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-yellow-400 mt-1">•</span>
+                          <span>Les figures et atouts valent plus de points que les petites cartes</span>
+                        </li>
+                      </ul>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-3">
+                      <div className="transform rotate-3">
+                        <img
+                          src="/img/cards/trumps/1.png"
+                          alt="Atout 1"
+                          className="w-full h-auto rounded-lg shadow-xl"
+                        />
+                      </div>
+                      <div className="transform -rotate-2 mt-4">
+                        <img
+                          src="/img/cards/trumps/21.png"
+                          alt="Atout 21"
+                          className="w-full h-auto rounded-lg shadow-xl"
+                        />
+                      </div>
+                      <div className="transform rotate-2">
+                        <img
+                          src="/img/cards/excuse.png"
+                          alt="Excuse"
+                          className="w-full h-auto rounded-lg shadow-xl"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <footer className="border-t bg-white mt-16">
         <div className="container mx-auto px-4 py-8">
           <div className="text-center text-slate-600 text-sm">
