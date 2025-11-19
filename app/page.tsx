@@ -309,7 +309,7 @@ export default function Home() {
             <div className="space-y-8">
               <div className="space-y-4">
                 <h2 className="text-4xl md:text-5xl font-bold text-slate-900">
-                  Votre plateforme complète de Tarot en ligne
+                  Votre plateforme de Tarot en ligne
                 </h2>
                 <p className="text-xl text-slate-600">
                   Découvrez toutes les fonctionnalités qui font de notre site la référence pour jouer au Tarot français
