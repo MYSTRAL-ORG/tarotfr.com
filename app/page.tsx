@@ -214,54 +214,50 @@ export default function Home() {
 
       <section className="container mx-auto px-4" style={{ paddingTop: '2rem', paddingBottom: '2rem' }}>
         <div className="max-w-5xl mx-auto">
-          <div className="relative bg-gradient-to-br from-green-700 via-green-800 to-green-900 rounded-2xl overflow-hidden">
-            <div className="absolute inset-0 opacity-20" style={{
-              backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
-            }}></div>
-
-            <div className="relative z-10 grid lg:grid-cols-2 gap-8 p-12">
-              <div className="flex flex-col justify-center space-y-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-red-600 rounded-lg flex items-center justify-center">
-                    <Hash className="w-7 h-7 text-white" />
-                  </div>
-                  <h2 className="text-4xl md:text-5xl font-bold text-white">
-                    Distributions
-                  </h2>
+          <div className="grid lg:grid-cols-2 gap-8">
+            <div className="flex flex-col justify-center space-y-6 p-8">
+              <h2 className="text-4xl md:text-5xl font-bold text-slate-900">
+                Distributions
+              </h2>
+              <p className="text-xl text-slate-700 leading-relaxed">
+                Rejouez les donnes célèbres ou entraînez-vous sur des distributions spécifiques avec notre système unique de codes de distribution.
+              </p>
+              <div className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <Check className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
+                  <p className="text-slate-700 text-lg">
+                    <span className="font-semibold">Code unique</span> - Chaque distribution possède un code partageable
+                  </p>
                 </div>
-                <p className="text-xl text-white/90 leading-relaxed">
-                  Rejouez les donnes célèbres ou entraînez-vous sur des distributions spécifiques avec notre système unique de codes de distribution.
-                </p>
-                <div className="space-y-3">
-                  <div className="flex items-start gap-3">
-                    <Check className="w-6 h-6 text-green-300 flex-shrink-0 mt-1" />
-                    <p className="text-white/90 text-lg">
-                      <span className="font-semibold">Code unique</span> - Chaque distribution possède un code partageable
-                    </p>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <Check className="w-6 h-6 text-green-300 flex-shrink-0 mt-1" />
-                    <p className="text-white/90 text-lg">
-                      <span className="font-semibold">Reproductible</span> - Rejouez la même donne à l'infini
-                    </p>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <Check className="w-6 h-6 text-green-300 flex-shrink-0 mt-1" />
-                    <p className="text-white/90 text-lg">
-                      <span className="font-semibold">Analyse</span> - Comparez vos résultats avec d'autres joueurs
-                    </p>
-                  </div>
+                <div className="flex items-start gap-3">
+                  <Check className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
+                  <p className="text-slate-700 text-lg">
+                    <span className="font-semibold">Reproductible</span> - Rejouez la même donne à l'infini
+                  </p>
                 </div>
-                <div>
-                  <Link href="/distributions">
-                    <Button size="lg" className="text-xl px-10 py-7 bg-red-600 hover:bg-red-700">
-                      Découvrir les distributions
-                    </Button>
-                  </Link>
+                <div className="flex items-start gap-3">
+                  <Check className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
+                  <p className="text-slate-700 text-lg">
+                    <span className="font-semibold">Analyse</span> - Comparez vos résultats avec d'autres joueurs
+                  </p>
                 </div>
               </div>
+              <div>
+                <Link href="/distributions">
+                  <Button size="lg" className="text-xl px-10 py-7 bg-red-600 hover:bg-red-700">
+                    Découvrir les distributions
+                  </Button>
+                </Link>
+              </div>
+            </div>
 
-              <div className="flex items-center justify-center">
+            <div className="flex items-center justify-center">
+              <div className="relative w-full rounded-2xl overflow-hidden">
+                <div className="relative bg-gradient-to-br from-green-700 via-green-800 to-green-900">
+                  <div className="absolute inset-0 opacity-20" style={{
+                    backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
+                  }}></div>
+                  <div className="relative z-10 p-12">
                 <div className="relative w-full max-w-md">
                   <div className="bg-white/10 backdrop-blur-sm border-2 border-white/30 rounded-2xl p-8 space-y-6">
                     <div className="text-center space-y-2">
@@ -289,6 +285,8 @@ export default function Home() {
                         </div>
                       </div>
                     </div>
+                  </div>
+                </div>
                   </div>
                 </div>
               </div>
