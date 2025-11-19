@@ -47,12 +47,28 @@ export default function SettingsPage() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const { error } = await supabase
+      const { data: settings, error: fetchError } = await supabase
         .from('site_settings')
-        .update({ landing_page_mode: landingPageMode })
-        .eq('id', (await supabase.from('site_settings').select('id').limit(1).single()).data?.id);
+        .select('id')
+        .limit(1)
+        .maybeSingle();
 
-      if (error) throw error;
+      if (fetchError) throw fetchError;
+
+      if (!settings) {
+        const { error: insertError } = await supabase
+          .from('site_settings')
+          .insert({ landing_page_mode: landingPageMode });
+
+        if (insertError) throw insertError;
+      } else {
+        const { error: updateError } = await supabase
+          .from('site_settings')
+          .update({ landing_page_mode: landingPageMode })
+          .eq('id', settings.id);
+
+        if (updateError) throw updateError;
+      }
 
       toast({
         title: 'Succès',
