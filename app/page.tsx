@@ -371,7 +371,7 @@ export default function Home() {
         <div className="max-w-5xl mx-auto">
           <Card className="bg-white rounded-2xl p-12">
             <div className="grid lg:grid-cols-2 gap-12">
-              <div className="space-y-6 lg:col-span-2">
+              <div className="space-y-6">
                 <h2 className="text-4xl md:text-5xl font-bold text-slate-900">
                   Le Tarot français, un patrimoine ludique
                 </h2>
@@ -413,60 +413,63 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="relative lg:col-span-2">
-                <div className="relative bg-gradient-to-br from-green-700 via-green-800 to-green-900 rounded-2xl overflow-hidden p-8">
-                  <div className="absolute inset-0 opacity-20" style={{
-                    backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
-                  }}></div>
+              <div className="flex items-center justify-center">
+                <div className="relative w-full rounded-2xl overflow-hidden">
+                  <div className="relative bg-gradient-to-br from-green-700 via-green-800 to-green-900">
+                    <div className="absolute inset-0 opacity-20" style={{
+                      backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
+                    }}></div>
+                    <div className="relative z-10 p-8">
+                      <div className="relative w-full">
+                        <div className="bg-white/10 backdrop-blur-sm border-2 border-white/30 rounded-xl p-6 space-y-6">
+                          <h4 className="text-white text-xl font-bold">Le saviez-vous ?</h4>
+                          <ul className="space-y-3 text-white/90 text-base">
+                            <li className="flex items-start gap-2">
+                              <span className="text-yellow-400 mt-1">•</span>
+                              <span>Le Tarot utilise 78 cartes, dont 21 atouts numérotés</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <span className="text-yellow-400 mt-1">•</span>
+                              <span>L'Excuse est la seule carte sans valeur fixe</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <span className="text-yellow-400 mt-1">•</span>
+                              <span>Une partie se joue en 18 plis de 4 cartes</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <span className="text-yellow-400 mt-1">•</span>
+                              <span>Le preneur doit réaliser 41 points minimum avec le Petit au bout pour gagner une Petite</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <span className="text-yellow-400 mt-1">•</span>
+                              <span>Les figures et atouts valent plus de points que les petites cartes</span>
+                            </li>
+                          </ul>
 
-                  <div className="relative z-10 space-y-6">
-                    <div className="bg-white/10 backdrop-blur-sm border-2 border-white/30 rounded-xl p-6">
-                      <h4 className="text-white text-xl font-bold mb-3">Le saviez-vous ?</h4>
-                      <ul className="space-y-3 text-white/90 text-base">
-                        <li className="flex items-start gap-2">
-                          <span className="text-yellow-400 mt-1">•</span>
-                          <span>Le Tarot utilise 78 cartes, dont 21 atouts numérotés</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-yellow-400 mt-1">•</span>
-                          <span>L'Excuse est la seule carte sans valeur fixe</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-yellow-400 mt-1">•</span>
-                          <span>Une partie se joue en 18 plis de 4 cartes</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-yellow-400 mt-1">•</span>
-                          <span>Le preneur doit réaliser 41 points minimum avec le Petit au bout pour gagner une Petite</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-yellow-400 mt-1">•</span>
-                          <span>Les figures et atouts valent plus de points que les petites cartes</span>
-                        </li>
-                      </ul>
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-3">
-                      <div className="transform rotate-3">
-                        <img
-                          src="/img/cards/trumps/1.png"
-                          alt="Atout 1"
-                          className="w-full h-auto rounded-lg shadow-xl"
-                        />
-                      </div>
-                      <div className="transform -rotate-2 mt-4">
-                        <img
-                          src="/img/cards/trumps/21.png"
-                          alt="Atout 21"
-                          className="w-full h-auto rounded-lg shadow-xl"
-                        />
-                      </div>
-                      <div className="transform rotate-2">
-                        <img
-                          src="/img/cards/excuse.png"
-                          alt="Excuse"
-                          className="w-full h-auto rounded-lg shadow-xl"
-                        />
+                          <div className="grid grid-cols-3 gap-3 pt-4">
+                            <div className="transform rotate-3">
+                              <img
+                                src="/img/cards/trumps/1.png"
+                                alt="Atout 1"
+                                className="w-full h-auto rounded-lg shadow-xl"
+                              />
+                            </div>
+                            <div className="transform -rotate-2 mt-4">
+                              <img
+                                src="/img/cards/trumps/21.png"
+                                alt="Atout 21"
+                                className="w-full h-auto rounded-lg shadow-xl"
+                              />
+                            </div>
+                            <div className="transform rotate-2">
+                              <img
+                                src="/img/cards/excuse.png"
+                                alt="Excuse"
+                                className="w-full h-auto rounded-lg shadow-xl"
+                              />
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
