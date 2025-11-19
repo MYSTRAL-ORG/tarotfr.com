@@ -100,20 +100,34 @@ export function dealCards(deck: TarotCard[]): {
   return { hands, dog };
 }
 
-export function createInitialState(players: Player[]): TarotGameState {
-  const deck = createDeck();
-  const { hands, dog } = dealCards(deck);
+export function createInitialState(
+  players: Player[],
+  hands?: Record<number, TarotCard[]>,
+  dog?: TarotCard[]
+): TarotGameState {
+  let finalHands: Record<number, TarotCard[]>;
+  let finalDog: TarotCard[];
+
+  if (hands && dog) {
+    finalHands = hands;
+    finalDog = dog;
+  } else {
+    const deck = createDeck();
+    const dealt = dealCards(deck);
+    finalHands = dealt.hands;
+    finalDog = dealt.dog;
+  }
 
   const sortedHands: Record<number, TarotCard[]> = {};
   for (let i = 0; i < 4; i++) {
-    sortedHands[i] = sortHand(hands[i]);
+    sortedHands[i] = sortHand(finalHands[i]);
   }
 
   return {
     phase: 'DEALING',
     players,
     hands: sortedHands,
-    dog,
+    dog: finalDog,
     isDogRevealed: false,
     currentDealerSeat: 0,
     currentPlayerSeat: 1,

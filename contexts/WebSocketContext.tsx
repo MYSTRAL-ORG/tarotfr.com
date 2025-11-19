@@ -5,11 +5,18 @@ import { WSServerMessage, WSClientMessage, TarotGameState, Player, BidType } fro
 
 type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'reconnecting';
 
+interface DistributionInfo {
+  hashCode: string;
+  distributionNumber: string;
+  sequenceNumber: string;
+}
+
 interface WebSocketContextType {
   status: ConnectionStatus;
   gameState: TarotGameState | null;
   players: Player[];
   tableId: string | null;
+  distributionInfo: DistributionInfo | null;
   joinTable: (tableId: string, userId: string, displayName: string) => void;
   leaveTable: () => void;
   ready: () => void;
@@ -29,6 +36,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
   const [gameState, setGameState] = useState<TarotGameState | null>(null);
   const [players, setPlayers] = useState<Player[]>([]);
   const [tableId, setTableId] = useState<string | null>(null);
+  const [distributionInfo, setDistributionInfo] = useState<DistributionInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const wsRef = useRef<WebSocket | null>(null);
@@ -153,6 +161,14 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
       case 'TRICK_COMPLETE':
         break;
 
+      case 'DISTRIBUTION_INFO':
+        setDistributionInfo({
+          hashCode: message.payload.hashCode,
+          distributionNumber: message.payload.distributionNumber,
+          sequenceNumber: message.payload.sequenceNumber,
+        });
+        break;
+
       case 'GAME_PHASE_CHANGE':
         if (gameState) {
           setGameState({ ...gameState, phase: message.payload.phase });
@@ -233,6 +249,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
         gameState,
         players,
         tableId,
+        distributionInfo,
         joinTable,
         leaveTable,
         ready,

@@ -148,6 +148,7 @@ export interface WSServerMessage extends WSMessage {
     | 'CARD_PLAYED'
     | 'TRICK_COMPLETE'
     | 'GAME_PHASE_CHANGE'
+    | 'DISTRIBUTION_INFO'
     | 'ERROR'
     | 'PONG'
     | 'BOT_ADDED'

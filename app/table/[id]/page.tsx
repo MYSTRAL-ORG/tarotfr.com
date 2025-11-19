@@ -16,6 +16,7 @@ import { useWebSocket } from '@/contexts/WebSocketContext';
 import { BidType, Player } from '@/lib/types';
 import { toast } from 'sonner';
 import { ArrowLeft, Bot } from 'lucide-react';
+import { DistributionCode } from '@/components/game/DistributionCode';
 
 export default function TablePage() {
   const params = useParams();
@@ -25,6 +26,7 @@ export default function TablePage() {
     status,
     gameState,
     players,
+    distributionInfo,
     joinTable,
     ready,
     placeBid,
@@ -104,11 +106,19 @@ export default function TablePage() {
       <Navigation />
 
       <div className="container mx-auto px-4 py-6">
-        <div className="mb-4">
+        <div className="mb-4 flex items-center justify-between">
           <Button variant="ghost" onClick={handleLeave} className="text-white hover:bg-white/10">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Quitter la table
           </Button>
+
+          {distributionInfo && (
+            <DistributionCode
+              hashCode={distributionInfo.hashCode}
+              distributionNumber={distributionInfo.distributionNumber}
+              sequenceNumber={distributionInfo.sequenceNumber}
+            />
+          )}
         </div>
 
         {status !== 'connected' && (

@@ -21,6 +21,7 @@ import {
   chooseCardToPlay,
   BotDifficulty,
 } from '../lib/botPlayer';
+import { generateNewDistribution, sortHand } from '../lib/distributionSeeder';
 import { createClient } from '@supabase/supabase-js';
 
 interface ConnectedClient {
@@ -208,7 +209,7 @@ async function handleReady(ws: WebSocket) {
     });
 
     if (players.length === 4 && players.every(p => p.isReady)) {
-      startGame(client.tableId, players);
+      await startGame(client.tableId, players);
     }
   } catch (error) {
     console.error('Error in handleReady:', error);
@@ -322,20 +323,77 @@ function handlePlayCard(ws: WebSocket, payload: any) {
   }
 }
 
-function startGame(tableId: string, players: Player[]) {
-  const gameState = createInitialState(players);
-  tableGames.set(tableId, gameState);
+async function startGame(tableId: string, players: Player[]) {
+  try {
+    const distribution = generateNewDistribution();
 
-  const biddingState = startBidding(gameState);
-  tableGames.set(tableId, biddingState);
+    const { data: distData, error: distError } = await supabase
+      .from('card_distributions')
+      .insert({
+        distribution_number: distribution.metadata.distributionNumber.toString(),
+        sequence_number: distribution.metadata.sequenceNumber.toString(),
+        hash_code: distribution.metadata.hashCode,
+        deck_order: distribution.metadata.deckOrder,
+        used_count: 0,
+      })
+      .select()
+      .single();
 
-  broadcastGameState(tableId, biddingState);
-  broadcastToTable(tableId, {
-    type: 'GAME_PHASE_CHANGE',
-    payload: { phase: 'BIDDING' },
-  });
+    if (distError) {
+      console.error('Error creating distribution:', distError);
+      return;
+    }
 
-  executeBotTurn(tableId, biddingState);
+    const sortedHands: Record<number, any> = {};
+    for (let i = 0; i < 4; i++) {
+      sortedHands[i] = sortHand(distribution.hands[i]);
+    }
+
+    const gameState = createInitialState(players, sortedHands, distribution.dog);
+    tableGames.set(tableId, gameState);
+
+    const biddingState = startBidding(gameState);
+    tableGames.set(tableId, biddingState);
+
+    broadcastToTable(tableId, {
+      type: 'DISTRIBUTION_INFO',
+      payload: {
+        hashCode: distribution.metadata.hashCode,
+        distributionNumber: distribution.metadata.distributionNumber.toString(),
+        sequenceNumber: distribution.metadata.sequenceNumber.toString(),
+      },
+    });
+
+    broadcastGameState(tableId, biddingState);
+    broadcastToTable(tableId, {
+      type: 'GAME_PHASE_CHANGE',
+      payload: { phase: 'BIDDING' },
+    });
+
+    const { error: gameError } = await supabase
+      .from('games')
+      .insert({
+        table_id: tableId,
+        status: 'BIDDING',
+        current_dealer_seat: 0,
+        current_player_seat: 1,
+        distribution_id: distData.id,
+        game_state: biddingState,
+      });
+
+    if (gameError) {
+      console.error('Error creating game:', gameError);
+    }
+
+    await supabase
+      .from('card_distributions')
+      .update({ used_count: 1 })
+      .eq('id', distData.id);
+
+    executeBotTurn(tableId, biddingState);
+  } catch (error) {
+    console.error('Error in startGame:', error);
+  }
 }
 
 function handleDisconnect(ws: WebSocket) {
