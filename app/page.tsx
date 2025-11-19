@@ -63,7 +63,7 @@ export default function Home() {
 
             <div className="relative z-10 grid lg:grid-cols-2 gap-8 p-12">
               <div className="flex flex-col justify-center space-y-6">
-                <h1 className="text-6xl md:text-7xl font-bold text-white leading-tight">
+                <h1 className="text-6xl font-bold text-white leading-tight">
                   Jouez au Tarot en ligne
                 </h1>
                 <p className="text-2xl text-white/90">
