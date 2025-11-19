@@ -14,7 +14,8 @@ import {
   LogOut,
   Menu,
   X,
-  Home
+  Home,
+  Shuffle
 } from 'lucide-react';
 
 export default function OperationLayout({
@@ -53,6 +54,7 @@ export default function OperationLayout({
 
   const menuItems = [
     { icon: LayoutDashboard, label: 'Dashboard', href: '/operation/dashboard' },
+    { icon: Shuffle, label: 'Générer Seeds', href: '/operation/seed' },
     { icon: Settings, label: 'Paramètres', href: '/operation/settings' },
     { icon: Users, label: 'Membres', href: '/operation/members' },
     { icon: Bot, label: 'Bots', href: '/operation/bots' },
