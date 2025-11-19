@@ -2,11 +2,11 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Lock } from 'lucide-react';
 
 export default function OperationLogin() {
   const router = useRouter();
@@ -21,7 +21,7 @@ export default function OperationLogin() {
     setLoading(true);
 
     if (username === 'admin' && password === '#83@InesAylanAliceLucie') {
-      sessionStorage.setItem('admin_authenticated', 'true');
+      localStorage.setItem('admin_authenticated', 'true');
       router.push('/operation/dashboard');
     } else {
       setError('Identifiants incorrects');
@@ -30,11 +30,20 @@ export default function OperationLogin() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-700 via-green-800 to-green-900 relative overflow-hidden">
+      <div className="absolute inset-0 opacity-20" style={{
+        backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
+      }}></div>
+      <Card className="w-full max-w-md relative z-10">
         <CardHeader className="space-y-1">
           <div className="flex items-center justify-center mb-4">
-            <Lock className="h-12 w-12 text-purple-600" />
+            <Image
+              src="/img/icon.png"
+              alt="Tarot Icon"
+              width={60}
+              height={60}
+              className="object-contain"
+            />
           </div>
           <CardTitle className="text-2xl text-center">Administration</CardTitle>
           <CardDescription className="text-center">

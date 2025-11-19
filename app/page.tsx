@@ -12,8 +12,11 @@ import { supabase } from '@/lib/supabase';
 export default function Home() {
   const [landingMode, setLandingMode] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
+    const adminAuth = localStorage.getItem('admin_authenticated');
+    setIsAdmin(adminAuth === 'true');
     checkLandingMode();
   }, []);
 
@@ -39,7 +42,7 @@ export default function Home() {
     return null;
   }
 
-  if (landingMode) {
+  if (landingMode && !isAdmin) {
     return <LandingPage />;
   }
 

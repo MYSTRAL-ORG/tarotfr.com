@@ -28,7 +28,7 @@ export default function OperationLayout({
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   useEffect(() => {
-    const auth = sessionStorage.getItem('admin_authenticated');
+    const auth = localStorage.getItem('admin_authenticated');
     if (pathname !== '/operation' && auth !== 'true') {
       router.push('/operation');
     } else {
@@ -38,7 +38,7 @@ export default function OperationLayout({
   }, [pathname, router]);
 
   const handleLogout = () => {
-    sessionStorage.removeItem('admin_authenticated');
+    localStorage.removeItem('admin_authenticated');
     router.push('/operation');
   };
 
