@@ -50,7 +50,7 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
       <Navigation />
 
-      <section className="container mx-auto px-4 py-20">
+      <section className="container mx-auto px-4 py-4">
         <div className="max-w-5xl mx-auto">
           <div className="relative bg-gradient-to-br from-green-700 via-green-800 to-green-900 rounded-2xl overflow-hidden">
             <div className="absolute inset-0 opacity-20" style={{
@@ -132,68 +132,68 @@ export default function Home() {
       <section className="container mx-auto px-4 py-16">
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
           <Card className="overflow-hidden hover:shadow-xl transition-shadow">
-            <div className="relative bg-gradient-to-br from-green-700 via-green-800 to-green-900 p-4">
+            <div className="relative bg-gradient-to-br from-green-700 via-green-800 to-green-900 p-6">
               <div className="absolute inset-0 opacity-20" style={{
                 backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
               }}></div>
-              <div className="relative w-14 h-14 bg-white/20 backdrop-blur-sm text-white rounded-full flex items-center justify-center mx-auto">
-                <Users className="w-7 h-7" />
+              <div className="relative w-16 h-16 bg-white/20 backdrop-blur-sm text-white rounded-full flex items-center justify-center mx-auto">
+                <Users className="w-9 h-9" />
               </div>
             </div>
-            <div className="p-6 text-center space-y-3">
-              <h3 className="font-semibold text-xl">Multijoueur</h3>
-              <p className="text-slate-600 text-base">
+            <div className="p-8 text-center space-y-4">
+              <h3 className="font-bold text-2xl">Multijoueur</h3>
+              <p className="text-slate-600 text-lg font-medium">
                 Jouez avec 3 autres joueurs du monde entier en temps réel
               </p>
             </div>
           </Card>
 
           <Card className="overflow-hidden hover:shadow-xl transition-shadow">
-            <div className="relative bg-gradient-to-br from-green-700 via-green-800 to-green-900 p-4">
+            <div className="relative bg-gradient-to-br from-green-700 via-green-800 to-green-900 p-6">
               <div className="absolute inset-0 opacity-20" style={{
                 backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
               }}></div>
-              <div className="relative w-14 h-14 bg-white/20 backdrop-blur-sm text-white rounded-full flex items-center justify-center mx-auto">
-                <Clock className="w-7 h-7" />
+              <div className="relative w-16 h-16 bg-white/20 backdrop-blur-sm text-white rounded-full flex items-center justify-center mx-auto">
+                <Clock className="w-9 h-9" />
               </div>
             </div>
-            <div className="p-6 text-center space-y-3">
-              <h3 className="font-semibold text-xl">Temps réel</h3>
-              <p className="text-slate-600 text-base">
+            <div className="p-8 text-center space-y-4">
+              <h3 className="font-bold text-2xl">Temps réel</h3>
+              <p className="text-slate-600 text-lg font-medium">
                 Synchronisation instantanée pour une expérience de jeu fluide
               </p>
             </div>
           </Card>
 
           <Card className="overflow-hidden hover:shadow-xl transition-shadow">
-            <div className="relative bg-gradient-to-br from-green-700 via-green-800 to-green-900 p-4">
+            <div className="relative bg-gradient-to-br from-green-700 via-green-800 to-green-900 p-6">
               <div className="absolute inset-0 opacity-20" style={{
                 backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
               }}></div>
-              <div className="relative w-14 h-14 bg-white/20 backdrop-blur-sm text-white rounded-full flex items-center justify-center mx-auto">
-                <Spade className="w-7 h-7" />
+              <div className="relative w-16 h-16 bg-white/20 backdrop-blur-sm text-white rounded-full flex items-center justify-center mx-auto">
+                <Spade className="w-9 h-9" />
               </div>
             </div>
-            <div className="p-6 text-center space-y-3">
-              <h3 className="font-semibold text-xl">Règles françaises</h3>
-              <p className="text-slate-600 text-base">
+            <div className="p-8 text-center space-y-4">
+              <h3 className="font-bold text-2xl">Règles françaises</h3>
+              <p className="text-slate-600 text-lg font-medium">
                 Tarot à 4 joueurs selon les règles officielles françaises
               </p>
             </div>
           </Card>
 
           <Card className="overflow-hidden hover:shadow-xl transition-shadow">
-            <div className="relative bg-gradient-to-br from-green-700 via-green-800 to-green-900 p-4">
+            <div className="relative bg-gradient-to-br from-green-700 via-green-800 to-green-900 p-6">
               <div className="absolute inset-0 opacity-20" style={{
                 backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
               }}></div>
-              <div className="relative w-14 h-14 bg-white/20 backdrop-blur-sm text-white rounded-full flex items-center justify-center mx-auto">
-                <Shield className="w-7 h-7" />
+              <div className="relative w-16 h-16 bg-white/20 backdrop-blur-sm text-white rounded-full flex items-center justify-center mx-auto">
+                <Shield className="w-9 h-9" />
               </div>
             </div>
-            <div className="p-6 text-center space-y-3">
-              <h3 className="font-semibold text-xl">100% gratuit</h3>
-              <p className="text-slate-600 text-base">
+            <div className="p-8 text-center space-y-4">
+              <h3 className="font-bold text-2xl">100% gratuit</h3>
+              <p className="text-slate-600 text-lg font-medium">
                 Jouez gratuitement, sans publicité ni limitation
               </p>
             </div>
