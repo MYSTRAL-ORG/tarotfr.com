@@ -12,7 +12,10 @@ export default function OperationSeedPage() {
   const [generating, setGenerating] = useState(false);
   const [count, setCount] = useState(100);
   const [lastGeneration, setLastGeneration] = useState<{
-    count: number;
+    generated: number;
+    duplicates: number;
+    failed: number;
+    requested: number;
     timestamp: string;
   } | null>(null);
 
@@ -34,9 +37,19 @@ export default function OperationSeedPage() {
       const data = await response.json();
 
       if (response.ok) {
-        toast.success(`${data.generated} distributions générées avec succès !`);
+        let message = `${data.generated} distribution${data.generated > 1 ? 's' : ''} générée${data.generated > 1 ? 's' : ''} avec succès !`;
+        if (data.duplicates > 0) {
+          message += ` (${data.duplicates} doublon${data.duplicates > 1 ? 's' : ''} ignoré${data.duplicates > 1 ? 's' : ''})`;
+        }
+        if (data.failed > 0) {
+          message += ` (${data.failed} échec${data.failed > 1 ? 's' : ''})`;
+        }
+        toast.success(message);
         setLastGeneration({
-          count: data.generated,
+          generated: data.generated,
+          duplicates: data.duplicates,
+          failed: data.failed,
+          requested: data.requested,
           timestamp: new Date().toISOString(),
         });
       } else {
@@ -125,14 +138,25 @@ export default function OperationSeedPage() {
             <div className="bg-green-50 border border-green-200 rounded-lg p-4">
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5" />
-                <div>
+                <div className="flex-1">
                   <p className="font-semibold text-green-900">
                     Génération réussie
                   </p>
                   <p className="text-sm text-green-700 mt-1">
-                    {lastGeneration.count} distributions générées le{' '}
+                    {lastGeneration.generated} distribution{lastGeneration.generated > 1 ? 's' : ''} générée{lastGeneration.generated > 1 ? 's' : ''} le{' '}
                     {new Date(lastGeneration.timestamp).toLocaleString('fr-FR')}
                   </p>
+                  {(lastGeneration.duplicates > 0 || lastGeneration.failed > 0) && (
+                    <div className="mt-2 text-xs text-green-600 space-y-1">
+                      {lastGeneration.duplicates > 0 && (
+                        <p>• {lastGeneration.duplicates} doublon{lastGeneration.duplicates > 1 ? 's' : ''} ignoré{lastGeneration.duplicates > 1 ? 's' : ''}</p>
+                      )}
+                      {lastGeneration.failed > 0 && (
+                        <p>• {lastGeneration.failed} échec{lastGeneration.failed > 1 ? 's' : ''}</p>
+                      )}
+                      <p className="font-medium">• Total demandé: {lastGeneration.requested}</p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

@@ -21,6 +21,7 @@ export async function POST(request: NextRequest) {
     const distributions = [];
     let generated = 0;
     let duplicates = 0;
+    let failed = 0;
 
     for (let i = 0; i < count; i++) {
       const distribution = generateNewDistribution();
@@ -35,7 +36,7 @@ export async function POST(request: NextRequest) {
           used_count: 0,
         })
         .select()
-        .maybeSingle();
+        .single();
 
       if (error) {
         if (error.code === '23505') {
@@ -43,23 +44,23 @@ export async function POST(request: NextRequest) {
           continue;
         }
         console.error('Error creating distribution:', error);
+        failed++;
         continue;
       }
 
-      if (data) {
-        generated++;
-        distributions.push({
-          id: data.id,
-          distributionNumber: data.distribution_number,
-          sequenceNumber: data.sequence_number,
-          hashCode: data.hash_code,
-        });
-      }
+      generated++;
+      distributions.push({
+        id: data.id,
+        distributionNumber: data.distribution_number,
+        sequenceNumber: data.sequence_number,
+        hashCode: data.hash_code,
+      });
     }
 
     return NextResponse.json({
       generated,
       duplicates,
+      failed,
       requested: count,
       distributions: distributions.slice(0, 10),
     });
