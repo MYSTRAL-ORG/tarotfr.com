@@ -12,14 +12,18 @@ export async function POST(request: NextRequest) {
     // Generate a new distribution automatically for this table
     const distribution = generateNewDistribution();
 
+    // Convert BigInt to string for JSON serialization
+    const distributionNumberStr = distribution.metadata.distributionNumber.toString();
+    const sequenceNumberStr = distribution.metadata.sequenceNumber.toString();
+
     // Insert the distribution
     const { data: distributionData, error: distError } = await supabase
       .from('card_distributions')
       .insert({
-        distribution_number: distribution.metadata.distributionNumber.toString(),
-        sequence_number: distribution.metadata.sequenceNumber.toString(),
+        distribution_number: distributionNumberStr,
+        sequence_number: sequenceNumberStr,
         hash_code: distribution.metadata.hashCode,
-        deck_order: distribution.metadata.deckOrder,
+        deck_order: JSON.parse(JSON.stringify(distribution.metadata.deckOrder)),
         used_count: 0,
       })
       .select()
