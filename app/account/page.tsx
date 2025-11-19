@@ -174,7 +174,7 @@ export default function AccountPage() {
           <div className="w-full max-w-5xl mx-auto">
             <Tabs defaultValue="login" className="w-full">
               <div className="mb-6">
-                <TabsList className="grid w-full grid-cols-3 h-auto bg-white rounded-xl border-2 border-slate-200 p-2">
+                <TabsList className="grid w-full grid-cols-3 gap-2 h-auto bg-white rounded-xl border-2 border-slate-200 p-2">
                   <TabsTrigger
                     value="login"
                     className="flex items-center justify-center gap-2 py-4 rounded-lg transition-all data-[state=active]:bg-red-600 data-[state=active]:text-white data-[state=inactive]:bg-slate-100"
