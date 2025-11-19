@@ -369,115 +369,106 @@ export default function Home() {
 
       <section className="container mx-auto px-4" style={{ paddingTop: '2rem', paddingBottom: '4rem' }}>
         <div className="max-w-5xl mx-auto">
-          <Card className="bg-white rounded-2xl p-12">
-            <div className="space-y-8">
+          <Card className="overflow-hidden hover:border-red-600 transition-colors border-4 border-transparent rounded-2xl">
+          <div className="grid lg:grid-cols-2 gap-8">
+            <div className="flex flex-col justify-center space-y-6 p-12">
               <h2 className="text-4xl md:text-5xl font-bold text-slate-900">
-                Le Tarot français, un patrimoine ludique
+                Le Tarot français
               </h2>
-
-              <div className="grid lg:grid-cols-2 gap-12">
-                <div className="space-y-6">
-                  <div className="space-y-4">
-                    <h3 className="text-2xl font-bold text-slate-900">
-                      Origines historiques
-                    </h3>
-                    <p className="text-lg text-slate-700 leading-relaxed">
-                      Le Tarot trouve ses origines en Italie au XVe siècle, où il était initialement un jeu de cartes aristocratique. Il s'est progressivement répandu en France à partir du XVIe siècle, où il a connu une évolution majeure pour devenir le jeu que nous connaissons aujourd'hui.
-                    </p>
-                  </div>
-
-                  <div className="space-y-4">
-                    <h3 className="text-2xl font-bold text-slate-900">
-                      Le Tarot en France
-                    </h3>
-                    <p className="text-lg text-slate-700 leading-relaxed">
-                      En France, le Tarot s'est particulièrement développé au XVIIIe siècle et est devenu un véritable phénomène culturel au XXe siècle. Avec ses 78 cartes dont 21 atouts, l'Excuse, et quatre couleurs traditionnelles, le Tarot français se distingue par sa richesse stratégique et la complexité de ses annonces. Aujourd'hui, il reste l'un des jeux de cartes les plus populaires dans l'Hexagone, pratiqué aussi bien en famille qu'en compétition.
-                    </p>
-                  </div>
-
-                  <div className="space-y-4">
-                    <h3 className="text-2xl font-bold text-slate-900">
-                      Un jeu de stratégie et de convivialité
-                    </h3>
-                    <p className="text-lg text-slate-700 leading-relaxed">
-                      Le Tarot combine habilement hasard et réflexion, mémoire et psychologie. Se jouant traditionnellement à quatre, il oppose un preneur contre trois défenseurs, créant une dynamique unique où alliance et confrontation se mêlent à chaque pli. Cette richesse tactique en fait un jeu inépuisable qui continue de passionner des millions de joueurs.
-                    </p>
-                  </div>
-
-                  <div className="pt-4">
-                    <Link href="/regles">
-                      <Button size="lg" className="text-lg px-8 py-6 bg-red-600 hover:bg-red-700">
-                        <FileText className="mr-2 h-5 w-5" />
-                        Consulter les règles
-                      </Button>
-                    </Link>
-                  </div>
+              <p className="text-xl text-slate-700 leading-relaxed">
+                Un patrimoine ludique riche d'une histoire de plusieurs siècles, mêlant tradition et stratégie dans un jeu de cartes unique au monde.
+              </p>
+              <div className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <Check className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
+                  <p className="text-slate-700 text-lg">
+                    <span className="font-semibold">Origines italiennes</span> - Né au XVe siècle dans l'aristocratie
+                  </p>
                 </div>
+                <div className="flex items-start gap-3">
+                  <Check className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
+                  <p className="text-slate-700 text-lg">
+                    <span className="font-semibold">Tradition française</span> - Développé depuis le XVIe siècle
+                  </p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Check className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
+                  <p className="text-slate-700 text-lg">
+                    <span className="font-semibold">Jeu de stratégie</span> - Alliance, réflexion et psychologie
+                  </p>
+                </div>
+              </div>
+              <div>
+                <Link href="/regles">
+                  <Button size="lg" className="text-xl px-10 py-7 bg-red-600 hover:bg-red-700">
+                    Consulter les règles
+                  </Button>
+                </Link>
+              </div>
+            </div>
 
-              <div className="flex items-center justify-center">
-                <div className="relative w-full rounded-2xl overflow-hidden">
-                  <div className="relative bg-gradient-to-br from-green-700 via-green-800 to-green-900">
-                    <div className="absolute inset-0 opacity-20" style={{
-                      backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
-                    }}></div>
-                    <div className="relative z-10 p-8">
-                      <div className="relative w-full">
-                        <div className="bg-white/10 backdrop-blur-sm border-2 border-white/30 rounded-xl p-6 space-y-6">
-                          <h4 className="text-white text-xl font-bold">Le saviez-vous ?</h4>
-                          <ul className="space-y-3 text-white/90 text-base">
-                            <li className="flex items-start gap-2">
-                              <span className="text-yellow-400 mt-1">•</span>
-                              <span>Le Tarot utilise 78 cartes, dont 21 atouts numérotés</span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                              <span className="text-yellow-400 mt-1">•</span>
-                              <span>L'Excuse est la seule carte sans valeur fixe</span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                              <span className="text-yellow-400 mt-1">•</span>
-                              <span>Une partie se joue en 18 plis de 4 cartes</span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                              <span className="text-yellow-400 mt-1">•</span>
-                              <span>Le preneur doit réaliser 41 points minimum avec le Petit au bout pour gagner une Petite</span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                              <span className="text-yellow-400 mt-1">•</span>
-                              <span>Les figures et atouts valent plus de points que les petites cartes</span>
-                            </li>
-                          </ul>
-
-                          <div className="grid grid-cols-3 gap-3 pt-4">
-                            <div className="transform rotate-3">
-                              <img
-                                src="/img/cards/trumps/1.png"
-                                alt="Atout 1"
-                                className="w-full h-auto rounded-lg shadow-xl"
-                              />
-                            </div>
-                            <div className="transform -rotate-2 mt-4">
-                              <img
-                                src="/img/cards/trumps/21.png"
-                                alt="Atout 21"
-                                className="w-full h-auto rounded-lg shadow-xl"
-                              />
-                            </div>
-                            <div className="transform rotate-2">
-                              <img
-                                src="/img/cards/excuse.png"
-                                alt="Excuse"
-                                className="w-full h-auto rounded-lg shadow-xl"
-                              />
-                            </div>
-                          </div>
+            <div className="flex items-center justify-center p-12">
+              <div className="relative w-full rounded-2xl overflow-hidden">
+                <div className="relative bg-gradient-to-br from-green-700 via-green-800 to-green-900">
+                  <div className="absolute inset-0 opacity-20" style={{
+                    backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
+                  }}></div>
+                  <div className="relative z-10 p-12">
+                <div className="relative w-full max-w-md">
+                  <div className="bg-white/10 backdrop-blur-sm border-2 border-white/30 rounded-2xl p-8 space-y-6">
+                    <div className="text-center space-y-2">
+                      <div className="text-white/70 text-sm font-medium">Le saviez-vous ?</div>
+                      <div className="text-white text-2xl font-bold">78 cartes uniques</div>
+                    </div>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between text-white/90 bg-white/5 rounded-lg p-4">
+                        <span className="text-sm">Atouts numérotés</span>
+                        <span className="font-bold text-lg flex items-center gap-2">
+                          <Trophy className="w-5 h-5 text-yellow-400" />
+                          21
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="bg-white/5 rounded-lg p-3 text-center">
+                          <div className="text-white/70 text-xs mb-1">Plis par partie</div>
+                          <div className="text-white font-bold">18</div>
                         </div>
+                        <div className="bg-white/5 rounded-lg p-3 text-center">
+                          <div className="text-white/70 text-xs mb-1">Joueurs</div>
+                          <div className="text-white font-bold">4</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-3 gap-3 pt-2">
+                      <div className="transform rotate-3">
+                        <img
+                          src="/img/cards/trumps/1.png"
+                          alt="Atout 1"
+                          className="w-full h-auto rounded-lg shadow-xl"
+                        />
+                      </div>
+                      <div className="transform -rotate-2">
+                        <img
+                          src="/img/cards/trumps/21.png"
+                          alt="Atout 21"
+                          className="w-full h-auto rounded-lg shadow-xl"
+                        />
+                      </div>
+                      <div className="transform rotate-2">
+                        <img
+                          src="/img/cards/excuse.png"
+                          alt="Excuse"
+                          className="w-full h-auto rounded-lg shadow-xl"
+                        />
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
+                  </div>
+                </div>
               </div>
             </div>
+          </div>
           </Card>
         </div>
       </section>
