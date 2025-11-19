@@ -160,37 +160,47 @@ export default function AccountPage() {
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
       <Navigation />
 
-      <div className="flex items-center justify-center px-4 py-12 min-h-[calc(100vh-80px)]">
-        <div className="w-full max-w-5xl">
-          <Tabs defaultValue="login" className="w-full">
-            <div className="mb-6">
-              <TabsList className="grid w-full grid-cols-3 h-auto bg-white rounded-xl border-2 border-slate-200 p-2">
-                <TabsTrigger
-                  value="login"
-                  className="flex items-center justify-center gap-2 py-4 rounded-lg transition-all data-[state=active]:bg-red-600 data-[state=active]:text-white"
-                >
-                  <LogIn className="w-5 h-5" />
-                  <span className="font-semibold">Connexion</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="register"
-                  className="flex items-center justify-center gap-2 py-4 rounded-lg transition-all data-[state=active]:bg-red-600 data-[state=active]:text-white"
-                >
-                  <UserPlus className="w-5 h-5" />
-                  <span className="font-semibold">Inscription</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="guest"
-                  className="flex items-center justify-center gap-2 py-4 rounded-lg transition-all data-[state=active]:bg-red-600 data-[state=active]:text-white"
-                >
-                  <UserCheck className="w-5 h-5" />
-                  <span className="font-semibold">Invité</span>
-                </TabsTrigger>
-              </TabsList>
-            </div>
+      <div className="container mx-auto px-4 py-12">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h1 className="text-5xl font-bold mb-4 text-slate-900">
+              Connexion
+            </h1>
+            <p className="text-xl text-slate-600">
+              Accédez à votre compte ou créez-en un nouveau
+            </p>
+          </div>
 
-            <TabsContent value="guest" className="mt-0">
-              <div className="grid md:grid-cols-2 gap-0 rounded-xl overflow-hidden shadow-2xl bg-white h-[600px]">
+          <div className="w-full max-w-5xl mx-auto">
+            <Tabs defaultValue="login" className="w-full">
+              <div className="mb-6">
+                <TabsList className="grid w-full grid-cols-3 h-auto bg-white rounded-xl border-2 border-slate-200 p-2">
+                  <TabsTrigger
+                    value="login"
+                    className="flex items-center justify-center gap-2 py-4 rounded-lg transition-all data-[state=active]:bg-red-600 data-[state=active]:text-white data-[state=inactive]:bg-slate-100"
+                  >
+                    <LogIn className="w-5 h-5" />
+                    <span className="font-semibold">Connexion</span>
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="register"
+                    className="flex items-center justify-center gap-2 py-4 rounded-lg transition-all data-[state=active]:bg-red-600 data-[state=active]:text-white data-[state=inactive]:bg-slate-100"
+                  >
+                    <UserPlus className="w-5 h-5" />
+                    <span className="font-semibold">Inscription</span>
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="guest"
+                    className="flex items-center justify-center gap-2 py-4 rounded-lg transition-all data-[state=active]:bg-red-600 data-[state=active]:text-white data-[state=inactive]:bg-slate-100"
+                  >
+                    <UserCheck className="w-5 h-5" />
+                    <span className="font-semibold">Invité</span>
+                  </TabsTrigger>
+                </TabsList>
+              </div>
+
+              <TabsContent value="guest" className="mt-0">
+                <div className="grid md:grid-cols-2 gap-0 rounded-xl overflow-hidden bg-white h-[600px]">
                 <div className="relative bg-gradient-to-br from-green-700 via-green-800 to-green-900 p-12 flex flex-col items-center justify-center">
                   <div className="absolute inset-0 opacity-20" style={{
                     backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
@@ -223,8 +233,8 @@ export default function AccountPage() {
               </div>
             </TabsContent>
 
-            <TabsContent value="login" className="mt-0">
-              <div className="grid md:grid-cols-2 gap-0 rounded-xl overflow-hidden shadow-2xl bg-white h-[600px]">
+              <TabsContent value="login" className="mt-0">
+                <div className="grid md:grid-cols-2 gap-0 rounded-xl overflow-hidden bg-white h-[600px]">
                 <div className="relative bg-gradient-to-br from-green-700 via-green-800 to-green-900 p-12 flex flex-col items-center justify-center">
                   <div className="absolute inset-0 opacity-20" style={{
                     backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
@@ -280,8 +290,8 @@ export default function AccountPage() {
               </div>
             </TabsContent>
 
-            <TabsContent value="register" className="mt-0">
-              <div className="grid md:grid-cols-2 gap-0 rounded-xl overflow-hidden shadow-2xl bg-white h-[600px]">
+              <TabsContent value="register" className="mt-0">
+                <div className="grid md:grid-cols-2 gap-0 rounded-xl overflow-hidden bg-white h-[600px]">
                 <div className="relative bg-gradient-to-br from-green-700 via-green-800 to-green-900 p-12 flex flex-col items-center justify-center">
                   <div className="absolute inset-0 opacity-20" style={{
                     backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
@@ -346,10 +356,11 @@ export default function AccountPage() {
                       S'inscrire
                     </Button>
                   </form>
+                  </div>
                 </div>
-              </div>
-            </TabsContent>
-          </Tabs>
+              </TabsContent>
+            </Tabs>
+          </div>
         </div>
       </div>
     </div>
