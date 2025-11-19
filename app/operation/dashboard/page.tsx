@@ -47,7 +47,7 @@ export default function DashboardPage() {
       .select('id, used_count, created_at');
 
     const { data: games } = await supabase
-      .from('game_tables')
+      .from('tables')
       .select('id, status, created_at');
 
     if (distributions) {
