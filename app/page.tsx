@@ -130,7 +130,17 @@ export default function Home() {
       </section>
 
       <section className="container mx-auto px-4 py-16">
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+        <div className="max-w-6xl mx-auto space-y-12">
+          <div className="text-center space-y-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-900">
+              Pourquoi jouer sur TarotFR ?
+            </h2>
+            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+              La plateforme de référence pour jouer au Tarot en ligne. Une expérience de jeu optimale avec des fonctionnalités pensées pour les joueurs.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card className="overflow-hidden hover:shadow-xl transition-shadow">
             <div className="relative bg-gradient-to-br from-green-700 via-green-800 to-green-900 p-6 border-b-4 border-red-600">
               <div className="absolute inset-0 opacity-20" style={{
@@ -198,6 +208,7 @@ export default function Home() {
               </p>
             </div>
           </Card>
+          </div>
         </div>
       </section>
 

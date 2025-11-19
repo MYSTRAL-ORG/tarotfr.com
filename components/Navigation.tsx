@@ -69,7 +69,7 @@ export function Navigation() {
           />
           <div className="h-10 w-px bg-white/30 ml-2"></div>
           <div className="text-white/90 text-sm font-medium">
-            <span className="text-green-300">{onlinePlayers}</span> joueurs en ligne
+            <span className="text-green-300 mr-1">{onlinePlayers}</span> joueurs en ligne
           </div>
         </Link>
 
