@@ -185,9 +185,9 @@ export default function Home() {
               </div>
             </div>
             <div className="p-8 text-center space-y-4">
-              <h3 className="font-bold text-2xl">Règles françaises</h3>
+              <h3 className="font-bold text-2xl">Règles</h3>
               <p className="text-slate-600 text-lg font-medium">
-                Tarot à 4 joueurs selon les règles officielles françaises
+                Tarot à 4 joueurs selon les <a href="https://wcgf.com/fr/tarot/rules" target="_blank" rel="noopener noreferrer" className="text-green-700 hover:text-green-800 underline">règles officielles françaises</a>
               </p>
             </div>
           </Card>
@@ -214,8 +214,9 @@ export default function Home() {
 
       <section className="container mx-auto px-4" style={{ paddingTop: '2rem', paddingBottom: '2rem' }}>
         <div className="max-w-5xl mx-auto">
+          <Card className="overflow-hidden hover:shadow-xl transition-shadow">
           <div className="grid lg:grid-cols-2 gap-8">
-            <div className="flex flex-col justify-center space-y-6 p-8">
+            <div className="flex flex-col justify-center space-y-6 p-12">
               <h2 className="text-4xl md:text-5xl font-bold text-slate-900">
                 Distributions
               </h2>
@@ -292,6 +293,7 @@ export default function Home() {
               </div>
             </div>
           </div>
+          </Card>
         </div>
       </section>
 
