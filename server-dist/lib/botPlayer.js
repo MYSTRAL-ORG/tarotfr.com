@@ -150,6 +150,13 @@ function findWinningCard(trick) {
     const sameSuitCards = trick.filter(pc => pc.card.suit === leadSuit);
     return sameSuitCards.reduce((highest, current) => getRankValue(current.card.rank) > getRankValue(highest.card.rank) ? current : highest).card;
 }
+function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
 function createBotPlayer(seatIndex, difficulty) {
     const botNames = {
         EASY: ['Bot Débutant', 'Bot Apprenti', 'Bot Novice', 'Bot Junior'],
@@ -158,9 +165,10 @@ function createBotPlayer(seatIndex, difficulty) {
     };
     const names = botNames[difficulty];
     const name = names[Math.floor(Math.random() * names.length)];
+    const botId = generateUUID();
     return {
-        id: `bot_${Date.now()}_${seatIndex}`,
-        userId: `bot_${Date.now()}_${seatIndex}`,
+        id: botId,
+        userId: botId,
         displayName: name,
         seatIndex,
         isReady: true,
