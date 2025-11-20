@@ -214,4 +214,19 @@
       z-index: 1;
     }
   }
+
+  @keyframes cardFly {
+    0% {
+      transform: translate(var(--start-x), var(--start-y)) scale(0.8) rotate(-10deg);
+      opacity: 1;
+    }
+    100% {
+      transform: translate(0, 0) scale(1) rotate(0deg);
+      opacity: 1;
+    }
+  }
+
+  .animate-card-fly {
+    animation: cardFly 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
 }

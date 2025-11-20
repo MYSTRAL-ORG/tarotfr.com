@@ -1,7 +1,7 @@
 import { PlayedCard, Player } from '@/lib/types';
 import { TarotCard } from './TarotCard';
 import { cn } from '@/lib/utils';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 interface TrickAreaProps {
   cards: PlayedCard[];
@@ -9,10 +9,48 @@ interface TrickAreaProps {
   winnerSeat?: number | null;
   players?: Player[];
   currentPlayerSeat?: number;
+  onAnimationComplete?: () => void;
 }
 
-export function TrickArea({ cards, className, winnerSeat, players = [], currentPlayerSeat }: TrickAreaProps) {
+interface AnimatingCard {
+  playedCard: PlayedCard;
+  startPosition: { x: number; y: number };
+  finalIndex: number;
+}
+
+export function TrickArea({ cards, className, winnerSeat, players = [], currentPlayerSeat, onAnimationComplete }: TrickAreaProps) {
   const [animatingToWinner, setAnimatingToWinner] = useState(false);
+  const [animatingCards, setAnimatingCards] = useState<AnimatingCard[]>([]);
+  const [settledCards, setSettledCards] = useState<PlayedCard[]>([]);
+  const prevCardsLengthRef = useRef(0);
+  const trickAreaRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (cards.length === 0) {
+      setSettledCards([]);
+      setAnimatingCards([]);
+      prevCardsLengthRef.current = 0;
+      return;
+    }
+
+    if (cards.length > prevCardsLengthRef.current) {
+      const newCard = cards[cards.length - 1];
+      const startPos = getPlayerCardStartPosition(newCard.playerSeat);
+
+      setAnimatingCards(prev => [...prev, {
+        playedCard: newCard,
+        startPosition: startPos,
+        finalIndex: cards.length - 1
+      }]);
+
+      setTimeout(() => {
+        setSettledCards(prev => [...prev, newCard]);
+        setAnimatingCards(prev => prev.filter(ac => ac.playedCard !== newCard));
+      }, 600);
+    }
+
+    prevCardsLengthRef.current = cards.length;
+  }, [cards]);
 
   useEffect(() => {
     if (winnerSeat !== null && winnerSeat !== undefined && cards.length === 4) {
@@ -25,6 +63,32 @@ export function TrickArea({ cards, className, winnerSeat, players = [], currentP
       setAnimatingToWinner(false);
     }
   }, [winnerSeat, cards.length]);
+
+  const getPlayerCardStartPosition = (playerSeat: number): { x: number; y: number } => {
+    if (!trickAreaRef.current) return { x: 0, y: 0 };
+
+    const rect = trickAreaRef.current.getBoundingClientRect();
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    const currentPlayer = players.find(p => p.seatIndex === currentPlayerSeat);
+    if (!currentPlayer) return { x: centerX, y: centerY };
+
+    const relativePosition = (playerSeat - currentPlayer.seatIndex + 4) % 4;
+
+    switch (relativePosition) {
+      case 0:
+        return { x: centerX, y: rect.height + 150 };
+      case 1:
+        return { x: rect.width + 200, y: centerY };
+      case 2:
+        return { x: centerX, y: -150 };
+      case 3:
+        return { x: -200, y: centerY };
+      default:
+        return { x: centerX, y: centerY };
+    }
+  };
 
   const getWinnerPosition = () => {
     if (winnerSeat === null || winnerSeat === undefined || !players.length) return { x: 0, y: 0 };
@@ -54,7 +118,7 @@ export function TrickArea({ cards, className, winnerSeat, players = [], currentP
   const winnerPos = getWinnerPosition();
 
   return (
-    <div className={cn('relative w-full h-full bg-green-700 rounded-xl mb-5 flex items-center justify-center', className)}>
+    <div ref={trickAreaRef} className={cn('relative w-full h-full bg-green-700 rounded-xl mb-5 flex items-center justify-center', className)}>
       <div className="absolute inset-0 flex items-center justify-center opacity-10">
         <img
           src="/img/logo-carpet.svg"
@@ -65,14 +129,44 @@ export function TrickArea({ cards, className, winnerSeat, players = [], currentP
       <div className="absolute inset-[20px] border-[10px] border-white/10 rounded-xl pointer-events-none"></div>
 
       {winnerSeat !== null && winnerSeat !== undefined && cards.length === 4 && (
-        <div className="absolute inset-0 flex items-center justify-center">
+        <div className="absolute inset-0 flex items-center justify-center z-50">
           <div className="text-3xl font-bold text-yellow-400 animate-pulse bg-black/30 px-6 py-3 rounded-lg">
             Vainqueur: {players.find(p => p.seatIndex === winnerSeat)?.displayName || `Joueur ${winnerSeat + 1}`}
           </div>
         </div>
       )}
 
-      {cards.map((playedCard, index) => {
+      {animatingCards.map((animCard, idx) => {
+        const offset = 100;
+        const totalCards = cards.length;
+        const baseLeft = `calc(50% - ${(totalCards - 1) * offset / 2}px + ${animCard.finalIndex * offset}px)`;
+
+        return (
+          <div
+            key={`animating-${animCard.playedCard.card.id}-${idx}`}
+            className="absolute"
+            style={{
+              zIndex: 100 + idx,
+              left: baseLeft,
+              top: '50%',
+              transform: 'translateY(-50%)',
+              transition: 'none',
+            }}
+          >
+            <div
+              className="animate-card-fly"
+              style={{
+                '--start-x': `${animCard.startPosition.x}px`,
+                '--start-y': `${animCard.startPosition.y}px`,
+              } as React.CSSProperties}
+            >
+              <TarotCard card={animCard.playedCard.card} size="xl" />
+            </div>
+          </div>
+        );
+      })}
+
+      {settledCards.map((playedCard, index) => {
         const offset = 100;
         const baseLeft = `calc(50% - ${(cards.length - 1) * offset / 2}px + ${index * offset}px)`;
 
