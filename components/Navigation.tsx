@@ -83,9 +83,11 @@ export function Navigation() {
           <Link href="/distributions" className="text-white/90 hover:text-white font-medium transition-colors">
             Distributions
           </Link>
-          <Link href="/jouer" className="text-white/90 hover:text-white font-medium transition-colors">
-            Jouer
-          </Link>
+          {user && (
+            <Link href="/jouer" className="text-white/90 hover:text-white font-medium transition-colors">
+              Jouer
+            </Link>
+          )}
 
           {user ? (
             <div className="flex items-center gap-4">
