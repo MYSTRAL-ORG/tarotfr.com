@@ -458,10 +458,8 @@ export default function TablePage() {
                                         selectable={isPlayable}
                                         selected={selectedCard === card.id}
                                         onClick={() => isPlayable && handleCardClick(card.id)}
+                                        dimmed={isMyTurn && gameState.phase === 'PLAYING' && !canPlay}
                                       />
-                                      {(isMyTurn && gameState.phase === 'PLAYING' && !canPlay) && (
-                                        <div className="absolute inset-0 bg-black/60 rounded-lg pointer-events-none" />
-                                      )}
                                     </div>
                                   );
                                 })}
@@ -503,10 +501,8 @@ export default function TablePage() {
                                       selectable={isPlayable}
                                       selected={selectedCard === card.id}
                                       onClick={() => isPlayable && handleCardClick(card.id)}
+                                      dimmed={isMyTurn && gameState.phase === 'PLAYING' && !canPlay}
                                     />
-                                    {(isMyTurn && gameState.phase === 'PLAYING' && !canPlay) && (
-                                      <div className="absolute inset-0 bg-black/60 rounded-lg pointer-events-none" />
-                                    )}
                                   </div>
                                 );
                               })}

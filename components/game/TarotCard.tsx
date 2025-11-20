@@ -10,6 +10,7 @@ interface TarotCardProps {
   onClick?: () => void;
   className?: string;
   size?: 'sm' | 'md' | 'lg' | 'xl';
+  dimmed?: boolean;
 }
 
 export function TarotCard({
@@ -20,6 +21,7 @@ export function TarotCard({
   onClick,
   className,
   size = 'md',
+  dimmed = false,
 }: TarotCardProps) {
   const sizeClasses = {
     sm: 'w-16 h-24',
@@ -97,6 +99,9 @@ export function TarotCard({
         fill
         className="object-contain"
       />
+      {dimmed && (
+        <div className="absolute inset-0 bg-black/60 rounded-lg pointer-events-none" />
+      )}
     </div>
   );
 }
