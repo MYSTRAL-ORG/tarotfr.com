@@ -1,5 +1,6 @@
 import { GamePhase, BidType } from '@/lib/types';
 import { cn } from '@/lib/utils';
+import { ReactNode } from 'react';
 
 interface GameStatusBarProps {
   phase: GamePhase;
@@ -7,6 +8,7 @@ interface GameStatusBarProps {
   takerName: string | null;
   currentPlayerName: string;
   className?: string;
+  actions?: ReactNode;
 }
 
 export function GameStatusBar({
@@ -15,6 +17,7 @@ export function GameStatusBar({
   takerName,
   currentPlayerName,
   className,
+  actions,
 }: GameStatusBarProps) {
   const getPhaseText = () => {
     switch (phase) {
@@ -74,12 +77,18 @@ export function GameStatusBar({
           <img src="/img/icon.png" alt="Tarot" className="w-12 h-12" />
         </div>
 
-        <div className="text-right flex-1">
-          <div className="text-xs text-slate-500">Tour de</div>
-          <div className="text-sm font-semibold text-slate-900">
-            {currentPlayerName}
+        {actions ? (
+          <div className="flex-1 flex justify-end gap-2">
+            {actions}
           </div>
-        </div>
+        ) : (
+          <div className="text-right flex-1">
+            <div className="text-xs text-slate-500">Tour de</div>
+            <div className="text-sm font-semibold text-slate-900">
+              {currentPlayerName}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

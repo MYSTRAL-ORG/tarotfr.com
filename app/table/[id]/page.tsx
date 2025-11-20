@@ -19,10 +19,22 @@ import { DistributionCode } from '@/components/game/DistributionCode';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import {
   Select,
   SelectContent,
@@ -55,6 +67,7 @@ export default function TablePage() {
   const [copiedDistrib, setCopiedDistrib] = useState(false);
   const [selectedDifficulty, setSelectedDifficulty] = useState<'EASY' | 'MEDIUM' | 'HARD'>('MEDIUM');
   const [scoresOpen, setScoresOpen] = useState(false);
+  const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
 
   const tableId = params.id as string;
 
@@ -103,6 +116,7 @@ export default function TablePage() {
   };
 
   const handleLeave = () => {
+    setLeaveDialogOpen(false);
     router.push('/jouer');
   };
 
@@ -141,69 +155,9 @@ export default function TablePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
-      <Navigation />
+      {!gameState && <Navigation />}
 
       <div className="container mx-auto px-4 py-6">
-        <div className="mb-6 bg-white rounded-lg shadow-md p-4 flex items-center justify-between">
-          <Button variant="ghost" onClick={handleLeave} className="text-slate-700 hover:bg-slate-100">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Quitter
-          </Button>
-
-          <div className="flex gap-2">
-            {gameState && (
-              <Dialog open={scoresOpen} onOpenChange={setScoresOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="outline">
-                    <Trophy className="w-4 h-4 mr-2" />
-                    Scores
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Scores de la partie</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-2 mt-4">
-                    {players.map((player) => (
-                      <div
-                        key={player.userId}
-                        className="flex items-center justify-between p-3 bg-slate-50 rounded-lg"
-                      >
-                        <div className="flex items-center gap-2">
-                          {player.isBot && (
-                            <Bot className="w-4 h-4 text-blue-600" />
-                          )}
-                          <span className="font-medium text-slate-900">
-                            {player.displayName}
-                            {player.userId === user?.id && ' (Vous)'}
-                          </span>
-                        </div>
-                        <span className="font-bold text-slate-900">
-                          {gameState.scores[player.seatIndex] || 0}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </DialogContent>
-              </Dialog>
-            )}
-
-            {distributionInfo && (
-              <Button
-                variant="outline"
-                onClick={handleCopyDistribution}
-                disabled={copiedDistrib}
-              >
-                {copiedDistrib ? (
-                  <Check className="w-4 h-4 mr-2" />
-                ) : (
-                  <Copy className="w-4 h-4 mr-2" />
-                )}
-                {copiedDistrib ? 'Copié !' : 'Copier distrib'}
-              </Button>
-            )}
-          </div>
-        </div>
 
 
         <div className="max-w-6xl mx-auto">
@@ -340,6 +294,65 @@ export default function TablePage() {
                     contract={gameState.contract}
                     takerName={takerPlayer?.displayName || null}
                     className="mb-6"
+                    actions={
+                      <>
+                        <Dialog open={scoresOpen} onOpenChange={setScoresOpen}>
+                          <DialogTrigger asChild>
+                            <Button variant="outline" size="sm">
+                              <Trophy className="w-4 h-4 mr-2" />
+                              Scores
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent>
+                            <DialogHeader>
+                              <DialogTitle>Scores de la partie</DialogTitle>
+                            </DialogHeader>
+                            <div className="space-y-2 mt-4">
+                              {players.map((player) => (
+                                <div
+                                  key={player.userId}
+                                  className="flex items-center justify-between p-3 bg-slate-50 rounded-lg"
+                                >
+                                  <div className="flex items-center gap-2">
+                                    {player.isBot && (
+                                      <Bot className="w-4 h-4 text-blue-600" />
+                                    )}
+                                    <span className="font-medium text-slate-900">
+                                      {player.displayName}
+                                      {player.userId === user?.id && ' (Vous)'}
+                                    </span>
+                                  </div>
+                                  <span className="font-bold text-slate-900">
+                                    {gameState.scores[player.seatIndex] || 0}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          </DialogContent>
+                        </Dialog>
+
+                        {distributionInfo && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleCopyDistribution}
+                            disabled={copiedDistrib}
+                          >
+                            {copiedDistrib ? (
+                              <Check className="w-4 h-4 mr-2" />
+                            ) : (
+                              <Copy className="w-4 h-4 mr-2" />
+                            )}
+                            {copiedDistrib ? 'Copié !' : 'Copier distrib'}
+                          </Button>
+                        )}
+
+                        <Button variant="ghost" size="sm" onClick={() => setLeaveDialogOpen(true)} className="text-slate-700 hover:bg-slate-100">
+                          <ArrowLeft className="w-4 h-4 mr-2" />
+                          Quitter
+                        </Button>
+                      </>
+                    }
                   />
 
                   <div className="grid grid-cols-3 gap-4 mb-6">
@@ -454,6 +467,23 @@ export default function TablePage() {
           )}
         </div>
       </div>
+
+      <AlertDialog open={leaveDialogOpen} onOpenChange={setLeaveDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Quitter la partie ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Êtes-vous sûr de vouloir quitter cette partie ? Si la partie est en cours, vous perdrez votre progression.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction onClick={handleLeave}>
+              Quitter
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
