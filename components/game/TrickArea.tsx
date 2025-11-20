@@ -11,7 +11,7 @@ interface TrickAreaProps {
 export function TrickArea({ cards, className, winnerSeat }: TrickAreaProps) {
 
   return (
-    <div className={cn('relative w-full min-h-[350px] bg-green-700 rounded-xl flex items-center justify-center p-4', className)}>
+    <div className={cn('relative w-full h-full bg-green-700 flex items-center justify-center', className)}>
       <div className="absolute inset-0 flex items-center justify-center opacity-10">
         <img
           src="/img/logo-carpet.svg"

@@ -184,9 +184,8 @@ export default function TablePage() {
       {!gameState && <Navigation />}
 
       <div className="h-full flex flex-col">
-        <div className="flex-1 overflow-y-auto">
-          <div className="container mx-auto px-4 py-6">
           {!gameState ? (
+            <div className="container mx-auto px-4 py-6">
             <Card className="p-8">
               <h2 className="text-2xl font-bold text-slate-900 mb-4">
                 Salle d'attente
@@ -305,20 +304,21 @@ export default function TablePage() {
                 </div>
               )}
             </Card>
+            </div>
           ) : (
-            <div className="space-y-4">
-              <div className={`bg-gradient-to-br from-green-700 via-green-800 to-green-900 rounded-xl p-8 shadow-2xl relative overflow-hidden ${isMyTurn ? 'ring-4 ring-blue-500' : ''}`}>
+            <div className="h-full flex flex-col">
+              <div className={`bg-gradient-to-br from-green-700 via-green-800 to-green-900 flex-1 flex flex-col relative overflow-hidden ${isMyTurn ? 'ring-4 ring-blue-500' : ''}`}>
                 <div className="absolute inset-0 opacity-20" style={{
                   backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
                 }}></div>
 
-                <div className="relative z-10">
+                <div className="relative z-10 flex-1 flex flex-col p-4">
                   <GameStatusBar
                     phase={gameState.phase}
                     currentPlayerName={currentTurnPlayer?.displayName || 'En attente'}
                     contract={gameState.contract}
                     takerName={takerPlayer?.displayName || null}
-                    className="mb-6"
+                    className="mb-2"
                     actions={
                       <>
                         <Dialog open={scoresOpen} onOpenChange={setScoresOpen}>
@@ -401,7 +401,7 @@ export default function TablePage() {
                   </div>
 
                   {gameState.phase === 'PLAYING' && (
-                    <div className="my-4">
+                    <div className="flex-1 flex items-center">
                       <TrickArea
                         cards={gameState.currentTrick}
                         winnerSeat={null}
@@ -419,13 +419,13 @@ export default function TablePage() {
                     </div>
                   )}
 
-                  <div className="bg-slate-800 rounded-xl p-6 overflow-x-auto" style={{ minHeight: '220px' }}>
+                  <div className="bg-slate-800 p-4" style={{ height: '180px' }}>
                     {myHand && myHand.length > 0 ? (
                       <div className="flex justify-center items-start h-full">
-                        <div className="relative" style={{ width: '100%', height: '400px', marginTop: '0' }}>
+                        <div className="relative" style={{ width: '100%', height: '160px', marginTop: '0' }}>
                           {myHand.length > 8 && (
                             <div className="absolute top-0 left-1/2 -translate-x-1/2">
-                              <div className="relative" style={{ width: `${(myHand.length - 8) * 45 + 128}px`, height: '200px' }}>
+                              <div className="relative" style={{ width: `${(myHand.length - 8) * 45 + 128}px`, height: '160px' }}>
                                 {myHand.slice(8).map((card, index) => {
                                   const canPlay = currentPlayer && gameState
                                     ? canPlayCard(gameState, currentPlayer.seatIndex, card.id)
@@ -469,8 +469,8 @@ export default function TablePage() {
                             </div>
                           )}
 
-                          <div className="absolute left-1/2 -translate-x-1/2" style={{ top: '80px' }}>
-                            <div className="relative" style={{ width: `${Math.min(myHand.length, 8) * 45 + 128}px`, height: '200px' }}>
+                          <div className="absolute left-1/2 -translate-x-1/2" style={{ top: '40px' }}>
+                            <div className="relative" style={{ width: `${Math.min(myHand.length, 8) * 45 + 128}px`, height: '160px' }}>
                               {myHand.slice(0, Math.min(8, myHand.length)).map((card, index) => {
                                 const canPlay = currentPlayer && gameState
                                   ? canPlayCard(gameState, currentPlayer.seatIndex, card.id)
@@ -520,8 +520,6 @@ export default function TablePage() {
               </div>
             </div>
           )}
-          </div>
-        </div>
       </div>
 
       <AlertDialog open={leaveDialogOpen} onOpenChange={setLeaveDialogOpen}>
