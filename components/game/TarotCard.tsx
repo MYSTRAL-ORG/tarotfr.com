@@ -9,7 +9,7 @@ interface TarotCardProps {
   selected?: boolean;
   onClick?: () => void;
   className?: string;
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
   dimmed?: boolean;
 }
 
@@ -28,6 +28,7 @@ export function TarotCard({
     md: 'w-[44px] h-20',
     lg: 'w-[88px] h-40',
     xl: 'w-[115px] h-52',
+    xxl: 'w-[140px] h-64',
   };
 
   const getCardImagePath = () => {

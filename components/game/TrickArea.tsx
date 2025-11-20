@@ -33,7 +33,7 @@ export function TrickArea({ cards, className, winnerSeat }: TrickAreaProps) {
               left: baseLeft,
             }}
           >
-            <TarotCard card={playedCard.card} size="lg" />
+            <TarotCard card={playedCard.card} size="xl" />
           </div>
         );
       })}

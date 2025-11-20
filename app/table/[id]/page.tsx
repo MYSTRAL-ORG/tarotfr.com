@@ -417,95 +417,47 @@ export default function TablePage() {
                     )}
                   </div>
 
-                  <div style={{ height: '200px' }}>
+                  <div style={{ height: '280px' }}>
                     {myHand && myHand.length > 0 ? (
-                      <div className="flex justify-center items-start h-full">
-                        <div className="relative" style={{ width: '100%', height: '180px', marginTop: '0' }}>
-                          {myHand.length > 8 && (
-                            <div className="absolute top-0 left-1/2 -translate-x-1/2">
-                              <div className="relative" style={{ width: `${(myHand.length - 8) * 45 + 128}px`, height: '180px' }}>
-                                {myHand.slice(8).map((card, index) => {
-                                  const canPlay = currentPlayer && gameState
-                                    ? canPlayCard(gameState, currentPlayer.seatIndex, card.id)
-                                    : false;
-                                  const isPlayable = isMyTurn && gameState.phase === 'PLAYING' && canPlay;
+                      <div className="flex justify-center items-center h-full">
+                        <div className="relative" style={{ width: `${myHand.length * 70 + 140}px`, height: '100%' }}>
+                          {myHand.map((card, index) => {
+                            const canPlay = currentPlayer && gameState
+                              ? canPlayCard(gameState, currentPlayer.seatIndex, card.id)
+                              : false;
+                            const isPlayable = isMyTurn && gameState.phase === 'PLAYING' && canPlay;
 
-                                  return (
-                                    <div
-                                      key={card.id}
-                                      className="absolute transition-all duration-200"
-                                      style={{
-                                        left: `${index * 45}px`,
-                                        top: '0',
-                                        zIndex: 10 + index,
-                                      }}
-                                      onMouseEnter={(e) => {
-                                        if (isPlayable) {
-                                          e.currentTarget.style.top = '-20px';
-                                        }
-                                      }}
-                                      onMouseLeave={(e) => {
-                                        if (isPlayable) {
-                                          e.currentTarget.style.top = '0';
-                                        }
-                                      }}
-                                    >
-                                      <TarotCard
-                                        card={card}
-                                        size="lg"
-                                        selectable={isPlayable}
-                                        selected={selectedCard === card.id}
-                                        onClick={() => isPlayable && handleCardClick(card.id)}
-                                        dimmed={isMyTurn && gameState.phase === 'PLAYING' && !canPlay}
-                                      />
-                                    </div>
-                                  );
-                                })}
+                            return (
+                              <div
+                                key={card.id}
+                                className="absolute transition-all duration-200"
+                                style={{
+                                  left: `${index * 70}px`,
+                                  top: '10px',
+                                  zIndex: 10 + index,
+                                }}
+                                onMouseEnter={(e) => {
+                                  if (isPlayable) {
+                                    e.currentTarget.style.top = '-30px';
+                                  }
+                                }}
+                                onMouseLeave={(e) => {
+                                  if (isPlayable) {
+                                    e.currentTarget.style.top = '10px';
+                                  }
+                                }}
+                              >
+                                <TarotCard
+                                  card={card}
+                                  size="xxl"
+                                  selectable={isPlayable}
+                                  selected={selectedCard === card.id}
+                                  onClick={() => isPlayable && handleCardClick(card.id)}
+                                  dimmed={isMyTurn && gameState.phase === 'PLAYING' && !canPlay}
+                                />
                               </div>
-                            </div>
-                          )}
-
-                          <div className="absolute left-1/2 -translate-x-1/2" style={{ top: '60px' }}>
-                            <div className="relative" style={{ width: `${Math.min(myHand.length, 8) * 45 + 128}px`, height: '180px' }}>
-                              {myHand.slice(0, Math.min(8, myHand.length)).map((card, index) => {
-                                const canPlay = currentPlayer && gameState
-                                  ? canPlayCard(gameState, currentPlayer.seatIndex, card.id)
-                                  : false;
-                                const isPlayable = isMyTurn && gameState.phase === 'PLAYING' && canPlay;
-
-                                return (
-                                  <div
-                                    key={card.id}
-                                    className="absolute transition-all duration-200"
-                                    style={{
-                                      left: `${index * 45}px`,
-                                      top: '0',
-                                      zIndex: 30 + index,
-                                    }}
-                                    onMouseEnter={(e) => {
-                                      if (isPlayable) {
-                                        e.currentTarget.style.top = '-20px';
-                                      }
-                                    }}
-                                    onMouseLeave={(e) => {
-                                      if (isPlayable) {
-                                        e.currentTarget.style.top = '0';
-                                      }
-                                    }}
-                                  >
-                                    <TarotCard
-                                      card={card}
-                                      size="lg"
-                                      selectable={isPlayable}
-                                      selected={selectedCard === card.id}
-                                      onClick={() => isPlayable && handleCardClick(card.id)}
-                                      dimmed={isMyTurn && gameState.phase === 'PLAYING' && !canPlay}
-                                    />
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          </div>
+                            );
+                          })}
                         </div>
                       </div>
                     ) : null}
