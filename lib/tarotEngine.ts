@@ -335,7 +335,7 @@ export function playCard(state: TarotGameState, playerSeat: number, cardId: stri
     return {
       ...state,
       hands: newHands,
-      currentTrick: [],
+      currentTrick: newCurrentTrick,
       completedTricks: newCompletedTricks,
       phase: newPhase,
       currentPlayerSeat: newCurrentPlayerSeat,

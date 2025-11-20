@@ -313,6 +313,8 @@ function handlePlayCard(ws: WebSocket, payload: any) {
 
   try {
     const newState = playCard(gameState, player.seatIndex, cardId);
+    const trickJustCompleted = newState.currentTrick.length === 0 && newState.completedTricks.length > gameState.completedTricks.length;
+
     tableGames.set(client.tableId, newState);
 
     broadcastToTable(client.tableId, {
@@ -320,13 +322,25 @@ function handlePlayCard(ws: WebSocket, payload: any) {
       payload: { playerSeat: player.seatIndex, cardId },
     });
 
-    if (newState.currentTrick.length === 0 && newState.completedTricks.length > gameState.completedTricks.length) {
-      broadcastToTable(client.tableId, {
-        type: 'TRICK_COMPLETE',
-        payload: {
-          trick: newState.completedTricks[newState.completedTricks.length - 1]
-        },
-      });
+    if (trickJustCompleted && client.tableId) {
+      const tableId = client.tableId;
+      setTimeout(() => {
+        const currentState = tableGames.get(tableId);
+        if (currentState) {
+          const clearedState = {
+            ...currentState,
+            currentTrick: [],
+          };
+          tableGames.set(tableId, clearedState);
+
+          broadcastToTable(tableId, {
+            type: 'TRICK_COMPLETE',
+            payload: {
+              trick: currentState.completedTricks[currentState.completedTricks.length - 1]
+            },
+          });
+        }
+      }, 4500);
     }
 
     if (newState.phase === 'SCORING') {
@@ -785,6 +799,8 @@ function executeBotTurn(tableId: string, gameState: TarotGameState) {
       if (cardToPlay) {
         try {
           const newState = playCard(updatedGameState, currentPlayer.seatIndex, cardToPlay);
+          const trickJustCompleted = newState.currentTrick.length === 0 && newState.completedTricks.length > updatedGameState.completedTricks.length;
+
           tableGames.set(tableId, newState);
 
           broadcastToTable(tableId, {
@@ -792,13 +808,24 @@ function executeBotTurn(tableId: string, gameState: TarotGameState) {
             payload: { playerSeat: currentPlayer.seatIndex, cardId: cardToPlay },
           });
 
-          if (newState.currentTrick.length === 0 && newState.completedTricks.length > updatedGameState.completedTricks.length) {
-            broadcastToTable(tableId, {
-              type: 'TRICK_COMPLETE',
-              payload: {
-                trick: newState.completedTricks[newState.completedTricks.length - 1]
-              },
-            });
+          if (trickJustCompleted) {
+            setTimeout(() => {
+              const currentState = tableGames.get(tableId);
+              if (currentState) {
+                const clearedState = {
+                  ...currentState,
+                  currentTrick: [],
+                };
+                tableGames.set(tableId, clearedState);
+
+                broadcastToTable(tableId, {
+                  type: 'TRICK_COMPLETE',
+                  payload: {
+                    trick: currentState.completedTricks[currentState.completedTricks.length - 1]
+                  },
+                });
+              }
+            }, 4500);
           }
 
           if (newState.phase === 'SCORING') {

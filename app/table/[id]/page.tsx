@@ -16,7 +16,7 @@ import { useWebSocket } from '@/contexts/WebSocketContext';
 import { BidType, Player } from '@/lib/types';
 import { canPlayCard } from '@/lib/tarotEngine';
 import { toast } from 'sonner';
-import { ArrowLeft, Bot, Trophy, Copy, Check } from 'lucide-react';
+import { Bot, Trophy, Copy, Check } from 'lucide-react';
 import { DistributionCode } from '@/components/game/DistributionCode';
 import {
   Dialog,
@@ -180,7 +180,7 @@ export default function TablePage() {
   const availableBids: BidType[] = ['PASS', 'PETITE', 'GARDE', 'GARDE_SANS', 'GARDE_CONTRE'];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
+    <div className="h-screen overflow-hidden bg-gradient-to-b from-slate-50 to-slate-100">
       {!gameState && <Navigation />}
 
       <div className="container mx-auto px-4 py-6">
@@ -307,7 +307,7 @@ export default function TablePage() {
               )}
             </Card>
           ) : (
-            <div className="space-y-6">
+            <div className="h-full overflow-y-auto pb-6">
               <div className={`bg-gradient-to-br from-green-700 via-green-800 to-green-900 rounded-xl p-8 shadow-2xl relative overflow-hidden ${isMyTurn ? 'ring-4 ring-blue-500' : ''}`}>
                 <div className="absolute inset-0 opacity-20" style={{
                   backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
@@ -373,8 +373,7 @@ export default function TablePage() {
                           </Button>
                         )}
 
-                        <Button variant="ghost" size="sm" onClick={() => setLeaveDialogOpen(true)} className="text-slate-700 hover:bg-slate-100">
-                          <ArrowLeft className="w-4 h-4 mr-2" />
+                        <Button variant="destructive" size="sm" onClick={() => setLeaveDialogOpen(true)}>
                           Quitter
                         </Button>
                       </>
