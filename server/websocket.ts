@@ -351,11 +351,9 @@ function handlePlayCard(ws: WebSocket, payload: any) {
 
     if (trickJustCompleted && client.tableId) {
       const tableId = client.tableId;
-      const trickToComplete = newState.currentTrick;
       setTimeout(() => {
         const currentState = tableGames.get(tableId);
         if (!currentState || currentState.currentTrick.length !== 4) return;
-        if (currentState.currentTrick !== trickToComplete) return;
 
         const clearedState = clearTrick(currentState);
         tableGames.set(tableId, clearedState);
@@ -849,11 +847,9 @@ function executeBotTurn(tableId: string, gameState: TarotGameState) {
           broadcastGameState(tableId, newState);
 
           if (trickJustCompleted) {
-            const trickToComplete = newState.currentTrick;
             setTimeout(() => {
               const currentState = tableGames.get(tableId);
               if (!currentState || currentState.currentTrick.length !== 4) return;
-              if (currentState.currentTrick !== trickToComplete) return;
 
               const clearedState = clearTrick(currentState);
               tableGames.set(tableId, clearedState);

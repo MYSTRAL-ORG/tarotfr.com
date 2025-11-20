@@ -288,12 +288,9 @@ function handlePlayCard(ws, payload) {
         broadcastGameState(client.tableId, newState);
         if (trickJustCompleted && client.tableId) {
             const tableId = client.tableId;
-            const trickToComplete = newState.currentTrick;
             setTimeout(() => {
                 const currentState = tableGames.get(tableId);
                 if (!currentState || currentState.currentTrick.length !== 4)
-                    return;
-                if (currentState.currentTrick !== trickToComplete)
                     return;
                 const clearedState = (0, tarotEngine_1.clearTrick)(currentState);
                 tableGames.set(tableId, clearedState);
@@ -703,12 +700,9 @@ function executeBotTurn(tableId, gameState) {
                     });
                     broadcastGameState(tableId, newState);
                     if (trickJustCompleted) {
-                        const trickToComplete = newState.currentTrick;
                         setTimeout(() => {
                             const currentState = tableGames.get(tableId);
                             if (!currentState || currentState.currentTrick.length !== 4)
-                                return;
-                            if (currentState.currentTrick !== trickToComplete)
                                 return;
                             const clearedState = (0, tarotEngine_1.clearTrick)(currentState);
                             tableGames.set(tableId, clearedState);
