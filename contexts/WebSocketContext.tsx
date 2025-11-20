@@ -186,6 +186,18 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
         }
         break;
 
+      case 'ROUND_END':
+        window.dispatchEvent(new CustomEvent('roundEnd', { detail: message.payload }));
+        break;
+
+      case 'ROUND_START':
+        window.dispatchEvent(new CustomEvent('roundStart', { detail: message.payload }));
+        break;
+
+      case 'GAME_OVER':
+        window.dispatchEvent(new CustomEvent('gameOver', { detail: message.payload }));
+        break;
+
       case 'ERROR':
         setError(message.payload.message);
         setTimeout(() => setError(null), 5000);

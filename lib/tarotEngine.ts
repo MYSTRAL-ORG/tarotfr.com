@@ -137,6 +137,10 @@ export function createInitialState(
     currentTrick: [],
     completedTricks: [],
     scores: { 0: 0, 1: 0, 2: 0, 3: 0 },
+    currentRound: 1,
+    roundScores: [],
+    totalScores: { 0: 0, 1: 0, 2: 0, 3: 0 },
+    lastRoundWon: null,
   };
 }
 
@@ -438,5 +442,53 @@ export function revealDog(state: TarotGameState): TarotGameState {
     phase: 'PLAYING',
     currentPlayerSeat: state.takerSeat,
     dog: [],
+  };
+}
+
+export function finishRound(state: TarotGameState): { state: TarotGameState; contractWon: boolean } {
+  const roundScores = calculateScores(state);
+  const newRoundScores = [...state.roundScores, roundScores];
+
+  const newTotalScores: Record<number, number> = { ...state.totalScores };
+  for (let i = 0; i < 4; i++) {
+    newTotalScores[i] = (newTotalScores[i] || 0) + (roundScores[i] || 0);
+  }
+
+  const takerScore = state.takerSeat !== null ? roundScores[state.takerSeat] : 0;
+  const contractWon = takerScore > 0;
+
+  return {
+    state: {
+      ...state,
+      scores: roundScores,
+      roundScores: newRoundScores,
+      totalScores: newTotalScores,
+      lastRoundWon: contractWon,
+      phase: 'SCORING',
+    },
+    contractWon,
+  };
+}
+
+export function startNextRound(state: TarotGameState, newHands: Record<number, TarotCard[]>, newDog: TarotCard[]): TarotGameState {
+  const nextDealerSeat = (state.currentDealerSeat + 1) % 4;
+  const nextPlayerSeat = (nextDealerSeat + 1) % 4;
+
+  return {
+    ...state,
+    phase: 'DEALING',
+    hands: newHands,
+    dog: newDog,
+    isDogRevealed: false,
+    currentDealerSeat: nextDealerSeat,
+    currentPlayerSeat: nextPlayerSeat,
+    bids: [],
+    takerSeat: null,
+    contract: null,
+    currentTrick: [],
+    completedTricks: [],
+    scores: { 0: 0, 1: 0, 2: 0, 3: 0 },
+    currentRound: state.currentRound + 1,
+    lastRoundWon: null,
   };
 }

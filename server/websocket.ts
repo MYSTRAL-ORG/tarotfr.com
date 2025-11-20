@@ -14,6 +14,8 @@ import {
   startBidding,
   revealDog,
   calculateScores,
+  finishRound,
+  startNextRound,
 } from '../lib/tarotEngine';
 import {
   createBotPlayer,
@@ -328,14 +330,38 @@ function handlePlayCard(ws: WebSocket, payload: any) {
     }
 
     if (newState.phase === 'SCORING') {
-      const scores = calculateScores(newState);
-      newState.scores = scores;
-      tableGames.set(client.tableId, newState);
+      const { state: scoringState, contractWon } = finishRound(newState);
+      tableGames.set(client.tableId, scoringState);
 
       broadcastToTable(client.tableId, {
-        type: 'GAME_PHASE_CHANGE',
-        payload: { phase: 'SCORING', scores },
+        type: 'ROUND_END',
+        payload: {
+          phase: 'SCORING',
+          roundNumber: scoringState.currentRound,
+          scores: scoringState.scores,
+          totalScores: scoringState.totalScores,
+          contractWon,
+          isGameOver: scoringState.currentRound >= 3,
+        },
       });
+
+      broadcastGameState(client.tableId, scoringState);
+
+      if (scoringState.currentRound >= 3) {
+        broadcastToTable(client.tableId, {
+          type: 'GAME_OVER',
+          payload: {
+            finalScores: scoringState.totalScores,
+            roundScores: scoringState.roundScores,
+          },
+        });
+        return;
+      }
+
+      setTimeout(() => {
+        handleNextRound(client.tableId!);
+      }, 5000);
+      return;
     }
 
     broadcastGameState(client.tableId, newState);
@@ -417,6 +443,43 @@ async function startGame(tableId: string, players: Player[]) {
     executeBotTurn(tableId, biddingState);
   } catch (error) {
     console.error('Error in startGame:', error);
+  }
+}
+
+async function handleNextRound(tableId: string) {
+  try {
+    const currentState = tableGames.get(tableId);
+    if (!currentState) return;
+
+    const distribution = generateNewDistribution();
+
+    const sortedHands: Record<number, any> = {};
+    for (let i = 0; i < 4; i++) {
+      sortedHands[i] = sortHand(distribution.hands[i]);
+    }
+
+    const nextRoundState = startNextRound(currentState, sortedHands, distribution.dog);
+    tableGames.set(tableId, nextRoundState);
+
+    const biddingState = startBidding(nextRoundState);
+    tableGames.set(tableId, biddingState);
+
+    broadcastToTable(tableId, {
+      type: 'ROUND_START',
+      payload: {
+        roundNumber: biddingState.currentRound,
+      },
+    });
+
+    broadcastGameState(tableId, biddingState);
+    broadcastToTable(tableId, {
+      type: 'GAME_PHASE_CHANGE',
+      payload: { phase: 'BIDDING' },
+    });
+
+    executeBotTurn(tableId, biddingState);
+  } catch (error) {
+    console.error('Error in handleNextRound:', error);
   }
 }
 
@@ -739,14 +802,38 @@ function executeBotTurn(tableId: string, gameState: TarotGameState) {
           }
 
           if (newState.phase === 'SCORING') {
-            const scores = calculateScores(newState);
-            newState.scores = scores;
-            tableGames.set(tableId, newState);
+            const { state: scoringState, contractWon } = finishRound(newState);
+            tableGames.set(tableId, scoringState);
 
             broadcastToTable(tableId, {
-              type: 'GAME_PHASE_CHANGE',
-              payload: { phase: 'SCORING', scores },
+              type: 'ROUND_END',
+              payload: {
+                phase: 'SCORING',
+                roundNumber: scoringState.currentRound,
+                scores: scoringState.scores,
+                totalScores: scoringState.totalScores,
+                contractWon,
+                isGameOver: scoringState.currentRound >= 3,
+              },
             });
+
+            broadcastGameState(tableId, scoringState);
+
+            if (scoringState.currentRound >= 3) {
+              broadcastToTable(tableId, {
+                type: 'GAME_OVER',
+                payload: {
+                  finalScores: scoringState.totalScores,
+                  roundScores: scoringState.roundScores,
+                },
+              });
+              return;
+            }
+
+            setTimeout(() => {
+              handleNextRound(tableId);
+            }, 5000);
+            return;
           }
 
           broadcastGameState(tableId, newState);

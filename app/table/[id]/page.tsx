@@ -10,6 +10,7 @@ import { PlayerSeat } from '@/components/game/PlayerSeat';
 import { TrickArea } from '@/components/game/TrickArea';
 import { GameStatusBar } from '@/components/game/GameStatusBar';
 import { BiddingPanel } from '@/components/game/BiddingPanel';
+import { RoundSummary } from '@/components/game/RoundSummary';
 import { useAuth } from '@/contexts/AuthContext';
 import { useWebSocket } from '@/contexts/WebSocketContext';
 import { BidType, Player } from '@/lib/types';
@@ -69,6 +70,8 @@ export default function TablePage() {
   const [selectedDifficulty, setSelectedDifficulty] = useState<'EASY' | 'MEDIUM' | 'HARD'>('MEDIUM');
   const [scoresOpen, setScoresOpen] = useState(false);
   const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
+  const [showRoundSummary, setShowRoundSummary] = useState(false);
+  const [roundSummaryData, setRoundSummaryData] = useState<any>(null);
 
   const tableId = params.id as string;
 
@@ -84,6 +87,28 @@ export default function TablePage() {
       toast.error(error);
     }
   }, [error]);
+
+  useEffect(() => {
+    const handleRoundEnd = (event: any) => {
+      setRoundSummaryData(event.detail);
+      setShowRoundSummary(true);
+    };
+
+    const handleRoundStart = () => {
+      setShowRoundSummary(false);
+      setRoundSummaryData(null);
+    };
+
+    window.addEventListener('roundEnd', handleRoundEnd);
+    window.addEventListener('roundStart', handleRoundStart);
+    window.addEventListener('gameOver', handleRoundEnd);
+
+    return () => {
+      window.removeEventListener('roundEnd', handleRoundEnd);
+      window.removeEventListener('roundStart', handleRoundStart);
+      window.removeEventListener('gameOver', handleRoundEnd);
+    };
+  }, []);
 
   const currentPlayer = players.find(p => p.userId === user?.id);
   const otherPlayers = players.filter(p => p.userId !== user?.id);
@@ -545,6 +570,24 @@ export default function TablePage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {showRoundSummary && roundSummaryData && gameState && (
+        <RoundSummary
+          roundNumber={roundSummaryData.roundNumber}
+          players={players}
+          takerSeat={gameState.takerSeat}
+          contract={gameState.contract}
+          roundScores={roundSummaryData.scores}
+          totalScores={roundSummaryData.totalScores}
+          contractWon={roundSummaryData.contractWon}
+          isGameOver={roundSummaryData.isGameOver}
+          onContinue={() => {
+            if (roundSummaryData.isGameOver) {
+              router.push('/jouer');
+            }
+          }}
+        />
+      )}
     </div>
   );
 }

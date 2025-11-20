@@ -62,6 +62,10 @@ export interface TarotGameState {
   currentTrick: PlayedCard[];
   completedTricks: Trick[];
   scores: Record<number, number>;
+  currentRound: number;
+  roundScores: Record<number, number>[];
+  totalScores: Record<number, number>;
+  lastRoundWon: boolean | null;
 }
 
 export interface User {
@@ -149,6 +153,9 @@ export interface WSServerMessage extends WSMessage {
     | 'TRICK_COMPLETE'
     | 'GAME_PHASE_CHANGE'
     | 'DISTRIBUTION_INFO'
+    | 'ROUND_END'
+    | 'ROUND_START'
+    | 'GAME_OVER'
     | 'ERROR'
     | 'PONG'
     | 'BOT_ADDED'
