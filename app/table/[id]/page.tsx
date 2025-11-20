@@ -150,7 +150,7 @@ export default function TablePage() {
     if (distributionInfo?.hashCode) {
       await navigator.clipboard.writeText(distributionInfo.hashCode);
       setCopiedDistrib(true);
-      toast.success('Code de distribution copié !');
+      toast.success(`Distribution #${distributionInfo.hashCode} copiée !`);
       setTimeout(() => setCopiedDistrib(false), 2000);
     }
   };
@@ -369,7 +369,7 @@ export default function TablePage() {
                             ) : (
                               <Copy className="w-4 h-4 mr-2" />
                             )}
-                            {copiedDistrib ? 'Copié !' : 'Copier distrib'}
+                            #{distributionInfo.hashCode}
                           </Button>
                         )}
 
@@ -381,29 +381,25 @@ export default function TablePage() {
                     }
                   />
 
-                  <div className="mb-6">
-                    <div className="flex justify-center mb-4">
-                      <PlayerSeat
-                        player={getPlayerAtPosition('top')}
-                        position="top"
-                        isCurrentPlayer={gameState.currentPlayerSeat === getPlayerAtPosition('top')?.seatIndex}
-                        playerColor="red"
-                      />
-                    </div>
-                    <div className="flex justify-center gap-8">
-                      <PlayerSeat
-                        player={getPlayerAtPosition('left')}
-                        position="top"
-                        isCurrentPlayer={gameState.currentPlayerSeat === getPlayerAtPosition('left')?.seatIndex}
-                        playerColor="yellow"
-                      />
-                      <PlayerSeat
-                        player={getPlayerAtPosition('right')}
-                        position="top"
-                        isCurrentPlayer={gameState.currentPlayerSeat === getPlayerAtPosition('right')?.seatIndex}
-                        playerColor="purple"
-                      />
-                    </div>
+                  <div className="grid grid-cols-3 gap-4 mb-6">
+                    <PlayerSeat
+                      player={getPlayerAtPosition('left')}
+                      position="top"
+                      isCurrentPlayer={gameState.currentPlayerSeat === getPlayerAtPosition('left')?.seatIndex}
+                      playerColor="yellow"
+                    />
+                    <PlayerSeat
+                      player={getPlayerAtPosition('top')}
+                      position="top"
+                      isCurrentPlayer={gameState.currentPlayerSeat === getPlayerAtPosition('top')?.seatIndex}
+                      playerColor="red"
+                    />
+                    <PlayerSeat
+                      player={getPlayerAtPosition('right')}
+                      position="top"
+                      isCurrentPlayer={gameState.currentPlayerSeat === getPlayerAtPosition('right')?.seatIndex}
+                      playerColor="purple"
+                    />
                   </div>
 
                   {gameState.phase === 'PLAYING' && (

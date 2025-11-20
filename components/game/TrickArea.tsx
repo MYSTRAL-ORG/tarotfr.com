@@ -24,25 +24,14 @@ export function TrickArea({ cards, className, winnerSeat }: TrickAreaProps) {
     }
   }, [cards.length, winnerSeat]);
 
-  const getCardPosition = (playerSeat: number) => {
+  const getCardPosition = (playerSeat: number, cardIndex: number) => {
     if (isCollecting && winnerSeat !== null && winnerSeat !== undefined) {
-      const winnerPositions = [
-        'left-1/2 -translate-x-1/2 bottom-0 opacity-0',
-        'left-4 top-1/2 -translate-y-1/2 opacity-0',
-        'left-1/2 -translate-x-1/2 top-0 opacity-0',
-        'right-4 top-1/2 -translate-y-1/2 opacity-0',
-      ];
-      return winnerPositions[winnerSeat];
+      return 'left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 opacity-0';
     }
 
-    const positions = [
-      'left-1/2 -translate-x-1/2 bottom-8',
-      'left-8 top-1/2 -translate-y-1/2',
-      'left-1/2 -translate-x-1/2 top-8',
-      'right-8 top-1/2 -translate-y-1/2',
-    ];
-
-    return positions[playerSeat] || positions[0];
+    const offset = 40;
+    const baseLeft = `calc(50% - ${(cards.length - 1) * offset / 2}px + ${cardIndex * offset}px)`;
+    return `top-1/2 -translate-y-1/2`;
   };
 
   return (
@@ -51,23 +40,30 @@ export function TrickArea({ cards, className, winnerSeat }: TrickAreaProps) {
         <img
           src="/img/logo-carpet.svg"
           alt=""
-          className="w-48 h-48 object-contain"
+          className="w-72 h-72 object-contain"
         />
       </div>
-      {cards.map((playedCard, index) => (
-        <div
-          key={`${playedCard.card.id}-${index}`}
-          className={cn(
-            'absolute transition-all duration-700',
-            getCardPosition(playedCard.playerSeat)
-          )}
-          style={{
-            zIndex: index,
-          }}
-        >
-          <TarotCard card={playedCard.card} size="md" />
-        </div>
-      ))}
+      {cards.map((playedCard, index) => {
+        const offset = 40;
+        const baseLeft = `calc(50% - ${(cards.length - 1) * offset / 2}px + ${index * offset}px)`;
+
+        return (
+          <div
+            key={`${playedCard.card.id}-${index}`}
+            className={cn(
+              'absolute transition-all duration-700',
+              getCardPosition(playedCard.playerSeat, index)
+            )}
+            style={{
+              zIndex: index,
+              left: isCollecting && winnerSeat !== null ? '50%' : baseLeft,
+              transform: isCollecting && winnerSeat !== null ? 'translate(-50%, -50%)' : 'translateY(-50%)',
+            }}
+          >
+            <TarotCard card={playedCard.card} size="md" />
+          </div>
+        );
+      })}
     </div>
   );
 }
