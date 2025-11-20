@@ -343,22 +343,14 @@ function handlePlayCard(ws: WebSocket, payload: any) {
 
     if (trickJustCompleted && client.tableId) {
       const tableId = client.tableId;
+      const completedTrick = newState.completedTricks[newState.completedTricks.length - 1];
       setTimeout(() => {
-        const currentState = tableGames.get(tableId);
-        if (currentState) {
-          const clearedState = {
-            ...currentState,
-            currentTrick: [],
-          };
-          tableGames.set(tableId, clearedState);
-
-          broadcastToTable(tableId, {
-            type: 'TRICK_COMPLETE',
-            payload: {
-              trick: currentState.completedTricks[currentState.completedTricks.length - 1]
-            },
-          });
-        }
+        broadcastToTable(tableId, {
+          type: 'TRICK_COMPLETE',
+          payload: {
+            trick: completedTrick
+          },
+        });
       }, 4500);
     }
 
@@ -835,22 +827,14 @@ function executeBotTurn(tableId: string, gameState: TarotGameState) {
           });
 
           if (trickJustCompleted) {
+            const completedTrick = newState.completedTricks[newState.completedTricks.length - 1];
             setTimeout(() => {
-              const currentState = tableGames.get(tableId);
-              if (currentState) {
-                const clearedState = {
-                  ...currentState,
-                  currentTrick: [],
-                };
-                tableGames.set(tableId, clearedState);
-
-                broadcastToTable(tableId, {
-                  type: 'TRICK_COMPLETE',
-                  payload: {
-                    trick: currentState.completedTricks[currentState.completedTricks.length - 1]
-                  },
-                });
-              }
+              broadcastToTable(tableId, {
+                type: 'TRICK_COMPLETE',
+                payload: {
+                  trick: completedTrick
+                },
+              });
             }, 4500);
           }
 

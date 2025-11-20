@@ -283,21 +283,14 @@ function handlePlayCard(ws, payload) {
         });
         if (trickJustCompleted && client.tableId) {
             const tableId = client.tableId;
+            const completedTrick = newState.completedTricks[newState.completedTricks.length - 1];
             setTimeout(() => {
-                const currentState = tableGames.get(tableId);
-                if (currentState) {
-                    const clearedState = {
-                        ...currentState,
-                        currentTrick: [],
-                    };
-                    tableGames.set(tableId, clearedState);
-                    broadcastToTable(tableId, {
-                        type: 'TRICK_COMPLETE',
-                        payload: {
-                            trick: currentState.completedTricks[currentState.completedTricks.length - 1]
-                        },
-                    });
-                }
+                broadcastToTable(tableId, {
+                    type: 'TRICK_COMPLETE',
+                    payload: {
+                        trick: completedTrick
+                    },
+                });
             }, 4500);
         }
         if (newState.phase === 'SCORING') {
@@ -694,21 +687,14 @@ function executeBotTurn(tableId, gameState) {
                         payload: { playerSeat: currentPlayerInUpdatedState.seatIndex, cardId: cardToPlay },
                     });
                     if (trickJustCompleted) {
+                        const completedTrick = newState.completedTricks[newState.completedTricks.length - 1];
                         setTimeout(() => {
-                            const currentState = tableGames.get(tableId);
-                            if (currentState) {
-                                const clearedState = {
-                                    ...currentState,
-                                    currentTrick: [],
-                                };
-                                tableGames.set(tableId, clearedState);
-                                broadcastToTable(tableId, {
-                                    type: 'TRICK_COMPLETE',
-                                    payload: {
-                                        trick: currentState.completedTricks[currentState.completedTricks.length - 1]
-                                    },
-                                });
-                            }
+                            broadcastToTable(tableId, {
+                                type: 'TRICK_COMPLETE',
+                                payload: {
+                                    trick: completedTrick
+                                },
+                            });
                         }, 4500);
                     }
                     if (newState.phase === 'SCORING') {
