@@ -405,7 +405,7 @@ export default function TablePage() {
                   {gameState.phase === 'PLAYING' && (
                     <TrickArea
                       cards={gameState.currentTrick}
-                      winnerSeat={gameState.currentTrick.length === 4 ? gameState.currentPlayerSeat : null}
+                      winnerSeat={null}
                     />
                   )}
 
