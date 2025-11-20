@@ -96,6 +96,8 @@ async function handleClientMessage(ws: WebSocket, message: WSClientMessage) {
 async function handleJoinTable(ws: WebSocket, payload: any) {
   const { tableId, userId, displayName } = payload;
 
+  console.log('[JOIN_TABLE] Request received:', { tableId, userId, displayName });
+
   if (!tableId || !userId || !displayName) {
     sendError(ws, 'Missing required fields');
     return;
@@ -109,6 +111,7 @@ async function handleJoinTable(ws: WebSocket, payload: any) {
   };
 
   clients.set(ws, client);
+  console.log('[JOIN_TABLE] Client registered, total clients:', clients.size);
 
   try {
     await supabase
@@ -122,6 +125,8 @@ async function handleJoinTable(ws: WebSocket, payload: any) {
       .select('*, users!inner(id, display_name)')
       .eq('table_id', tableId)
       .order('seat_index', { ascending: true });
+
+    console.log('[JOIN_TABLE] DB players fetched:', dbPlayers?.length || 0, 'players');
 
     if (error) {
       console.error('Error fetching players from DB:', error);
@@ -139,6 +144,7 @@ async function handleJoinTable(ws: WebSocket, payload: any) {
     }));
 
     tablePlayers.set(tableId, players);
+    console.log('[JOIN_TABLE] Players mapped and stored:', players.map(p => `${p.displayName}(${p.userId})`).join(', '));
 
     sendMessage(ws, {
       type: 'TABLE_STATE',
@@ -147,6 +153,10 @@ async function handleJoinTable(ws: WebSocket, payload: any) {
         players,
       },
     });
+    console.log('[JOIN_TABLE] Sent TABLE_STATE to joining player with', players.length, 'players');
+
+    const clientsInTable = Array.from(clients.values()).filter(c => c.tableId === tableId);
+    console.log('[JOIN_TABLE] Clients in table before broadcast:', clientsInTable.length, '-', clientsInTable.map(c => c.displayName).join(', '));
 
     broadcastToTable(tableId, {
       type: 'PLAYER_JOINED',
@@ -160,6 +170,7 @@ async function handleJoinTable(ws: WebSocket, payload: any) {
         players,
       },
     });
+    console.log('[JOIN_TABLE] Broadcasted updates to', clientsInTable.length, 'clients');
 
     const gameState = tableGames.get(tableId);
     if (gameState) {
