@@ -389,68 +389,33 @@ export default function TablePage() {
                     }
                   />
 
-                  <div className="mb-6 min-h-[280px] flex flex-col">
-                    <div className="hidden md:flex items-stretch justify-between">
-                      <div className="w-32 flex items-center">
-                        <PlayerSeat
-                          player={getPlayerAtPosition('left')}
-                          position="top"
-                          isCurrentPlayer={gameState.currentPlayerSeat === getPlayerAtPosition('left')?.seatIndex}
-                          playerColor="yellow"
-                        />
-                      </div>
-
-                      <div className="flex-1 flex flex-col">
-                        <div className="flex justify-center mb-4">
-                          <PlayerSeat
-                            player={getPlayerAtPosition('top')}
-                            position="top"
-                            isCurrentPlayer={gameState.currentPlayerSeat === getPlayerAtPosition('top')?.seatIndex}
-                            playerColor="red"
-                          />
-                        </div>
-
-                        <div className="flex-1 flex items-center justify-center">
-                          {gameState.phase === 'PLAYING' && (
-                            <TrickArea
-                              cards={gameState.currentTrick}
-                              winnerSeat={gameState.currentTrick.length === 4 ? gameState.currentPlayerSeat : null}
-                            />
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="w-32 flex items-center">
-                        <PlayerSeat
-                          player={getPlayerAtPosition('right')}
-                          position="top"
-                          isCurrentPlayer={gameState.currentPlayerSeat === getPlayerAtPosition('right')?.seatIndex}
-                          playerColor="purple"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="md:hidden grid grid-cols-3 gap-4">
-                      <PlayerSeat
-                        player={getPlayerAtPosition('left')}
-                        position="top"
-                        isCurrentPlayer={gameState.currentPlayerSeat === getPlayerAtPosition('left')?.seatIndex}
-                        playerColor="yellow"
-                      />
-                      <PlayerSeat
-                        player={getPlayerAtPosition('top')}
-                        position="top"
-                        isCurrentPlayer={gameState.currentPlayerSeat === getPlayerAtPosition('top')?.seatIndex}
-                        playerColor="red"
-                      />
-                      <PlayerSeat
-                        player={getPlayerAtPosition('right')}
-                        position="top"
-                        isCurrentPlayer={gameState.currentPlayerSeat === getPlayerAtPosition('right')?.seatIndex}
-                        playerColor="purple"
-                      />
-                    </div>
+                  <div className="grid grid-cols-3 gap-4 mb-6">
+                    <PlayerSeat
+                      player={getPlayerAtPosition('left')}
+                      position="top"
+                      isCurrentPlayer={gameState.currentPlayerSeat === getPlayerAtPosition('left')?.seatIndex}
+                      playerColor="yellow"
+                    />
+                    <PlayerSeat
+                      player={getPlayerAtPosition('top')}
+                      position="top"
+                      isCurrentPlayer={gameState.currentPlayerSeat === getPlayerAtPosition('top')?.seatIndex}
+                      playerColor="red"
+                    />
+                    <PlayerSeat
+                      player={getPlayerAtPosition('right')}
+                      position="top"
+                      isCurrentPlayer={gameState.currentPlayerSeat === getPlayerAtPosition('right')?.seatIndex}
+                      playerColor="purple"
+                    />
                   </div>
+
+                  {gameState.phase === 'PLAYING' && (
+                    <TrickArea
+                      cards={gameState.currentTrick}
+                      winnerSeat={gameState.currentTrick.length === 4 ? gameState.currentPlayerSeat : null}
+                    />
+                  )}
 
                   {gameState.phase === 'BIDDING' && currentPlayer && (
                     <div className="bg-white rounded-lg p-6 mb-6">
@@ -462,12 +427,59 @@ export default function TablePage() {
                     </div>
                   )}
 
-                  <div className="bg-slate-800 rounded-xl p-6 overflow-visible relative" style={{ height: '260px' }}>
+                  <div className="bg-slate-800 rounded-xl p-6 overflow-hidden" style={{ height: '220px' }}>
                     {myHand && myHand.length > 0 ? (
-                      <div className="relative h-full flex items-end justify-center">
-                        {myHand.length > 8 && (
-                          <div className="absolute bottom-16 left-1/2 -translate-x-1/2 flex justify-center">
-                            {myHand.slice(8).map((card, index) => {
+                      <div className="flex justify-center items-start h-full">
+                        <div className="relative" style={{ width: '100%', height: '400px', marginTop: '0' }}>
+                          {myHand.length > 8 && (
+                            <div className="absolute top-0 left-1/2 -translate-x-1/2">
+                              <div className="relative" style={{ width: `${(myHand.length - 8) * 45 + 128}px`, height: '200px' }}>
+                                {myHand.slice(8).map((card, index) => {
+                                  const canPlay = currentPlayer && gameState
+                                    ? canPlayCard(gameState, currentPlayer.seatIndex, card.id)
+                                    : false;
+                                  const isPlayable = isMyTurn && gameState.phase === 'PLAYING' && canPlay;
+
+                                  return (
+                                    <div
+                                      key={card.id}
+                                      className="absolute transition-all duration-200"
+                                      style={{
+                                        left: `${index * 45}px`,
+                                        top: '0',
+                                        zIndex: 10 + index,
+                                      }}
+                                      onMouseEnter={(e) => {
+                                        if (isPlayable) {
+                                          e.currentTarget.style.top = '-20px';
+                                        }
+                                      }}
+                                      onMouseLeave={(e) => {
+                                        if (isPlayable) {
+                                          e.currentTarget.style.top = '0';
+                                        }
+                                      }}
+                                    >
+                                      <TarotCard
+                                        card={card}
+                                        size="lg"
+                                        selectable={isPlayable}
+                                        selected={selectedCard === card.id}
+                                        onClick={() => isPlayable && handleCardClick(card.id)}
+                                      />
+                                      {isMyTurn && gameState.phase === 'PLAYING' && !canPlay && (
+                                        <div className="absolute inset-0 bg-black/60 rounded-lg pointer-events-none" />
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
+
+                          <div className="absolute left-1/2 -translate-x-1/2" style={{ top: '80px' }}>
+                            <div className="relative" style={{ width: `${Math.min(myHand.length, 8) * 45 + 128}px`, height: '200px' }}>
+                              {myHand.slice(0, Math.min(8, myHand.length)).map((card, index) => {
                                 const canPlay = currentPlayer && gameState
                                   ? canPlayCard(gameState, currentPlayer.seatIndex, card.id)
                                   : false;
@@ -476,61 +488,20 @@ export default function TablePage() {
                                 return (
                                   <div
                                     key={card.id}
-                                    className="transition-all duration-200 w-32"
+                                    className="absolute transition-all duration-200"
                                     style={{
-                                      marginLeft: index === 0 ? '0' : '-87px',
-                                      zIndex: 10 + index,
-                                    }}
-                                    onMouseEnter={(e) => {
-                                      if (isPlayable) {
-                                        e.currentTarget.style.transform = 'translateY(-20px)';
-                                      }
-                                    }}
-                                    onMouseLeave={(e) => {
-                                      if (isPlayable) {
-                                        e.currentTarget.style.transform = 'translateY(0)';
-                                      }
-                                    }}
-                                  >
-                                    <TarotCard
-                                      card={card}
-                                      size="lg"
-                                      selectable={isPlayable}
-                                      selected={selectedCard === card.id}
-                                      onClick={() => isPlayable && handleCardClick(card.id)}
-                                    />
-                                    {isMyTurn && gameState.phase === 'PLAYING' && !canPlay && (
-                                      <div className="absolute inset-0 bg-black/60 rounded-lg pointer-events-none" />
-                                    )}
-                                  </div>
-                                );
-                              })}
-                          </div>
-                        )}
-
-                        <div className="flex justify-center">
-                          {myHand.slice(0, Math.min(8, myHand.length)).map((card, index) => {
-                                const canPlay = currentPlayer && gameState
-                                  ? canPlayCard(gameState, currentPlayer.seatIndex, card.id)
-                                  : false;
-                                const isPlayable = isMyTurn && gameState.phase === 'PLAYING' && canPlay;
-
-                                return (
-                                  <div
-                                    key={card.id}
-                                    className="transition-all duration-200 w-32"
-                                    style={{
-                                      marginLeft: index === 0 ? '0' : '-87px',
+                                      left: `${index * 45}px`,
+                                      top: '0',
                                       zIndex: 30 + index,
                                     }}
                                     onMouseEnter={(e) => {
                                       if (isPlayable) {
-                                        e.currentTarget.style.transform = 'translateY(-20px)';
+                                        e.currentTarget.style.top = '-20px';
                                       }
                                     }}
                                     onMouseLeave={(e) => {
                                       if (isPlayable) {
-                                        e.currentTarget.style.transform = 'translateY(0)';
+                                        e.currentTarget.style.top = '0';
                                       }
                                     }}
                                   >
@@ -547,6 +518,8 @@ export default function TablePage() {
                                   </div>
                                 );
                               })}
+                            </div>
+                          </div>
                         </div>
                       </div>
                     ) : (
