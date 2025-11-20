@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { User, Users } from 'lucide-react';
+import { User, Users, BookOpen, GraduationCap, FileText, Play, LogOut } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 export function Navigation() {
@@ -77,37 +77,42 @@ export function Navigation() {
           </div>
         </Link>
 
-        <div className="flex items-center gap-6">
-          <Link href="/regles" className="text-white/90 hover:text-white font-medium transition-colors">
-            Règles
+        <div className="flex items-center gap-3 md:gap-6">
+          <Link href="/regles" className="text-white/90 hover:text-white font-medium transition-colors" title="Règles">
+            <span className="hidden md:inline">Règles</span>
+            <BookOpen className="w-5 h-5 md:hidden" />
           </Link>
-          <Link href="/tutoriel" className="text-white/90 hover:text-white font-medium transition-colors">
-            Tutoriel
+          <Link href="/tutoriel" className="text-white/90 hover:text-white font-medium transition-colors" title="Tutoriel">
+            <span className="hidden md:inline">Tutoriel</span>
+            <GraduationCap className="w-5 h-5 md:hidden" />
           </Link>
-          <Link href="/distributions" className="text-white/90 hover:text-white font-medium transition-colors">
-            Distributions
+          <Link href="/distributions" className="text-white/90 hover:text-white font-medium transition-colors" title="Distributions">
+            <span className="hidden md:inline">Distributions</span>
+            <FileText className="w-5 h-5 md:hidden" />
           </Link>
           {user && (
-            <Link href="/jouer" className="text-white/90 hover:text-white font-medium transition-colors">
-              Jouer
+            <Link href="/jouer" className="text-white/90 hover:text-white font-medium transition-colors" title="Jouer">
+              <span className="hidden md:inline">Jouer</span>
+              <Play className="w-5 h-5 md:hidden" />
             </Link>
           )}
 
           {user ? (
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
               <Link href="/compte">
-                <Button variant="ghost" size="sm">
-                  <User className="w-4 h-4 mr-2" />
-                  {user.displayName}
+                <Button variant="outline" size="sm" className="bg-white hover:bg-blue-50 text-gray-900 border-white hover:border-blue-200">
+                  <User className="w-4 h-4 md:mr-2" />
+                  <span className="hidden md:inline">{user.displayName}</span>
                 </Button>
               </Link>
-              <Button variant="outline" size="sm" onClick={logout}>
-                Déconnexion
+              <Button variant="outline" size="sm" onClick={logout} className="bg-white hover:bg-blue-50 text-gray-900 border-white hover:border-blue-200" title="Déconnexion">
+                <LogOut className="w-4 h-4" />
+                <span className="hidden md:inline md:ml-2">Déconnexion</span>
               </Button>
             </div>
           ) : (
             <Link href="/compte">
-              <Button size="sm">Se connecter</Button>
+              <Button size="sm" className="bg-white hover:bg-blue-50 text-gray-900">Se connecter</Button>
             </Link>
           )}
         </div>
