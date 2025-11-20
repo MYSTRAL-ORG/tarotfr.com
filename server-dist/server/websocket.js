@@ -109,6 +109,13 @@ async function handleJoinTable(ws, payload) {
             type: 'PLAYER_JOINED',
             payload: { player: players.find(p => p.userId === userId) },
         });
+        broadcastToTable(tableId, {
+            type: 'TABLE_STATE',
+            payload: {
+                tableId,
+                players,
+            },
+        });
         const gameState = tableGames.get(tableId);
         if (gameState) {
             console.log('[JOIN] Game already started, sending game state to new player');
@@ -260,27 +267,60 @@ function handlePlayCard(ws, payload) {
         return;
     try {
         const newState = (0, tarotEngine_1.playCard)(gameState, player.seatIndex, cardId);
+        const trickJustCompleted = newState.currentTrick.length === 0 && newState.completedTricks.length > gameState.completedTricks.length;
         tableGames.set(client.tableId, newState);
         broadcastToTable(client.tableId, {
             type: 'CARD_PLAYED',
             payload: { playerSeat: player.seatIndex, cardId },
         });
-        if (newState.currentTrick.length === 0 && newState.completedTricks.length > gameState.completedTricks.length) {
-            broadcastToTable(client.tableId, {
-                type: 'TRICK_COMPLETE',
-                payload: {
-                    trick: newState.completedTricks[newState.completedTricks.length - 1]
-                },
-            });
+        if (trickJustCompleted && client.tableId) {
+            const tableId = client.tableId;
+            setTimeout(() => {
+                const currentState = tableGames.get(tableId);
+                if (currentState) {
+                    const clearedState = {
+                        ...currentState,
+                        currentTrick: [],
+                    };
+                    tableGames.set(tableId, clearedState);
+                    broadcastToTable(tableId, {
+                        type: 'TRICK_COMPLETE',
+                        payload: {
+                            trick: currentState.completedTricks[currentState.completedTricks.length - 1]
+                        },
+                    });
+                }
+            }, 4500);
         }
         if (newState.phase === 'SCORING') {
-            const scores = (0, tarotEngine_1.calculateScores)(newState);
-            newState.scores = scores;
-            tableGames.set(client.tableId, newState);
+            const { state: scoringState, contractWon } = (0, tarotEngine_1.finishRound)(newState);
+            tableGames.set(client.tableId, scoringState);
             broadcastToTable(client.tableId, {
-                type: 'GAME_PHASE_CHANGE',
-                payload: { phase: 'SCORING', scores },
+                type: 'ROUND_END',
+                payload: {
+                    phase: 'SCORING',
+                    roundNumber: scoringState.currentRound,
+                    scores: scoringState.scores,
+                    totalScores: scoringState.totalScores,
+                    contractWon,
+                    isGameOver: scoringState.currentRound >= 3,
+                },
             });
+            broadcastGameState(client.tableId, scoringState);
+            if (scoringState.currentRound >= 3) {
+                broadcastToTable(client.tableId, {
+                    type: 'GAME_OVER',
+                    payload: {
+                        finalScores: scoringState.totalScores,
+                        roundScores: scoringState.roundScores,
+                    },
+                });
+                return;
+            }
+            setTimeout(() => {
+                handleNextRound(client.tableId);
+            }, 5000);
+            return;
         }
         broadcastGameState(client.tableId, newState);
         executeBotTurn(client.tableId, newState);
@@ -353,6 +393,37 @@ async function startGame(tableId, players) {
         console.error('Error in startGame:', error);
     }
 }
+async function handleNextRound(tableId) {
+    try {
+        const currentState = tableGames.get(tableId);
+        if (!currentState)
+            return;
+        const distribution = (0, distributionSeeder_1.generateNewDistribution)();
+        const sortedHands = {};
+        for (let i = 0; i < 4; i++) {
+            sortedHands[i] = (0, distributionSeeder_1.sortHand)(distribution.hands[i]);
+        }
+        const nextRoundState = (0, tarotEngine_1.startNextRound)(currentState, sortedHands, distribution.dog);
+        tableGames.set(tableId, nextRoundState);
+        const biddingState = (0, tarotEngine_1.startBidding)(nextRoundState);
+        tableGames.set(tableId, biddingState);
+        broadcastToTable(tableId, {
+            type: 'ROUND_START',
+            payload: {
+                roundNumber: biddingState.currentRound,
+            },
+        });
+        broadcastGameState(tableId, biddingState);
+        broadcastToTable(tableId, {
+            type: 'GAME_PHASE_CHANGE',
+            payload: { phase: 'BIDDING' },
+        });
+        executeBotTurn(tableId, biddingState);
+    }
+    catch (error) {
+        console.error('Error in handleNextRound:', error);
+    }
+}
 function handleDisconnect(ws) {
     const client = clients.get(ws);
     if (client && client.tableId) {
@@ -409,87 +480,103 @@ async function handleAddBot(ws, payload) {
         sendError(ws, 'Invalid difficulty level');
         return;
     }
-    const players = tablePlayers.get(client.tableId) || [];
-    if (players.length >= 4) {
-        sendError(ws, 'Table is full');
-        return;
-    }
-    const availableSeats = [0, 1, 2, 3].filter(seat => !players.some(p => p.seatIndex === seat));
-    if (availableSeats.length === 0) {
-        sendError(ws, 'No available seats');
-        return;
-    }
-    const seatIndex = availableSeats[0];
-    const bot = (0, botPlayer_1.createBotPlayer)(seatIndex, difficulty);
-    console.log('[ADD_BOT] Creating bot:', {
-        userId: bot.userId,
-        displayName: bot.displayName,
-        seatIndex,
-        difficulty
-    });
-    try {
-        const { error: userError } = await supabase_1.supabase
-            .from('users')
-            .insert({
-            id: bot.userId,
-            display_name: bot.displayName,
-            is_guest: false,
-            is_bot: true,
-            email: null,
-        });
-        if (userError) {
-            console.log('[ADD_BOT] User insert result:', {
-                code: userError.code,
-                message: userError.message,
-                details: userError.details
+    let attempts = 0;
+    const maxAttempts = 5;
+    while (attempts < maxAttempts) {
+        try {
+            const { data: existingPlayers, error: fetchError } = await supabase_1.supabase
+                .from('table_players')
+                .select('seat_index')
+                .eq('table_id', client.tableId);
+            if (fetchError) {
+                console.error('[ADD_BOT] Error fetching existing players:', fetchError);
+                sendError(ws, 'Failed to check available seats');
+                return;
+            }
+            const occupiedSeats = (existingPlayers || []).map(p => p.seat_index);
+            if (occupiedSeats.length >= 4) {
+                sendError(ws, 'Table is full');
+                return;
+            }
+            const availableSeats = [0, 1, 2, 3].filter(seat => !occupiedSeats.includes(seat));
+            if (availableSeats.length === 0) {
+                sendError(ws, 'No available seats');
+                return;
+            }
+            const seatIndex = availableSeats[0];
+            const bot = (0, botPlayer_1.createBotPlayer)(seatIndex, difficulty);
+            console.log('[ADD_BOT] Attempt', attempts + 1, 'Creating bot:', {
+                userId: bot.userId,
+                displayName: bot.displayName,
+                seatIndex,
+                difficulty,
+                occupiedSeats
             });
-        }
-        if (userError && userError.code !== '23505') {
-            console.error('[ADD_BOT] Error creating bot user:', userError);
-            console.error('[ADD_BOT] Error details:', JSON.stringify(userError, null, 2));
-            sendError(ws, `Failed to create bot user: ${userError.message}`);
+            const { error: userError } = await supabase_1.supabase
+                .from('users')
+                .insert({
+                id: bot.userId,
+                display_name: bot.displayName,
+                is_guest: false,
+                is_bot: true,
+                email: null,
+            });
+            if (userError && userError.code !== '23505') {
+                console.error('[ADD_BOT] Error creating bot user:', userError);
+                sendError(ws, `Failed to create bot user: ${userError.message}`);
+                return;
+            }
+            const { error } = await supabase_1.supabase
+                .from('table_players')
+                .insert({
+                table_id: client.tableId,
+                user_id: bot.userId,
+                seat_index: seatIndex,
+                is_ready: true,
+            });
+            if (error && error.code === '23505') {
+                console.log('[ADD_BOT] Seat conflict detected, retrying with next available seat...');
+                attempts++;
+                await new Promise(resolve => setTimeout(resolve, 100));
+                continue;
+            }
+            if (error) {
+                console.error('[ADD_BOT] Error adding bot to table_players:', error);
+                sendError(ws, `Failed to add bot to table: ${error.message}`);
+                return;
+            }
+            console.log('[ADD_BOT] Bot added to table_players successfully');
+            const players = tablePlayers.get(client.tableId) || [];
+            players.push(bot);
+            tablePlayers.set(client.tableId, players);
+            console.log('[ADD_BOT] Players count after adding bot:', players.length);
+            broadcastToTable(client.tableId, {
+                type: 'BOT_ADDED',
+                payload: { player: bot },
+            });
+            broadcastToTable(client.tableId, {
+                type: 'TABLE_STATE',
+                payload: {
+                    tableId: client.tableId,
+                    players,
+                },
+            });
+            if (players.length === 4 && players.every(p => p.isReady)) {
+                setTimeout(() => startGame(client.tableId, players), 1000);
+            }
             return;
         }
-        else {
-            console.log('[ADD_BOT] Bot user created successfully (or already exists)');
-        }
-        const { error } = await supabase_1.supabase
-            .from('table_players')
-            .insert({
-            table_id: client.tableId,
-            user_id: bot.userId,
-            seat_index: seatIndex,
-            is_ready: true,
-        });
-        if (error) {
-            console.error('[ADD_BOT] Error adding bot to table_players:', error);
-            console.error('[ADD_BOT] Error details:', JSON.stringify(error, null, 2));
-            sendError(ws, `Failed to add bot to table: ${error.message}`);
-            return;
-        }
-        console.log('[ADD_BOT] Bot added to table_players successfully');
-        players.push(bot);
-        tablePlayers.set(client.tableId, players);
-        console.log('[ADD_BOT] Players count after adding bot:', players.length);
-        broadcastToTable(client.tableId, {
-            type: 'BOT_ADDED',
-            payload: { player: bot },
-        });
-        broadcastToTable(client.tableId, {
-            type: 'TABLE_STATE',
-            payload: {
-                tableId: client.tableId,
-                players,
-            },
-        });
-        if (players.length === 4 && players.every(p => p.isReady)) {
-            setTimeout(() => startGame(client.tableId, players), 1000);
+        catch (error) {
+            console.error('Error in handleAddBot:', error);
+            if (attempts >= maxAttempts - 1) {
+                sendError(ws, 'Failed to add bot after multiple attempts');
+                return;
+            }
+            attempts++;
+            await new Promise(resolve => setTimeout(resolve, 100));
         }
     }
-    catch (error) {
-        console.error('Error in handleAddBot:', error);
-        sendError(ws, 'Failed to add bot');
-    }
+    sendError(ws, 'Failed to add bot: maximum attempts reached');
 }
 async function handleRemoveBot(ws, payload) {
     const client = clients.get(ws);
@@ -587,27 +674,59 @@ function executeBotTurn(tableId, gameState) {
             if (cardToPlay) {
                 try {
                     const newState = (0, tarotEngine_1.playCard)(updatedGameState, currentPlayer.seatIndex, cardToPlay);
+                    const trickJustCompleted = newState.currentTrick.length === 0 && newState.completedTricks.length > updatedGameState.completedTricks.length;
                     tableGames.set(tableId, newState);
                     broadcastToTable(tableId, {
                         type: 'CARD_PLAYED',
                         payload: { playerSeat: currentPlayer.seatIndex, cardId: cardToPlay },
                     });
-                    if (newState.currentTrick.length === 0 && newState.completedTricks.length > updatedGameState.completedTricks.length) {
-                        broadcastToTable(tableId, {
-                            type: 'TRICK_COMPLETE',
-                            payload: {
-                                trick: newState.completedTricks[newState.completedTricks.length - 1]
-                            },
-                        });
+                    if (trickJustCompleted) {
+                        setTimeout(() => {
+                            const currentState = tableGames.get(tableId);
+                            if (currentState) {
+                                const clearedState = {
+                                    ...currentState,
+                                    currentTrick: [],
+                                };
+                                tableGames.set(tableId, clearedState);
+                                broadcastToTable(tableId, {
+                                    type: 'TRICK_COMPLETE',
+                                    payload: {
+                                        trick: currentState.completedTricks[currentState.completedTricks.length - 1]
+                                    },
+                                });
+                            }
+                        }, 4500);
                     }
                     if (newState.phase === 'SCORING') {
-                        const scores = (0, tarotEngine_1.calculateScores)(newState);
-                        newState.scores = scores;
-                        tableGames.set(tableId, newState);
+                        const { state: scoringState, contractWon } = (0, tarotEngine_1.finishRound)(newState);
+                        tableGames.set(tableId, scoringState);
                         broadcastToTable(tableId, {
-                            type: 'GAME_PHASE_CHANGE',
-                            payload: { phase: 'SCORING', scores },
+                            type: 'ROUND_END',
+                            payload: {
+                                phase: 'SCORING',
+                                roundNumber: scoringState.currentRound,
+                                scores: scoringState.scores,
+                                totalScores: scoringState.totalScores,
+                                contractWon,
+                                isGameOver: scoringState.currentRound >= 3,
+                            },
                         });
+                        broadcastGameState(tableId, scoringState);
+                        if (scoringState.currentRound >= 3) {
+                            broadcastToTable(tableId, {
+                                type: 'GAME_OVER',
+                                payload: {
+                                    finalScores: scoringState.totalScores,
+                                    roundScores: scoringState.roundScores,
+                                },
+                            });
+                            return;
+                        }
+                        setTimeout(() => {
+                            handleNextRound(tableId);
+                        }, 5000);
+                        return;
                     }
                     broadcastGameState(tableId, newState);
                     executeBotTurn(tableId, newState);

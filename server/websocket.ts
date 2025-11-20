@@ -153,6 +153,14 @@ async function handleJoinTable(ws: WebSocket, payload: any) {
       payload: { player: players.find(p => p.userId === userId) },
     });
 
+    broadcastToTable(tableId, {
+      type: 'TABLE_STATE',
+      payload: {
+        tableId,
+        players,
+      },
+    });
+
     const gameState = tableGames.get(tableId);
     if (gameState) {
       console.log('[JOIN] Game already started, sending game state to new player');

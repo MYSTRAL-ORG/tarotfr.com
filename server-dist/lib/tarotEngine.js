@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.revealDog = exports.startBidding = exports.calculateScores = exports.determineTrickWinner = exports.playCard = exports.canPlayCard = exports.applyBid = exports.sortHand = exports.createInitialState = exports.dealCards = exports.shuffleDeck = exports.createDeck = void 0;
+exports.startNextRound = exports.finishRound = exports.revealDog = exports.startBidding = exports.calculateScores = exports.determineTrickWinner = exports.playCard = exports.canPlayCard = exports.applyBid = exports.sortHand = exports.createInitialState = exports.dealCards = exports.shuffleDeck = exports.createDeck = void 0;
 const CARD_POINTS = {
     'EXCUSE': 4.5,
     'TRUMP_1': 4.5,
@@ -108,6 +108,10 @@ function createInitialState(players, hands, dog) {
         currentTrick: [],
         completedTricks: [],
         scores: { 0: 0, 1: 0, 2: 0, 3: 0 },
+        currentRound: 1,
+        roundScores: [],
+        totalScores: { 0: 0, 1: 0, 2: 0, 3: 0 },
+        lastRoundWon: null,
     };
 }
 exports.createInitialState = createInitialState;
@@ -367,3 +371,47 @@ function revealDog(state) {
     };
 }
 exports.revealDog = revealDog;
+function finishRound(state) {
+    const roundScores = calculateScores(state);
+    const newRoundScores = [...state.roundScores, roundScores];
+    const newTotalScores = { ...state.totalScores };
+    for (let i = 0; i < 4; i++) {
+        newTotalScores[i] = (newTotalScores[i] || 0) + (roundScores[i] || 0);
+    }
+    const takerScore = state.takerSeat !== null ? roundScores[state.takerSeat] : 0;
+    const contractWon = takerScore > 0;
+    return {
+        state: {
+            ...state,
+            scores: roundScores,
+            roundScores: newRoundScores,
+            totalScores: newTotalScores,
+            lastRoundWon: contractWon,
+            phase: 'SCORING',
+        },
+        contractWon,
+    };
+}
+exports.finishRound = finishRound;
+function startNextRound(state, newHands, newDog) {
+    const nextDealerSeat = (state.currentDealerSeat + 1) % 4;
+    const nextPlayerSeat = (nextDealerSeat + 1) % 4;
+    return {
+        ...state,
+        phase: 'DEALING',
+        hands: newHands,
+        dog: newDog,
+        isDogRevealed: false,
+        currentDealerSeat: nextDealerSeat,
+        currentPlayerSeat: nextPlayerSeat,
+        bids: [],
+        takerSeat: null,
+        contract: null,
+        currentTrick: [],
+        completedTricks: [],
+        scores: { 0: 0, 1: 0, 2: 0, 3: 0 },
+        currentRound: state.currentRound + 1,
+        lastRoundWon: null,
+    };
+}
+exports.startNextRound = startNextRound;
