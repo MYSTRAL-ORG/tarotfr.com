@@ -400,24 +400,22 @@ export default function TablePage() {
                     />
                   </div>
 
-                  {gameState.phase === 'PLAYING' && (
-                    <div className="flex-1 flex items-center">
+                  <div className="flex-1 flex items-center justify-center">
+                    {gameState.phase === 'BIDDING' && currentPlayer ? (
+                      <div className="bg-white rounded-lg p-6 max-w-4xl w-full">
+                        <BiddingPanel
+                          onBid={handleBid}
+                          isMyTurn={isMyTurn || false}
+                          availableBids={availableBids}
+                        />
+                      </div>
+                    ) : (
                       <TrickArea
                         cards={gameState.currentTrick}
                         winnerSeat={null}
                       />
-                    </div>
-                  )}
-
-                  {gameState.phase === 'BIDDING' && currentPlayer && (
-                    <div className="bg-white rounded-lg p-6 mb-6">
-                      <BiddingPanel
-                        onBid={handleBid}
-                        isMyTurn={isMyTurn || false}
-                        availableBids={availableBids}
-                      />
-                    </div>
-                  )}
+                    )}
+                  </div>
 
                   <div style={{ height: '200px' }}>
                     {myHand && myHand.length > 0 ? (
