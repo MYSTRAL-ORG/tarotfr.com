@@ -412,7 +412,9 @@ export default function TablePage() {
                     ) : (
                       <TrickArea
                         cards={gameState.currentTrick}
-                        winnerSeat={null}
+                        winnerSeat={gameState.currentTrickWinner}
+                        players={players}
+                        currentPlayerSeat={currentPlayer?.seatIndex}
                       />
                     )}
                   </div>

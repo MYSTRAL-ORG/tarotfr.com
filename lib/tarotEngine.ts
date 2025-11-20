@@ -135,6 +135,7 @@ export function createInitialState(
     takerSeat: null,
     contract: null,
     currentTrick: [],
+    currentTrickWinner: null,
     completedTricks: [],
     scores: { 0: 0, 1: 0, 2: 0, 3: 0 },
     currentRound: 1,
@@ -341,16 +342,11 @@ export function playCard(state: TarotGameState, playerSeat: number, cardId: stri
 
   let newPhase = state.phase;
   let newCurrentPlayerSeat = (state.currentPlayerSeat + 1) % 4;
-  let newCompletedTricks = state.completedTricks;
+  let newTrickWinner = state.currentTrickWinner;
 
   if (newCurrentTrick.length === 4) {
     const winnerSeat = determineTrickWinner(newCurrentTrick);
-    const completedTrick: Trick = {
-      leadSeat: newCurrentTrick[0].playerSeat,
-      cards: newCurrentTrick,
-      winnerSeat,
-    };
-    newCompletedTricks = [...state.completedTricks, completedTrick];
+    newTrickWinner = winnerSeat;
     newCurrentPlayerSeat = winnerSeat;
 
     if (Object.values(newHands).every(hand => hand.length === 0)) {
@@ -360,8 +356,8 @@ export function playCard(state: TarotGameState, playerSeat: number, cardId: stri
     return {
       ...state,
       hands: newHands,
-      currentTrick: [],
-      completedTricks: newCompletedTricks,
+      currentTrick: newCurrentTrick,
+      currentTrickWinner: newTrickWinner,
       phase: newPhase,
       currentPlayerSeat: newCurrentPlayerSeat,
     };
@@ -371,6 +367,7 @@ export function playCard(state: TarotGameState, playerSeat: number, cardId: stri
     ...state,
     hands: newHands,
     currentTrick: newCurrentTrick,
+    currentTrickWinner: null,
     currentPlayerSeat: newCurrentPlayerSeat,
   };
 }
@@ -495,6 +492,25 @@ export function finishRound(state: TarotGameState): { state: TarotGameState; con
   };
 }
 
+export function clearTrick(state: TarotGameState): TarotGameState {
+  if (state.currentTrick.length !== 4 || state.currentTrickWinner === null) {
+    throw new Error('Cannot clear trick: trick is not complete');
+  }
+
+  const completedTrick: Trick = {
+    leadSeat: state.currentTrick[0].playerSeat,
+    cards: state.currentTrick,
+    winnerSeat: state.currentTrickWinner,
+  };
+
+  return {
+    ...state,
+    currentTrick: [],
+    currentTrickWinner: null,
+    completedTricks: [...state.completedTricks, completedTrick],
+  };
+}
+
 export function startNextRound(state: TarotGameState, newHands: Record<number, TarotCard[]>, newDog: TarotCard[]): TarotGameState {
   const nextDealerSeat = (state.currentDealerSeat + 1) % 4;
   const nextPlayerSeat = (nextDealerSeat + 1) % 4;
@@ -511,6 +527,7 @@ export function startNextRound(state: TarotGameState, newHands: Record<number, T
     takerSeat: null,
     contract: null,
     currentTrick: [],
+    currentTrickWinner: null,
     completedTricks: [],
     scores: { 0: 0, 1: 0, 2: 0, 3: 0 },
     currentRound: state.currentRound + 1,

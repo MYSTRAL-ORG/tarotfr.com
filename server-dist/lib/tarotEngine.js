@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.startNextRound = exports.finishRound = exports.revealDog = exports.startBidding = exports.calculateScores = exports.determineTrickWinner = exports.playCard = exports.canPlayCard = exports.applyBid = exports.sortHand = exports.createInitialState = exports.dealCards = exports.shuffleDeck = exports.createDeck = void 0;
+exports.startNextRound = exports.clearTrick = exports.finishRound = exports.revealDog = exports.startBidding = exports.calculateScores = exports.determineTrickWinner = exports.playCard = exports.canPlayCard = exports.applyBid = exports.sortHand = exports.createInitialState = exports.dealCards = exports.shuffleDeck = exports.createDeck = void 0;
 const CARD_POINTS = {
     'EXCUSE': 4.5,
     'TRUMP_1': 4.5,
@@ -106,6 +106,7 @@ function createInitialState(players, hands, dog) {
         takerSeat: null,
         contract: null,
         currentTrick: [],
+        currentTrickWinner: null,
         completedTricks: [],
         scores: { 0: 0, 1: 0, 2: 0, 3: 0 },
         currentRound: 1,
@@ -281,15 +282,10 @@ function playCard(state, playerSeat, cardId) {
     const newCurrentTrick = [...state.currentTrick, { playerSeat, card }];
     let newPhase = state.phase;
     let newCurrentPlayerSeat = (state.currentPlayerSeat + 1) % 4;
-    let newCompletedTricks = state.completedTricks;
+    let newTrickWinner = state.currentTrickWinner;
     if (newCurrentTrick.length === 4) {
         const winnerSeat = determineTrickWinner(newCurrentTrick);
-        const completedTrick = {
-            leadSeat: newCurrentTrick[0].playerSeat,
-            cards: newCurrentTrick,
-            winnerSeat,
-        };
-        newCompletedTricks = [...state.completedTricks, completedTrick];
+        newTrickWinner = winnerSeat;
         newCurrentPlayerSeat = winnerSeat;
         if (Object.values(newHands).every(hand => hand.length === 0)) {
             newPhase = 'SCORING';
@@ -297,8 +293,8 @@ function playCard(state, playerSeat, cardId) {
         return {
             ...state,
             hands: newHands,
-            currentTrick: [],
-            completedTricks: newCompletedTricks,
+            currentTrick: newCurrentTrick,
+            currentTrickWinner: newTrickWinner,
             phase: newPhase,
             currentPlayerSeat: newCurrentPlayerSeat,
         };
@@ -307,6 +303,7 @@ function playCard(state, playerSeat, cardId) {
         ...state,
         hands: newHands,
         currentTrick: newCurrentTrick,
+        currentTrickWinner: null,
         currentPlayerSeat: newCurrentPlayerSeat,
     };
 }
@@ -414,6 +411,23 @@ function finishRound(state) {
     };
 }
 exports.finishRound = finishRound;
+function clearTrick(state) {
+    if (state.currentTrick.length !== 4 || state.currentTrickWinner === null) {
+        throw new Error('Cannot clear trick: trick is not complete');
+    }
+    const completedTrick = {
+        leadSeat: state.currentTrick[0].playerSeat,
+        cards: state.currentTrick,
+        winnerSeat: state.currentTrickWinner,
+    };
+    return {
+        ...state,
+        currentTrick: [],
+        currentTrickWinner: null,
+        completedTricks: [...state.completedTricks, completedTrick],
+    };
+}
+exports.clearTrick = clearTrick;
 function startNextRound(state, newHands, newDog) {
     const nextDealerSeat = (state.currentDealerSeat + 1) % 4;
     const nextPlayerSeat = (nextDealerSeat + 1) % 4;
@@ -429,6 +443,7 @@ function startNextRound(state, newHands, newDog) {
         takerSeat: null,
         contract: null,
         currentTrick: [],
+        currentTrickWinner: null,
         completedTricks: [],
         scores: { 0: 0, 1: 0, 2: 0, 3: 0 },
         currentRound: state.currentRound + 1,

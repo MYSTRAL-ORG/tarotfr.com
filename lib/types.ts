@@ -60,6 +60,7 @@ export interface TarotGameState {
   takerSeat: number | null;
   contract: BidType | null;
   currentTrick: PlayedCard[];
+  currentTrickWinner: number | null;
   completedTricks: Trick[];
   scores: Record<number, number>;
   currentRound: number;

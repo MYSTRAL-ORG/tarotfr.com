@@ -275,55 +275,62 @@ function handlePlayCard(ws, payload) {
         return;
     try {
         const newState = (0, tarotEngine_1.playCard)(gameState, player.seatIndex, cardId);
-        const trickJustCompleted = newState.currentTrick.length === 0 && newState.completedTricks.length > gameState.completedTricks.length;
+        const trickJustCompleted = newState.currentTrick.length === 4 && newState.currentTrickWinner !== null;
         tableGames.set(client.tableId, newState);
         broadcastToTable(client.tableId, {
             type: 'CARD_PLAYED',
             payload: { playerSeat: player.seatIndex, cardId },
         });
+        broadcastGameState(client.tableId, newState);
         if (trickJustCompleted && client.tableId) {
             const tableId = client.tableId;
-            const completedTrick = newState.completedTricks[newState.completedTricks.length - 1];
             setTimeout(() => {
+                const currentState = tableGames.get(tableId);
+                if (!currentState || currentState.currentTrick.length !== 4)
+                    return;
+                const clearedState = (0, tarotEngine_1.clearTrick)(currentState);
+                tableGames.set(tableId, clearedState);
                 broadcastToTable(tableId, {
                     type: 'TRICK_COMPLETE',
                     payload: {
-                        trick: completedTrick
+                        trick: clearedState.completedTricks[clearedState.completedTricks.length - 1]
                     },
                 });
-            }, 4500);
-        }
-        if (newState.phase === 'SCORING') {
-            const { state: scoringState, contractWon } = (0, tarotEngine_1.finishRound)(newState);
-            tableGames.set(client.tableId, scoringState);
-            broadcastToTable(client.tableId, {
-                type: 'ROUND_END',
-                payload: {
-                    phase: 'SCORING',
-                    roundNumber: scoringState.currentRound,
-                    scores: scoringState.scores,
-                    totalScores: scoringState.totalScores,
-                    contractWon,
-                    isGameOver: scoringState.currentRound >= 3,
-                },
-            });
-            broadcastGameState(client.tableId, scoringState);
-            if (scoringState.currentRound >= 3) {
-                broadcastToTable(client.tableId, {
-                    type: 'GAME_OVER',
-                    payload: {
-                        finalScores: scoringState.totalScores,
-                        roundScores: scoringState.roundScores,
-                    },
-                });
-                return;
-            }
-            setTimeout(() => {
-                handleNextRound(client.tableId);
-            }, 5000);
+                if (clearedState.phase === 'SCORING') {
+                    const { state: scoringState, contractWon } = (0, tarotEngine_1.finishRound)(clearedState);
+                    tableGames.set(tableId, scoringState);
+                    broadcastToTable(tableId, {
+                        type: 'ROUND_END',
+                        payload: {
+                            phase: 'SCORING',
+                            roundNumber: scoringState.currentRound,
+                            scores: scoringState.scores,
+                            totalScores: scoringState.totalScores,
+                            contractWon,
+                            isGameOver: scoringState.currentRound >= 3,
+                        },
+                    });
+                    broadcastGameState(tableId, scoringState);
+                    if (scoringState.currentRound >= 3) {
+                        broadcastToTable(tableId, {
+                            type: 'GAME_OVER',
+                            payload: {
+                                finalScores: scoringState.totalScores,
+                                roundScores: scoringState.roundScores,
+                            },
+                        });
+                        return;
+                    }
+                    setTimeout(() => {
+                        handleNextRound(tableId);
+                    }, 5000);
+                    return;
+                }
+                broadcastGameState(tableId, clearedState);
+                executeBotTurn(tableId, clearedState);
+            }, 3500);
             return;
         }
-        broadcastGameState(client.tableId, newState);
         executeBotTurn(client.tableId, newState);
     }
     catch (error) {
@@ -680,54 +687,61 @@ function executeBotTurn(tableId, gameState) {
             if (cardToPlay) {
                 try {
                     const newState = (0, tarotEngine_1.playCard)(updatedGameState, currentPlayerInUpdatedState.seatIndex, cardToPlay);
-                    const trickJustCompleted = newState.currentTrick.length === 0 && newState.completedTricks.length > updatedGameState.completedTricks.length;
+                    const trickJustCompleted = newState.currentTrick.length === 4 && newState.currentTrickWinner !== null;
                     tableGames.set(tableId, newState);
                     broadcastToTable(tableId, {
                         type: 'CARD_PLAYED',
                         payload: { playerSeat: currentPlayerInUpdatedState.seatIndex, cardId: cardToPlay },
                     });
+                    broadcastGameState(tableId, newState);
                     if (trickJustCompleted) {
-                        const completedTrick = newState.completedTricks[newState.completedTricks.length - 1];
                         setTimeout(() => {
+                            const currentState = tableGames.get(tableId);
+                            if (!currentState || currentState.currentTrick.length !== 4)
+                                return;
+                            const clearedState = (0, tarotEngine_1.clearTrick)(currentState);
+                            tableGames.set(tableId, clearedState);
                             broadcastToTable(tableId, {
                                 type: 'TRICK_COMPLETE',
                                 payload: {
-                                    trick: completedTrick
+                                    trick: clearedState.completedTricks[clearedState.completedTricks.length - 1]
                                 },
                             });
-                        }, 4500);
-                    }
-                    if (newState.phase === 'SCORING') {
-                        const { state: scoringState, contractWon } = (0, tarotEngine_1.finishRound)(newState);
-                        tableGames.set(tableId, scoringState);
-                        broadcastToTable(tableId, {
-                            type: 'ROUND_END',
-                            payload: {
-                                phase: 'SCORING',
-                                roundNumber: scoringState.currentRound,
-                                scores: scoringState.scores,
-                                totalScores: scoringState.totalScores,
-                                contractWon,
-                                isGameOver: scoringState.currentRound >= 3,
-                            },
-                        });
-                        broadcastGameState(tableId, scoringState);
-                        if (scoringState.currentRound >= 3) {
-                            broadcastToTable(tableId, {
-                                type: 'GAME_OVER',
-                                payload: {
-                                    finalScores: scoringState.totalScores,
-                                    roundScores: scoringState.roundScores,
-                                },
-                            });
-                            return;
-                        }
-                        setTimeout(() => {
-                            handleNextRound(tableId);
-                        }, 5000);
+                            if (clearedState.phase === 'SCORING') {
+                                const { state: scoringState, contractWon } = (0, tarotEngine_1.finishRound)(clearedState);
+                                tableGames.set(tableId, scoringState);
+                                broadcastToTable(tableId, {
+                                    type: 'ROUND_END',
+                                    payload: {
+                                        phase: 'SCORING',
+                                        roundNumber: scoringState.currentRound,
+                                        scores: scoringState.scores,
+                                        totalScores: scoringState.totalScores,
+                                        contractWon,
+                                        isGameOver: scoringState.currentRound >= 3,
+                                    },
+                                });
+                                broadcastGameState(tableId, scoringState);
+                                if (scoringState.currentRound >= 3) {
+                                    broadcastToTable(tableId, {
+                                        type: 'GAME_OVER',
+                                        payload: {
+                                            finalScores: scoringState.totalScores,
+                                            roundScores: scoringState.roundScores,
+                                        },
+                                    });
+                                    return;
+                                }
+                                setTimeout(() => {
+                                    handleNextRound(tableId);
+                                }, 5000);
+                                return;
+                            }
+                            broadcastGameState(tableId, clearedState);
+                            executeBotTurn(tableId, clearedState);
+                        }, 3500);
                         return;
                     }
-                    broadcastGameState(tableId, newState);
                     executeBotTurn(tableId, newState);
                 }
                 catch (error) {
