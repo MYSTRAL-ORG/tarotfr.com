@@ -9,7 +9,10 @@ export async function POST(
     const { userId } = await request.json();
     const tableId = params.id;
 
+    console.log('[JOIN API] Request received:', { tableId, userId });
+
     if (!userId) {
+      console.log('[JOIN API] ERROR: Missing userId');
       return NextResponse.json(
         { error: 'User ID is required' },
         { status: 400 }
@@ -21,7 +24,10 @@ export async function POST(
       .select('*')
       .eq('table_id', tableId);
 
+    console.log('[JOIN API] Existing players:', existingPlayers?.length || 0);
+
     if (existingPlayers && existingPlayers.length >= 4) {
+      console.log('[JOIN API] ERROR: Table is full');
       return NextResponse.json(
         { error: 'Table is full' },
         { status: 400 }
