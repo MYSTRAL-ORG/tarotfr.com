@@ -484,32 +484,45 @@ async function handleAddBot(ws: WebSocket, payload: any) {
     return;
   }
 
-  const players = tablePlayers.get(client.tableId) || [];
-  if (players.length >= 4) {
-    sendError(ws, 'Table is full');
-    return;
-  }
-
-  const availableSeats = [0, 1, 2, 3].filter(
-    seat => !players.some(p => p.seatIndex === seat)
-  );
-
-  if (availableSeats.length === 0) {
-    sendError(ws, 'No available seats');
-    return;
-  }
-
-  const seatIndex = availableSeats[0];
-  const bot = createBotPlayer(seatIndex, difficulty as BotDifficulty);
-
-  console.log('[ADD_BOT] Creating bot:', {
-    userId: bot.userId,
-    displayName: bot.displayName,
-    seatIndex,
-    difficulty
-  });
-
   try {
+    const { data: existingPlayers, error: fetchError } = await supabase
+      .from('table_players')
+      .select('seat_index')
+      .eq('table_id', client.tableId);
+
+    if (fetchError) {
+      console.error('[ADD_BOT] Error fetching existing players:', fetchError);
+      sendError(ws, 'Failed to check available seats');
+      return;
+    }
+
+    const occupiedSeats = (existingPlayers || []).map(p => p.seat_index);
+
+    if (occupiedSeats.length >= 4) {
+      sendError(ws, 'Table is full');
+      return;
+    }
+
+    const availableSeats = [0, 1, 2, 3].filter(
+      seat => !occupiedSeats.includes(seat)
+    );
+
+    if (availableSeats.length === 0) {
+      sendError(ws, 'No available seats');
+      return;
+    }
+
+    const seatIndex = availableSeats[0];
+    const bot = createBotPlayer(seatIndex, difficulty as BotDifficulty);
+
+    console.log('[ADD_BOT] Creating bot:', {
+      userId: bot.userId,
+      displayName: bot.displayName,
+      seatIndex,
+      difficulty,
+      occupiedSeats
+    });
+
     const { error: userError } = await supabase
       .from('users')
       .insert({
@@ -555,6 +568,7 @@ async function handleAddBot(ws: WebSocket, payload: any) {
 
     console.log('[ADD_BOT] Bot added to table_players successfully');
 
+    const players = tablePlayers.get(client.tableId) || [];
     players.push(bot);
     tablePlayers.set(client.tableId, players);
     console.log('[ADD_BOT] Players count after adding bot:', players.length);
