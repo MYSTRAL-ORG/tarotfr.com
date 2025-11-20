@@ -120,40 +120,6 @@ export default function TablePage() {
           )}
         </div>
 
-        {status !== 'connected' && (
-          <Card className="p-6 text-center mb-6">
-            <p className="text-slate-600">
-              {status === 'connecting' && 'Connexion au serveur...'}
-              {status === 'reconnecting' && 'Reconnexion...'}
-              {status === 'disconnected' && 'Déconnecté du serveur'}
-            </p>
-          </Card>
-        )}
-
-        {!gameState && players.length < 4 && (
-          <Card className="p-8 text-center mb-6">
-            <h2 className="text-2xl font-bold mb-4 text-slate-900">
-              En attente de joueurs
-            </h2>
-            <p className="text-slate-600 mb-4">
-              {players.length} / 4 joueurs présents
-            </p>
-            <p className="text-sm text-slate-500">
-              La partie démarrera automatiquement dès que 4 joueurs seront présents
-            </p>
-          </Card>
-        )}
-
-        {!gameState && players.length === 4 && (
-          <Card className="p-8 text-center mb-6 bg-green-50 border-green-200">
-            <h2 className="text-2xl font-bold mb-2 text-green-900">
-              Prêt à commencer !
-            </h2>
-            <p className="text-green-700">
-              La partie va démarrer dans quelques instants...
-            </p>
-          </Card>
-        )}
 
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

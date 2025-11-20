@@ -502,6 +502,13 @@ async function handleAddBot(ws: WebSocket, payload: any) {
   const seatIndex = availableSeats[0];
   const bot = createBotPlayer(seatIndex, difficulty as BotDifficulty);
 
+  console.log('[ADD_BOT] Creating bot:', {
+    userId: bot.userId,
+    displayName: bot.displayName,
+    seatIndex,
+    difficulty
+  });
+
   try {
     const { error: userError } = await supabase
       .from('users')
@@ -512,11 +519,21 @@ async function handleAddBot(ws: WebSocket, payload: any) {
         email: null,
       });
 
+    if (userError) {
+      console.log('[ADD_BOT] User insert result:', {
+        code: userError.code,
+        message: userError.message,
+        details: userError.details
+      });
+    }
+
     if (userError && userError.code !== '23505') {
-      console.error('Error creating bot user:', userError);
-      console.error('Error details:', JSON.stringify(userError, null, 2));
-      sendError(ws, 'Failed to create bot user');
+      console.error('[ADD_BOT] Error creating bot user:', userError);
+      console.error('[ADD_BOT] Error details:', JSON.stringify(userError, null, 2));
+      sendError(ws, `Failed to create bot user: ${userError.message}`);
       return;
+    } else {
+      console.log('[ADD_BOT] Bot user created successfully (or already exists)');
     }
 
     const { error } = await supabase
@@ -529,14 +546,17 @@ async function handleAddBot(ws: WebSocket, payload: any) {
       });
 
     if (error) {
-      console.error('Error adding bot to database:', error);
-      console.error('Error details:', JSON.stringify(error, null, 2));
-      sendError(ws, 'Failed to add bot');
+      console.error('[ADD_BOT] Error adding bot to table_players:', error);
+      console.error('[ADD_BOT] Error details:', JSON.stringify(error, null, 2));
+      sendError(ws, `Failed to add bot to table: ${error.message}`);
       return;
     }
 
+    console.log('[ADD_BOT] Bot added to table_players successfully');
+
     players.push(bot);
     tablePlayers.set(client.tableId, players);
+    console.log('[ADD_BOT] Players count after adding bot:', players.length);
 
     broadcastToTable(client.tableId, {
       type: 'BOT_ADDED',
