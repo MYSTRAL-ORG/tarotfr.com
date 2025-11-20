@@ -119,10 +119,11 @@ export default function TablePage() {
     addBot('HARD');
   };
 
-  const handleCompleteTable = () => {
+  const handleCompleteTable = async () => {
     const emptySeats = 4 - players.length;
     for (let i = 0; i < emptySeats; i++) {
       addBot(selectedDifficulty);
+      await new Promise(resolve => setTimeout(resolve, 300));
     }
   };
 
