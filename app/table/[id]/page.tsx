@@ -308,7 +308,7 @@ export default function TablePage() {
             </Card>
           ) : (
             <div className="space-y-6">
-              <div className="bg-gradient-to-br from-green-700 via-green-800 to-green-900 rounded-xl p-8 shadow-2xl relative overflow-hidden">
+              <div className={`bg-gradient-to-br from-green-700 via-green-800 to-green-900 rounded-xl p-8 shadow-2xl relative overflow-hidden ${isMyTurn ? 'ring-4 ring-blue-500' : ''}`}>
                 <div className="absolute inset-0 opacity-20" style={{
                   backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
                 }}></div>
@@ -381,25 +381,29 @@ export default function TablePage() {
                     }
                   />
 
-                  <div className="grid grid-cols-3 gap-4 mb-6">
-                    <PlayerSeat
-                      player={getPlayerAtPosition('left')}
-                      position="top"
-                      isCurrentPlayer={gameState.currentPlayerSeat === getPlayerAtPosition('left')?.seatIndex}
-                      playerColor="yellow"
-                    />
-                    <PlayerSeat
-                      player={getPlayerAtPosition('top')}
-                      position="top"
-                      isCurrentPlayer={gameState.currentPlayerSeat === getPlayerAtPosition('top')?.seatIndex}
-                      playerColor="red"
-                    />
-                    <PlayerSeat
-                      player={getPlayerAtPosition('right')}
-                      position="top"
-                      isCurrentPlayer={gameState.currentPlayerSeat === getPlayerAtPosition('right')?.seatIndex}
-                      playerColor="purple"
-                    />
+                  <div className="mb-6">
+                    <div className="flex justify-center mb-4">
+                      <PlayerSeat
+                        player={getPlayerAtPosition('top')}
+                        position="top"
+                        isCurrentPlayer={gameState.currentPlayerSeat === getPlayerAtPosition('top')?.seatIndex}
+                        playerColor="red"
+                      />
+                    </div>
+                    <div className="flex justify-center gap-8">
+                      <PlayerSeat
+                        player={getPlayerAtPosition('left')}
+                        position="top"
+                        isCurrentPlayer={gameState.currentPlayerSeat === getPlayerAtPosition('left')?.seatIndex}
+                        playerColor="yellow"
+                      />
+                      <PlayerSeat
+                        player={getPlayerAtPosition('right')}
+                        position="top"
+                        isCurrentPlayer={gameState.currentPlayerSeat === getPlayerAtPosition('right')?.seatIndex}
+                        playerColor="purple"
+                      />
+                    </div>
                   </div>
 
                   {gameState.phase === 'PLAYING' && (
@@ -459,7 +463,7 @@ export default function TablePage() {
                                         selected={selectedCard === card.id}
                                         onClick={() => isPlayable && handleCardClick(card.id)}
                                       />
-                                      {isMyTurn && gameState.phase === 'PLAYING' && !canPlay && (
+                                      {(!isMyTurn || (isMyTurn && gameState.phase === 'PLAYING' && !canPlay)) && (
                                         <div className="absolute inset-0 bg-black/60 rounded-lg pointer-events-none" />
                                       )}
                                     </div>
@@ -504,7 +508,7 @@ export default function TablePage() {
                                       selected={selectedCard === card.id}
                                       onClick={() => isPlayable && handleCardClick(card.id)}
                                     />
-                                    {isMyTurn && gameState.phase === 'PLAYING' && !canPlay && (
+                                    {(!isMyTurn || (isMyTurn && gameState.phase === 'PLAYING' && !canPlay)) && (
                                       <div className="absolute inset-0 bg-black/60 rounded-lg pointer-events-none" />
                                     )}
                                   </div>
@@ -514,11 +518,7 @@ export default function TablePage() {
                           </div>
                         </div>
                       </div>
-                    ) : (
-                      <div className="flex items-center justify-center h-full">
-                        <span className="text-white/50 text-sm">En attente des cartes...</span>
-                      </div>
-                    )}
+                    ) : null}
                   </div>
                 </div>
               </div>

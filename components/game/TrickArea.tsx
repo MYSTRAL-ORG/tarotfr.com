@@ -51,7 +51,7 @@ export function TrickArea({ cards, className, winnerSeat }: TrickAreaProps) {
         <img
           src="/img/logo-carpet.svg"
           alt=""
-          className="w-96 h-96 object-contain"
+          className="w-48 h-48 object-contain"
         />
       </div>
       {cards.map((playedCard, index) => (
@@ -68,9 +68,6 @@ export function TrickArea({ cards, className, winnerSeat }: TrickAreaProps) {
           <TarotCard card={playedCard.card} size="md" />
         </div>
       ))}
-      {cards.length === 0 && (
-        <div className="relative z-10 text-white/30 text-sm">En attente des cartes...</div>
-      )}
     </div>
   );
 }
