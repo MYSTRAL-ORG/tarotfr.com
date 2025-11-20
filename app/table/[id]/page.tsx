@@ -233,7 +233,7 @@ export default function TablePage() {
                 <div className="space-y-3">
                   {players.map((player) => (
                     <div
-                      key={player.id}
+                      key={player.userId}
                       className="flex items-center justify-between p-3 bg-slate-50 rounded-lg"
                     >
                       <div className="flex items-center gap-2">
@@ -268,7 +268,7 @@ export default function TablePage() {
                   <div className="space-y-2">
                     {players.map((player) => (
                       <div
-                        key={player.id}
+                        key={player.userId}
                         className="flex items-center justify-between"
                       >
                         <span className="text-slate-700">{player.displayName}</span>
