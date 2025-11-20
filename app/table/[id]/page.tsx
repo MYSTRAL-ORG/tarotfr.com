@@ -313,14 +313,6 @@ export default function TablePage() {
                   backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
                 }}></div>
 
-                <div className="absolute inset-0 flex items-center justify-center opacity-10">
-                  <img
-                    src="/img/logo-carpet.svg"
-                    alt=""
-                    className="w-96 h-96 object-contain"
-                  />
-                </div>
-
                 <div className="relative z-10">
                   <GameStatusBar
                     phase={gameState.phase}

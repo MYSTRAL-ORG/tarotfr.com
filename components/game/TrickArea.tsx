@@ -47,6 +47,13 @@ export function TrickArea({ cards, className, winnerSeat }: TrickAreaProps) {
 
   return (
     <div className={cn('relative w-full h-full min-h-[280px] bg-green-700 rounded-xl my-6 flex items-center justify-center p-6', className)}>
+      <div className="absolute inset-0 flex items-center justify-center opacity-10">
+        <img
+          src="/img/logo-carpet.svg"
+          alt=""
+          className="w-96 h-96 object-contain"
+        />
+      </div>
       {cards.map((playedCard, index) => (
         <div
           key={`${playedCard.card.id}-${index}`}
@@ -62,7 +69,7 @@ export function TrickArea({ cards, className, winnerSeat }: TrickAreaProps) {
         </div>
       ))}
       {cards.length === 0 && (
-        <div className="text-white/30 text-sm">En attente des cartes...</div>
+        <div className="relative z-10 text-white/30 text-sm">En attente des cartes...</div>
       )}
     </div>
   );
