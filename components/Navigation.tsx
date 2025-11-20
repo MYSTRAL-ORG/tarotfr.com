@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { User } from 'lucide-react';
+import { User, Users } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 export function Navigation() {
@@ -67,9 +67,13 @@ export function Navigation() {
             className="h-14 w-auto"
             priority
           />
-          <div className="h-10 w-px bg-white/30 ml-2"></div>
-          <div className="text-white/90 text-sm font-medium">
+          <div className="h-10 w-px bg-white/30 ml-2 hidden md:block"></div>
+          <div className="text-white/90 text-sm font-medium hidden md:block">
             <span className="text-green-300 mr-1">{onlinePlayers}</span> joueurs en ligne
+          </div>
+          <div className="flex items-center gap-1.5 text-white/90 text-sm font-medium md:hidden ml-2">
+            <Users className="w-4 h-4 text-green-300" />
+            <span className="text-green-300">{onlinePlayers}</span>
           </div>
         </Link>
 
