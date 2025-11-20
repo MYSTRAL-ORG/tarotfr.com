@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { supabase } from '@/lib/supabase';
 import { generateNewDistribution } from '@/lib/distributionSeeder';
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = supabaseAdmin;
 
     // Generate a new distribution automatically for this table
     const distribution = generateNewDistribution();
@@ -28,8 +27,9 @@ export async function POST(request: NextRequest) {
 
     if (distError || !distributionData) {
       console.error('Failed to create distribution:', distError);
+      console.error('Error details:', JSON.stringify(distError, null, 2));
       return NextResponse.json(
-        { error: 'Failed to create distribution for table' },
+        { error: 'Failed to create distribution for table', details: distError?.message },
         { status: 500 }
       );
     }
@@ -47,8 +47,9 @@ export async function POST(request: NextRequest) {
 
     if (tableError || !table) {
       console.error('Failed to create table:', tableError);
+      console.error('Error details:', JSON.stringify(tableError, null, 2));
       return NextResponse.json(
-        { error: 'Failed to create table' },
+        { error: 'Failed to create table', details: tableError?.message },
         { status: 500 }
       );
     }

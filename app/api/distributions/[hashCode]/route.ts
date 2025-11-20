@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { supabase } from '@/lib/supabase';
 import { dealCardsWithSeed, sortHand } from '@/lib/distributionSeeder';
 
 export async function GET(
@@ -9,7 +9,7 @@ export async function GET(
   try {
     const { hashCode } = params;
 
-    const { data: distribution, error: distError } = await supabaseAdmin
+    const { data: distribution, error: distError } = await supabase
       .from('card_distributions')
       .select('*')
       .eq('hash_code', hashCode)
@@ -17,8 +17,9 @@ export async function GET(
 
     if (distError) {
       console.error('Error fetching distribution:', distError);
+      console.error('Error details:', JSON.stringify(distError, null, 2));
       return NextResponse.json(
-        { error: 'Failed to fetch distribution' },
+        { error: 'Failed to fetch distribution', details: distError?.message },
         { status: 500 }
       );
     }
@@ -30,13 +31,14 @@ export async function GET(
       );
     }
 
-    const { data: games, error: gamesError } = await supabaseAdmin
+    const { data: games, error: gamesError } = await supabase
       .from('games')
       .select('id, status, created_at')
       .eq('distribution_id', distribution.id);
 
     if (gamesError) {
       console.error('Error fetching games:', gamesError);
+      console.error('Error details:', JSON.stringify(gamesError, null, 2));
     }
 
     const hasCompletedGame = games?.some(g => g.status === 'END' || g.status === 'SCORING');

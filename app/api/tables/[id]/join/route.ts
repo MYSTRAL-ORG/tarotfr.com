@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { supabase } from '@/lib/supabase';
 
 export async function POST(
   request: NextRequest,
@@ -16,7 +16,7 @@ export async function POST(
       );
     }
 
-    const { data: existingPlayers } = await supabaseAdmin
+    const { data: existingPlayers } = await supabase
       .from('table_players')
       .select('*')
       .eq('table_id', tableId);
@@ -35,7 +35,7 @@ export async function POST(
 
     const seatIndex = existingPlayers?.length || 0;
 
-    const { data: tablePlayer, error } = await supabaseAdmin
+    const { data: tablePlayer, error } = await supabase
       .from('table_players')
       .insert({
         table_id: tableId,
@@ -47,8 +47,10 @@ export async function POST(
       .single();
 
     if (error || !tablePlayer) {
+      console.error('Failed to join table:', error);
+      console.error('Error details:', JSON.stringify(error, null, 2));
       return NextResponse.json(
-        { error: 'Failed to join table' },
+        { error: 'Failed to join table', details: error?.message },
         { status: 500 }
       );
     }

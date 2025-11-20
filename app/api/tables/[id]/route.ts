@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { supabase } from '@/lib/supabase';
 
 export async function GET(
   request: NextRequest,
@@ -8,20 +8,22 @@ export async function GET(
   try {
     const tableId = params.id;
 
-    const { data: table, error: tableError } = await supabaseAdmin
+    const { data: table, error: tableError } = await supabase
       .from('tables')
       .select('*')
       .eq('id', tableId)
       .maybeSingle();
 
     if (tableError || !table) {
+      console.error('Table not found:', tableError);
+      console.error('Error details:', JSON.stringify(tableError, null, 2));
       return NextResponse.json(
-        { error: 'Table not found' },
+        { error: 'Table not found', details: tableError?.message },
         { status: 404 }
       );
     }
 
-    const { data: players, error: playersError } = await supabaseAdmin
+    const { data: players, error: playersError } = await supabase
       .from('table_players')
       .select(`
         *,
@@ -35,8 +37,10 @@ export async function GET(
       .order('seat_index', { ascending: true });
 
     if (playersError) {
+      console.error('Failed to fetch players:', playersError);
+      console.error('Error details:', JSON.stringify(playersError, null, 2));
       return NextResponse.json(
-        { error: 'Failed to fetch players' },
+        { error: 'Failed to fetch players', details: playersError?.message },
         { status: 500 }
       );
     }

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { supabase } from '@/lib/supabase';
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await supabase
       .from('card_distributions')
       .select('id, hash_code, distribution_number, sequence_number, created_at')
       .eq('hash_code', hashCode)
@@ -21,8 +21,9 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error('Error validating hash code:', error);
+      console.error('Error details:', JSON.stringify(error, null, 2));
       return NextResponse.json(
-        { error: 'Failed to validate hash code' },
+        { error: 'Failed to validate hash code', details: error?.message },
         { status: 500 }
       );
     }

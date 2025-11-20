@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { supabase } from '@/lib/supabase';
 
 const GUEST_ADJECTIVES = [
   'Rapide', 'Brave', 'Sage', 'Fort', 'Rusé', 'Noble', 'Fier', 'Calme',
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
   try {
     const nickname = generateGuestNickname();
 
-    const { data: user, error: userError } = await supabaseAdmin
+    const { data: user, error: userError } = await supabase
       .from('users')
       .insert({
         display_name: nickname,
@@ -34,13 +34,14 @@ export async function POST(request: NextRequest) {
 
     if (userError || !user) {
       console.error('Failed to create guest user:', userError);
+      console.error('Error details:', JSON.stringify(userError, null, 2));
       return NextResponse.json(
-        { error: 'Failed to create guest user' },
+        { error: 'Failed to create guest user', details: userError?.message },
         { status: 500 }
       );
     }
 
-    const { error: sessionError } = await supabaseAdmin
+    const { error: sessionError } = await supabase
       .from('guest_sessions')
       .insert({
         user_id: user.id,
@@ -49,8 +50,9 @@ export async function POST(request: NextRequest) {
 
     if (sessionError) {
       console.error('Failed to create guest session:', sessionError);
+      console.error('Error details:', JSON.stringify(sessionError, null, 2));
       return NextResponse.json(
-        { error: 'Failed to create guest session' },
+        { error: 'Failed to create guest session', details: sessionError?.message },
         { status: 500 }
       );
     }

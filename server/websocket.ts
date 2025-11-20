@@ -22,7 +22,7 @@ import {
   BotDifficulty,
 } from '../lib/botPlayer';
 import { generateNewDistribution, sortHand } from '../lib/distributionSeeder';
-import { supabaseAdmin } from '../lib/supabaseAdmin';
+import { supabase } from '../lib/supabase';
 
 interface ConnectedClient {
   ws: WebSocket;
@@ -34,8 +34,6 @@ interface ConnectedClient {
 const clients = new Map<WebSocket, ConnectedClient>();
 const tableGames = new Map<string, TarotGameState>();
 const tablePlayers = new Map<string, Player[]>();
-
-const supabase = supabaseAdmin;
 
 const httpServer = createServer();
 const wss = new WebSocketServer({ server: httpServer });
@@ -119,6 +117,7 @@ async function handleJoinTable(ws: WebSocket, payload: any) {
 
     if (error) {
       console.error('Error fetching players from DB:', error);
+      console.error('Error details:', JSON.stringify(error, null, 2));
       sendError(ws, 'Failed to load table players');
       return;
     }
@@ -190,6 +189,7 @@ async function handleReady(ws: WebSocket) {
 
     if (error) {
       console.error('Error updating ready status:', error);
+      console.error('Error details:', JSON.stringify(error, null, 2));
       sendError(ws, 'Failed to update ready status');
       return;
     }
@@ -339,6 +339,7 @@ async function startGame(tableId: string, players: Player[]) {
 
     if (distError) {
       console.error('Error creating distribution:', distError);
+      console.error('Error details:', JSON.stringify(distError, null, 2));
       return;
     }
 
@@ -381,6 +382,7 @@ async function startGame(tableId: string, players: Player[]) {
 
     if (gameError) {
       console.error('Error creating game:', gameError);
+      console.error('Error details:', JSON.stringify(gameError, null, 2));
     }
 
     await supabase
@@ -488,6 +490,7 @@ async function handleAddBot(ws: WebSocket, payload: any) {
 
     if (error) {
       console.error('Error adding bot to database:', error);
+      console.error('Error details:', JSON.stringify(error, null, 2));
       sendError(ws, 'Failed to add bot');
       return;
     }
@@ -550,6 +553,7 @@ async function handleRemoveBot(ws: WebSocket, payload: any) {
 
     if (error) {
       console.error('Error removing bot from database:', error);
+      console.error('Error details:', JSON.stringify(error, null, 2));
     }
 
     const filteredPlayers = players.filter(p => p.userId !== botId);
