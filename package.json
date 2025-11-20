@@ -9,7 +9,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "cleanup:tables": "node scripts/cleanup-tables.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

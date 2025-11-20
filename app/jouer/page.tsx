@@ -258,10 +258,13 @@ export default function PlayPage() {
                           <div className="flex items-center gap-2 text-slate-500 text-sm">
                             <Clock className="w-4 h-4" />
                             <span>
-                              {new Date(table.createdAt).toLocaleTimeString('fr-FR', {
-                                hour: '2-digit',
-                                minute: '2-digit'
-                              })}
+                              {table.createdAt
+                                ? new Date(table.createdAt).toLocaleTimeString('fr-FR', {
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  })
+                                : '--:--'
+                              }
                             </span>
                           </div>
                         </div>
