@@ -93,8 +93,8 @@ export default function TablePage() {
 
     const positionMap = {
       top: (currentPlayer.seatIndex + 2) % 4,
-      left: (currentPlayer.seatIndex + 1) % 4,
-      right: (currentPlayer.seatIndex + 3) % 4,
+      left: (currentPlayer.seatIndex + 3) % 4,
+      right: (currentPlayer.seatIndex + 1) % 4,
     };
 
     return players.find(p => p.seatIndex === positionMap[position]) || null;
@@ -427,11 +427,10 @@ export default function TablePage() {
 
                   <div className="bg-slate-800 rounded-xl p-6 overflow-hidden" style={{ height: '220px' }}>
                     {myHand && myHand.length > 0 ? (
-                      <div className="flex justify-center items-start h-full">
-                        <div className="relative" style={{ width: '100%', height: '400px', marginTop: '0' }}>
-                          <div className="absolute top-0 left-1/2 -translate-x-1/2">
-                            <div className="relative" style={{ width: `${Math.min(myHand.length - 8, 7) * 45 + 128}px`, height: '200px' }}>
-                              {myHand.slice(8).map((card, index) => {
+                      <div className="flex flex-col justify-center items-center h-full gap-2">
+                        {myHand.length > 8 && (
+                          <div className="flex justify-center">
+                            {myHand.slice(8).map((card, index) => {
                                 const canPlay = currentPlayer && gameState
                                   ? canPlayCard(gameState, currentPlayer.seatIndex, card.id)
                                   : false;
@@ -440,24 +439,23 @@ export default function TablePage() {
                                 return (
                                   <div
                                     key={card.id}
-                                    className="absolute transition-all duration-200"
+                                    className="transition-all duration-200"
                                     style={{
-                                      left: `${index * 45}px`,
-                                      top: '0',
+                                      marginLeft: index === 0 ? '0' : '-87px',
                                       zIndex: 10 + index,
                                     }}
                                     onMouseEnter={(e) => {
                                       if (isPlayable) {
-                                        e.currentTarget.style.top = '-20px';
+                                        e.currentTarget.style.transform = 'translateY(-20px)';
                                       }
                                     }}
                                     onMouseLeave={(e) => {
                                       if (isPlayable) {
-                                        e.currentTarget.style.top = '0';
+                                        e.currentTarget.style.transform = 'translateY(0)';
                                       }
                                     }}
                                   >
-                                    <div className="relative">
+                                    <div className="relative w-32 h-52">
                                       <TarotCard
                                         card={card}
                                         size="lg"
@@ -466,18 +464,17 @@ export default function TablePage() {
                                         onClick={() => isPlayable && handleCardClick(card.id)}
                                       />
                                       {isMyTurn && gameState.phase === 'PLAYING' && !canPlay && (
-                                        <div className="absolute inset-0 bg-black/60 rounded-lg pointer-events-none" />
+                                        <div className="absolute inset-0 bg-black/60 rounded-lg pointer-events-none w-32 h-52" />
                                       )}
                                     </div>
                                   </div>
                                 );
                               })}
-                            </div>
                           </div>
+                        )}
 
-                          <div className="absolute left-1/2 -translate-x-1/2" style={{ top: '80px' }}>
-                            <div className="relative" style={{ width: `${Math.min(myHand.length, 8) * 45 + 128}px`, height: '200px' }}>
-                              {myHand.slice(0, 8).map((card, index) => {
+                        <div className="flex justify-center">
+                          {myHand.slice(0, Math.min(8, myHand.length)).map((card, index) => {
                                 const canPlay = currentPlayer && gameState
                                   ? canPlayCard(gameState, currentPlayer.seatIndex, card.id)
                                   : false;
@@ -486,24 +483,23 @@ export default function TablePage() {
                                 return (
                                   <div
                                     key={card.id}
-                                    className="absolute transition-all duration-200"
+                                    className="transition-all duration-200"
                                     style={{
-                                      left: `${index * 45}px`,
-                                      top: '0',
+                                      marginLeft: index === 0 ? '0' : '-87px',
                                       zIndex: 30 + index,
                                     }}
                                     onMouseEnter={(e) => {
                                       if (isPlayable) {
-                                        e.currentTarget.style.top = '-20px';
+                                        e.currentTarget.style.transform = 'translateY(-20px)';
                                       }
                                     }}
                                     onMouseLeave={(e) => {
                                       if (isPlayable) {
-                                        e.currentTarget.style.top = '0';
+                                        e.currentTarget.style.transform = 'translateY(0)';
                                       }
                                     }}
                                   >
-                                    <div className="relative">
+                                    <div className="relative w-32 h-52">
                                       <TarotCard
                                         card={card}
                                         size="lg"
@@ -512,14 +508,12 @@ export default function TablePage() {
                                         onClick={() => isPlayable && handleCardClick(card.id)}
                                       />
                                       {isMyTurn && gameState.phase === 'PLAYING' && !canPlay && (
-                                        <div className="absolute inset-0 bg-black/60 rounded-lg pointer-events-none" />
+                                        <div className="absolute inset-0 bg-black/60 rounded-lg pointer-events-none w-32 h-52" />
                                       )}
                                     </div>
                                   </div>
                                 );
                               })}
-                            </div>
-                          </div>
                         </div>
                       </div>
                     ) : (
