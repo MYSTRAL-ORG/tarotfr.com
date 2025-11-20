@@ -23,6 +23,7 @@ export default function PlayPage() {
   const [tables, setTables] = useState<TableWithPlayers[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
+  const [creatingNew, setCreatingNew] = useState(false);
 
   useEffect(() => {
     fetchTables();
@@ -63,14 +64,15 @@ export default function PlayPage() {
         return;
       }
 
-      const availableTable = tables.find(
-        t => t.status === 'WAITING' && t.playerCount < 4
-      );
+      const availableTables = tables
+        .filter(t => t.status === 'WAITING' && t.playerCount < 4)
+        .sort((a, b) => b.playerCount - a.playerCount);
 
       let tableId: string;
 
-      if (availableTable) {
-        tableId = availableTable.id;
+      if (availableTables.length > 0) {
+        tableId = availableTables[0].id;
+        toast.success(`Table trouvée avec ${availableTables[0].playerCount} joueur(s)`);
       } else {
         const createRes = await fetch('/api/tables/create', {
           method: 'POST',
@@ -83,6 +85,7 @@ export default function PlayPage() {
         }
 
         tableId = createData.table.id;
+        toast.success('Nouvelle table créée');
       }
 
       const joinRes = await fetch(`/api/tables/${tableId}/join`, {
@@ -104,6 +107,57 @@ export default function PlayPage() {
       toast.error('Une erreur est survenue');
     } finally {
       setCreating(false);
+    }
+  }
+
+  async function handleCreateTable() {
+    try {
+      setCreatingNew(true);
+
+      let currentUser = user;
+      if (!currentUser) {
+        await createGuest();
+        await new Promise(resolve => setTimeout(resolve, 500));
+        currentUser = user;
+      }
+
+      if (!currentUser) {
+        toast.error('Veuillez vous connecter pour jouer');
+        return;
+      }
+
+      const createRes = await fetch('/api/tables/create', {
+        method: 'POST',
+      });
+      const createData = await createRes.json();
+
+      if (!createData.table) {
+        toast.error('Erreur lors de la création de la table');
+        return;
+      }
+
+      const tableId = createData.table.id;
+
+      const joinRes = await fetch(`/api/tables/${tableId}/join`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: currentUser.id }),
+      });
+
+      const joinData = await joinRes.json();
+
+      if (!joinData.success) {
+        toast.error('Erreur lors de la connexion à la table');
+        return;
+      }
+
+      toast.success('Table créée avec succès');
+      router.push(`/table/${tableId}`);
+    } catch (error) {
+      console.error('Error creating table:', error);
+      toast.error('Une erreur est survenue');
+    } finally {
+      setCreatingNew(false);
     }
   }
 
@@ -155,12 +209,21 @@ export default function PlayPage() {
           </div>
 
           <div className="space-y-8">
-          <div className="flex justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button
+              size="lg"
+              variant="destructive"
+              onClick={handleCreateTable}
+              disabled={creatingNew || authLoading}
+              className="text-lg px-8 py-6 bg-red-600 hover:bg-red-700"
+            >
+              {creatingNew ? 'Création...' : 'Créer une table'}
+            </Button>
             <Button
               size="lg"
               onClick={handleQuickPlay}
               disabled={creating || authLoading}
-              className="text-lg px-8 py-6"
+              className="text-lg px-8 py-6 bg-green-600 hover:bg-green-700"
             >
               {creating ? 'Connexion...' : 'Jouer maintenant'}
             </Button>
@@ -179,7 +242,9 @@ export default function PlayPage() {
               </Card>
             ) : (
               <div className="space-y-3">
-                {tables.map((table) => (
+                {tables
+                  .sort((a, b) => b.playerCount - a.playerCount)
+                  .map((table) => (
                   <Card key={table.id} className="p-6">
                     <div className="flex items-center justify-between">
                       <div className="space-y-2">

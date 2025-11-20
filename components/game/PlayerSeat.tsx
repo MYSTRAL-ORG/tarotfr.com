@@ -1,7 +1,8 @@
 import { Player } from '@/lib/types';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
-import { User, Check } from 'lucide-react';
+import { User, Check, Plus, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface PlayerSeatProps {
   player: Player | null;
@@ -10,6 +11,10 @@ interface PlayerSeatProps {
   cardCount?: number;
   className?: string;
   playerColor?: 'yellow' | 'red' | 'purple';
+  onAddBot?: () => void;
+  onRemoveBot?: (botId: string) => void;
+  canModify?: boolean;
+  gameStarted?: boolean;
 }
 
 export function PlayerSeat({
@@ -19,18 +24,33 @@ export function PlayerSeat({
   cardCount,
   className,
   playerColor = 'yellow',
+  onAddBot,
+  onRemoveBot,
+  canModify = false,
+  gameStarted = false,
 }: PlayerSeatProps) {
   if (!player) {
     return (
       <div
         className={cn(
-          'p-4 rounded-lg border-2 border-dashed border-slate-300 bg-slate-50',
-          'flex items-center justify-center',
-          'min-w-[120px]',
+          'p-4 rounded-lg border-2 border-dashed border-slate-300 bg-slate-50/50',
+          'flex flex-col items-center justify-center gap-2',
+          'min-w-[120px] relative group',
           className
         )}
       >
         <span className="text-sm text-slate-400">En attente...</span>
+        {canModify && !gameStarted && onAddBot && (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={onAddBot}
+            className="bg-blue-500 hover:bg-blue-600 text-white border-blue-600 opacity-80 group-hover:opacity-100 transition-opacity"
+          >
+            <Plus className="w-4 h-4 mr-1" />
+            Ajouter bot
+          </Button>
+        )}
       </div>
     );
   }
@@ -73,7 +93,7 @@ export function PlayerSeat({
   return (
     <div
       className={cn(
-        'p-4 rounded-lg transition-all',
+        'p-4 rounded-lg transition-all relative group',
         isCurrentPlayer ? `border-4 ${colorClasses.border} bg-transparent` : 'bg-transparent',
         className
       )}
@@ -90,10 +110,15 @@ export function PlayerSeat({
               {getInitials(player.displayName)}
             </AvatarFallback>
           </Avatar>
-          {player.isReady && (
-            <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center border-2 border-white">
-              <Check className="w-3 h-3 text-white" />
-            </div>
+          {player.isBot && canModify && !gameStarted && onRemoveBot && (
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => onRemoveBot(player.userId)}
+              className="absolute -top-2 -right-2 w-6 h-6 p-0 bg-red-500 hover:bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              <X className="w-4 h-4" />
+            </Button>
           )}
         </div>
 

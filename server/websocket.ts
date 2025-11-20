@@ -109,6 +109,12 @@ async function handleJoinTable(ws: WebSocket, payload: any) {
   clients.set(ws, client);
 
   try {
+    await supabase
+      .from('table_players')
+      .update({ is_ready: true })
+      .eq('table_id', tableId)
+      .eq('user_id', userId);
+
     const { data: dbPlayers, error } = await supabase
       .from('table_players')
       .select('*, users!inner(id, display_name)')
@@ -127,7 +133,7 @@ async function handleJoinTable(ws: WebSocket, payload: any) {
       userId: dbPlayer.user_id,
       displayName: dbPlayer.users.display_name,
       seatIndex: dbPlayer.seat_index,
-      isReady: dbPlayer.is_ready,
+      isReady: true,
     }));
 
     tablePlayers.set(tableId, players);
@@ -148,6 +154,12 @@ async function handleJoinTable(ws: WebSocket, payload: any) {
     const gameState = tableGames.get(tableId);
     if (gameState) {
       sendGameState(ws, gameState);
+    } else if (players.length === 4) {
+      setTimeout(() => {
+        const currentPlayers = tablePlayers.get(tableId) || [];
+        if (currentPlayers.length === 4 && !tableGames.get(tableId)) {          startGame(tableId, currentPlayers);
+        }
+      }, 2000);
     }
   } catch (error) {
     console.error('Error in handleJoinTable:', error);
