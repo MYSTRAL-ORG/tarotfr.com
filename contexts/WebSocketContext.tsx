@@ -128,6 +128,9 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
 
       case 'GAME_STATE':
         console.log('[WS] Game state received, phase:', message.payload.phase);
+        console.log('[WS] Current trick length:', message.payload.currentTrick?.length || 0);
+        console.log('[WS] Current trick:', message.payload.currentTrick);
+        console.log('[WS] Current trick winner:', message.payload.currentTrickWinner);
         setGameState(message.payload);
         break;
 

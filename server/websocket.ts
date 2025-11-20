@@ -335,6 +335,11 @@ function handlePlayCard(ws: WebSocket, payload: any) {
     const newState = playCard(gameState, player.seatIndex, cardId);
     const trickJustCompleted = newState.currentTrick.length === 4 && newState.currentTrickWinner !== null;
 
+    console.log('[PLAY_CARD] Card played by seat:', player.seatIndex);
+    console.log('[PLAY_CARD] Current trick length after play:', newState.currentTrick.length);
+    console.log('[PLAY_CARD] Current trick winner:', newState.currentTrickWinner);
+    console.log('[PLAY_CARD] Trick just completed:', trickJustCompleted);
+
     tableGames.set(client.tableId, newState);
 
     broadcastToTable(client.tableId, {
@@ -550,6 +555,8 @@ function sendGameState(ws: WebSocket, gameState: TarotGameState) {
       [player.seatIndex]: gameState.hands[player.seatIndex],
     },
   };
+
+  console.log('[SEND_GAME_STATE] Sending to user:', client.userId, 'trick length:', sanitizedState.currentTrick.length);
 
   sendMessage(ws, {
     type: 'GAME_STATE',
