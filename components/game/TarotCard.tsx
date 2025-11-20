@@ -24,10 +24,10 @@ export function TarotCard({
   dimmed = false,
 }: TarotCardProps) {
   const sizeClasses = {
-    sm: 'w-16 h-24',
-    md: 'w-20 h-32',
-    lg: 'w-40 h-64',
-    xl: 'w-48 h-80',
+    sm: 'w-[35px] h-16',
+    md: 'w-[44px] h-20',
+    lg: 'w-[88px] h-40',
+    xl: 'w-[115px] h-52',
   };
 
   const getCardImagePath = () => {
@@ -75,7 +75,7 @@ export function TarotCard({
           src="/img/cards/back-cards.png"
           alt="Dos de carte"
           fill
-          className="object-contain"
+          className="object-cover"
         />
       </div>
     );
@@ -97,7 +97,7 @@ export function TarotCard({
         src={getCardImagePath()}
         alt={`${card.suit} ${card.rank}`}
         fill
-        className="object-contain"
+        className="object-cover"
       />
       {dimmed && (
         <div className="absolute inset-0 bg-black/60 rounded-lg pointer-events-none" />
