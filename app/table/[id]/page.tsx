@@ -419,7 +419,7 @@ export default function TablePage() {
                     </div>
                   )}
 
-                  <div className="bg-slate-800 p-4" style={{ height: '180px' }}>
+                  <div style={{ height: '180px' }}>
                     {myHand && myHand.length > 0 ? (
                       <div className="flex justify-center items-start h-full">
                         <div className="relative" style={{ width: '100%', height: '160px', marginTop: '0' }}>
