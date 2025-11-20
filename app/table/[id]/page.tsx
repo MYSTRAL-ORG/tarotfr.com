@@ -218,11 +218,17 @@ export default function TablePage() {
               <div className="grid md:grid-cols-4 gap-4 mb-6">
                 {[0, 1, 2, 3].map((seatIndex) => {
                   const player = players.find(p => p.seatIndex === seatIndex);
+                  const isPartnerSlot = currentPlayer && seatIndex === (currentPlayer.seatIndex + 2) % 4;
                   const canAddBots = players.length < 4;
 
                   if (player) {
                     return (
                       <Card key={seatIndex} className="p-4 relative group">
+                        {isPartnerSlot && (
+                          <div className="text-xs font-medium text-slate-500 text-center mb-2">
+                            Mon partenaire
+                          </div>
+                        )}
                         <div className="text-center">
                           <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
                             <span className="text-2xl font-bold text-blue-600">
@@ -256,53 +262,68 @@ export default function TablePage() {
 
                   return (
                     <Card key={seatIndex} className="p-4 border-2 border-dashed border-slate-300">
+                      {isPartnerSlot && (
+                        <div className="text-xs font-medium text-slate-500 text-center mb-2">
+                          Mon partenaire
+                        </div>
+                      )}
                       <div className="text-center space-y-3">
                         <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto">
                           <span className="text-2xl text-slate-400">?</span>
                         </div>
                         <p className="text-sm text-slate-400">En attente...</p>
 
-                        {canAddBots && players.length === 1 && (
-                          <div className="space-y-2">
-                            <Button
-                              size="sm"
-                              onClick={handleAddPartner}
-                              className="w-full text-xs"
-                              variant="outline"
-                            >
-                              <Bot className="w-3 h-3 mr-1" />
-                              Ajouter partenaire
-                            </Button>
-                            <div className="space-y-1">
-                              <Select
-                                value={selectedDifficulty}
-                                onValueChange={(value) => setSelectedDifficulty(value as 'EASY' | 'MEDIUM' | 'HARD')}
-                              >
-                                <SelectTrigger className="w-full h-8 text-xs">
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="EASY">Faible</SelectItem>
-                                  <SelectItem value="MEDIUM">Moyen</SelectItem>
-                                  <SelectItem value="HARD">Fort</SelectItem>
-                                </SelectContent>
-                              </Select>
-                              <Button
-                                size="sm"
-                                onClick={handleCompleteTable}
-                                className="w-full text-xs"
-                                variant="secondary"
-                              >
-                                Compléter la table
-                              </Button>
-                            </div>
-                          </div>
+                        {canAddBots && players.length === 1 && isPartnerSlot && (
+                          <Button
+                            size="sm"
+                            onClick={handleAddPartner}
+                            className="w-full text-xs"
+                            variant="outline"
+                          >
+                            <Bot className="w-3 h-3 mr-1" />
+                            Ajouter partenaire
+                          </Button>
                         )}
                       </div>
                     </Card>
                   );
                 })}
               </div>
+
+              {players.length === 1 && (
+                <div className="border-t pt-4">
+                  <h3 className="text-sm font-semibold text-slate-700 mb-3">
+                    Compléter la table avec des bots
+                  </h3>
+                  <div className="flex items-end gap-3">
+                    <div className="flex-1">
+                      <label className="text-xs text-slate-600 mb-1 block">
+                        Niveau des bots
+                      </label>
+                      <Select
+                        value={selectedDifficulty}
+                        onValueChange={(value) => setSelectedDifficulty(value as 'EASY' | 'MEDIUM' | 'HARD')}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="EASY">Faible</SelectItem>
+                          <SelectItem value="MEDIUM">Moyen</SelectItem>
+                          <SelectItem value="HARD">Fort</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <Button
+                      onClick={handleCompleteTable}
+                      className="flex-shrink-0"
+                    >
+                      <Bot className="w-4 h-4 mr-2" />
+                      Ajouter 3 bots
+                    </Button>
+                  </div>
+                </div>
+              )}
             </Card>
           ) : (
             <div className="space-y-6">
