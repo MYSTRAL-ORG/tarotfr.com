@@ -16,7 +16,7 @@ export function TrickArea({ cards, className, winnerSeat }: TrickAreaProps) {
     if (cards.length === 4 && winnerSeat !== null && winnerSeat !== undefined) {
       const timer = setTimeout(() => {
         setIsCollecting(true);
-      }, 1000);
+      }, 3000);
 
       return () => clearTimeout(timer);
     } else {
@@ -29,13 +29,11 @@ export function TrickArea({ cards, className, winnerSeat }: TrickAreaProps) {
       return 'left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 opacity-0';
     }
 
-    const offset = 40;
-    const baseLeft = `calc(50% - ${(cards.length - 1) * offset / 2}px + ${cardIndex * offset}px)`;
     return `top-1/2 -translate-y-1/2`;
   };
 
   return (
-    <div className={cn('relative w-full h-full min-h-[280px] bg-green-700 rounded-xl my-6 flex items-center justify-center p-6', className)}>
+    <div className={cn('relative w-full h-full min-h-[400px] bg-green-700 rounded-xl my-6 flex items-center justify-center p-6', className)}>
       <div className="absolute inset-0 flex items-center justify-center opacity-10">
         <img
           src="/img/logo-carpet.svg"
@@ -44,7 +42,7 @@ export function TrickArea({ cards, className, winnerSeat }: TrickAreaProps) {
         />
       </div>
       {cards.map((playedCard, index) => {
-        const offset = 40;
+        const offset = 80;
         const baseLeft = `calc(50% - ${(cards.length - 1) * offset / 2}px + ${index * offset}px)`;
 
         return (
@@ -60,7 +58,7 @@ export function TrickArea({ cards, className, winnerSeat }: TrickAreaProps) {
               transform: isCollecting && winnerSeat !== null ? 'translate(-50%, -50%)' : 'translateY(-50%)',
             }}
           >
-            <TarotCard card={playedCard.card} size="md" />
+            <TarotCard card={playedCard.card} size="lg" />
           </div>
         );
       })}
