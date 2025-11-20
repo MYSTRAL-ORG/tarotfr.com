@@ -417,10 +417,10 @@ export default function TablePage() {
                     )}
                   </div>
 
-                  <div style={{ height: '180px', overflow: 'hidden' }}>
+                  <div className="relative" style={{ height: '180px' }}>
                     {myHand && myHand.length > 0 ? (
-                      <div className="flex justify-center items-start h-full">
-                        <div className="relative" style={{ width: '100%', height: '300px', marginTop: '0' }}>
+                      <div className="absolute bottom-0 left-0 right-0 flex justify-center" style={{ height: '180px', overflow: 'hidden' }}>
+                        <div className="relative" style={{ width: '100%', height: '300px' }}>
                           {myHand.length > 8 && (
                             <div className="absolute top-0 left-1/2 -translate-x-1/2">
                               <div className="relative" style={{ width: `${(myHand.length - 8) * 60 + 140}px`, height: '300px' }}>
@@ -442,11 +442,13 @@ export default function TablePage() {
                                       onMouseEnter={(e) => {
                                         if (isPlayable) {
                                           e.currentTarget.style.top = '-30px';
+                                          e.currentTarget.style.zIndex = '100';
                                         }
                                       }}
                                       onMouseLeave={(e) => {
                                         if (isPlayable) {
                                           e.currentTarget.style.top = '0';
+                                          e.currentTarget.style.zIndex = `${10 + index}`;
                                         }
                                       }}
                                     >
@@ -485,11 +487,13 @@ export default function TablePage() {
                                     onMouseEnter={(e) => {
                                       if (isPlayable) {
                                         e.currentTarget.style.top = '-30px';
+                                        e.currentTarget.style.zIndex = '100';
                                       }
                                     }}
                                     onMouseLeave={(e) => {
                                       if (isPlayable) {
                                         e.currentTarget.style.top = '0';
+                                        e.currentTarget.style.zIndex = `${30 + index}`;
                                       }
                                     }}
                                   >
