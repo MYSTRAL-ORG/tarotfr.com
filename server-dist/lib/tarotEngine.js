@@ -184,14 +184,24 @@ function applyBid(state, playerSeat, bidType) {
 }
 exports.applyBid = applyBid;
 function canPlayCard(state, playerSeat, cardId) {
-    if (state.phase !== 'PLAYING')
+    if (state.phase !== 'PLAYING') {
+        console.log('[canPlayCard] FAILED: phase is not PLAYING:', state.phase);
         return false;
-    if (state.currentPlayerSeat !== playerSeat)
+    }
+    if (state.currentPlayerSeat !== playerSeat) {
+        console.log('[canPlayCard] FAILED: not current player:', { currentPlayerSeat: state.currentPlayerSeat, playerSeat });
         return false;
+    }
     const playerHand = state.hands[playerSeat];
     const card = playerHand.find((c) => c.id === cardId);
-    if (!card)
+    if (!card) {
+        console.log('[canPlayCard] FAILED: card not found in hand:', {
+            cardId,
+            handCardIds: playerHand.map(c => c.id),
+            handCards: playerHand.map(c => `${c.suit}_${c.rank}`)
+        });
         return false;
+    }
     const trick = state.currentTrick;
     if (trick.length === 0) {
         if (card.suit === 'EXCUSE')
@@ -201,7 +211,18 @@ function canPlayCard(state, playerSeat, cardId) {
     const leadCard = trick[0].card;
     const hasLeadSuit = playerHand.some((c) => c.suit === leadCard.suit);
     const hasTrump = playerHand.some((c) => c.suit === 'TRUMPS');
+    console.log('[canPlayCard] Checking card:', {
+        cardId,
+        cardSuit: card.suit,
+        cardRank: card.rank,
+        leadCardSuit: leadCard.suit,
+        leadCardRank: leadCard.rank,
+        hasLeadSuit,
+        hasTrump,
+        trickLength: trick.length
+    });
     if (card.suit === 'EXCUSE') {
+        console.log('[canPlayCard] Card is EXCUSE, allowing play');
         return true;
     }
     if (leadCard.suit === 'TRUMPS') {
