@@ -13,6 +13,7 @@ import { BiddingPanel } from '@/components/game/BiddingPanel';
 import { useAuth } from '@/contexts/AuthContext';
 import { useWebSocket } from '@/contexts/WebSocketContext';
 import { BidType, Player } from '@/lib/types';
+import { canPlayCard } from '@/lib/tarotEngine';
 import { toast } from 'sonner';
 import { ArrowLeft, Bot, Trophy, Copy, Check } from 'lucide-react';
 import { DistributionCode } from '@/components/game/DistributionCode';
@@ -355,29 +356,63 @@ export default function TablePage() {
                     }
                   />
 
-                  <div className="grid grid-cols-3 gap-4 mb-6">
-                    <PlayerSeat
-                      player={getPlayerAtPosition('left')}
-                      position="top"
-                      isCurrentPlayer={gameState.currentPlayerSeat === getPlayerAtPosition('left')?.seatIndex}
-                      playerColor="yellow"
-                    />
-                    <PlayerSeat
-                      player={getPlayerAtPosition('top')}
-                      position="top"
-                      isCurrentPlayer={gameState.currentPlayerSeat === getPlayerAtPosition('top')?.seatIndex}
-                      playerColor="red"
-                    />
-                    <PlayerSeat
-                      player={getPlayerAtPosition('right')}
-                      position="top"
-                      isCurrentPlayer={gameState.currentPlayerSeat === getPlayerAtPosition('right')?.seatIndex}
-                      playerColor="purple"
-                    />
+                  <div className="mb-6">
+                    <div className="hidden md:flex items-center justify-between">
+                      <div className="w-32">
+                        <PlayerSeat
+                          player={getPlayerAtPosition('left')}
+                          position="top"
+                          isCurrentPlayer={gameState.currentPlayerSeat === getPlayerAtPosition('left')?.seatIndex}
+                          playerColor="yellow"
+                        />
+                      </div>
+
+                      <div className="flex-1 flex justify-center">
+                        <PlayerSeat
+                          player={getPlayerAtPosition('top')}
+                          position="top"
+                          isCurrentPlayer={gameState.currentPlayerSeat === getPlayerAtPosition('top')?.seatIndex}
+                          playerColor="red"
+                        />
+                      </div>
+
+                      <div className="w-32">
+                        <PlayerSeat
+                          player={getPlayerAtPosition('right')}
+                          position="top"
+                          isCurrentPlayer={gameState.currentPlayerSeat === getPlayerAtPosition('right')?.seatIndex}
+                          playerColor="purple"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="md:hidden grid grid-cols-3 gap-4">
+                      <PlayerSeat
+                        player={getPlayerAtPosition('left')}
+                        position="top"
+                        isCurrentPlayer={gameState.currentPlayerSeat === getPlayerAtPosition('left')?.seatIndex}
+                        playerColor="yellow"
+                      />
+                      <PlayerSeat
+                        player={getPlayerAtPosition('top')}
+                        position="top"
+                        isCurrentPlayer={gameState.currentPlayerSeat === getPlayerAtPosition('top')?.seatIndex}
+                        playerColor="red"
+                      />
+                      <PlayerSeat
+                        player={getPlayerAtPosition('right')}
+                        position="top"
+                        isCurrentPlayer={gameState.currentPlayerSeat === getPlayerAtPosition('right')?.seatIndex}
+                        playerColor="purple"
+                      />
+                    </div>
                   </div>
 
                   {gameState.phase === 'PLAYING' && (
-                    <TrickArea cards={gameState.currentTrick} />
+                    <TrickArea
+                      cards={gameState.currentTrick}
+                      winnerSeat={gameState.currentTrick.length === 4 ? gameState.currentPlayerSeat : null}
+                    />
                   )}
 
                   {gameState.phase === 'BIDDING' && currentPlayer && (
@@ -396,61 +431,93 @@ export default function TablePage() {
                         <div className="relative" style={{ width: '100%', height: '400px', marginTop: '0' }}>
                           <div className="absolute top-0 left-1/2 -translate-x-1/2">
                             <div className="relative" style={{ width: `${Math.min(myHand.length - 8, 7) * 45 + 128}px`, height: '200px' }}>
-                              {myHand.slice(8).map((card, index) => (
-                                <div
-                                  key={card.id}
-                                  className="absolute transition-all duration-200"
-                                  style={{
-                                    left: `${index * 45}px`,
-                                    top: '0',
-                                    zIndex: 10 + index,
-                                  }}
-                                  onMouseEnter={(e) => {
-                                    e.currentTarget.style.top = '-20px';
-                                  }}
-                                  onMouseLeave={(e) => {
-                                    e.currentTarget.style.top = '0';
-                                  }}
-                                >
-                                  <TarotCard
-                                    card={card}
-                                    size="lg"
-                                    selectable={isMyTurn && gameState.phase === 'PLAYING'}
-                                    selected={selectedCard === card.id}
-                                    onClick={() => handleCardClick(card.id)}
-                                  />
-                                </div>
-                              ))}
+                              {myHand.slice(8).map((card, index) => {
+                                const canPlay = currentPlayer && gameState
+                                  ? canPlayCard(gameState, currentPlayer.seatIndex, card.id)
+                                  : false;
+                                const isPlayable = isMyTurn && gameState.phase === 'PLAYING' && canPlay;
+
+                                return (
+                                  <div
+                                    key={card.id}
+                                    className="absolute transition-all duration-200"
+                                    style={{
+                                      left: `${index * 45}px`,
+                                      top: '0',
+                                      zIndex: 10 + index,
+                                    }}
+                                    onMouseEnter={(e) => {
+                                      if (isPlayable) {
+                                        e.currentTarget.style.top = '-20px';
+                                      }
+                                    }}
+                                    onMouseLeave={(e) => {
+                                      if (isPlayable) {
+                                        e.currentTarget.style.top = '0';
+                                      }
+                                    }}
+                                  >
+                                    <div className="relative">
+                                      <TarotCard
+                                        card={card}
+                                        size="lg"
+                                        selectable={isPlayable}
+                                        selected={selectedCard === card.id}
+                                        onClick={() => isPlayable && handleCardClick(card.id)}
+                                      />
+                                      {isMyTurn && gameState.phase === 'PLAYING' && !canPlay && (
+                                        <div className="absolute inset-0 bg-black/60 rounded-lg pointer-events-none" />
+                                      )}
+                                    </div>
+                                  </div>
+                                );
+                              })}
                             </div>
                           </div>
 
                           <div className="absolute left-1/2 -translate-x-1/2" style={{ top: '80px' }}>
                             <div className="relative" style={{ width: `${Math.min(myHand.length, 8) * 45 + 128}px`, height: '200px' }}>
-                              {myHand.slice(0, 8).map((card, index) => (
-                                <div
-                                  key={card.id}
-                                  className="absolute transition-all duration-200"
-                                  style={{
-                                    left: `${index * 45}px`,
-                                    top: '0',
-                                    zIndex: 30 + index,
-                                  }}
-                                  onMouseEnter={(e) => {
-                                    e.currentTarget.style.top = '-20px';
-                                  }}
-                                  onMouseLeave={(e) => {
-                                    e.currentTarget.style.top = '0';
-                                  }}
-                                >
-                                  <TarotCard
-                                    card={card}
-                                    size="lg"
-                                    selectable={isMyTurn && gameState.phase === 'PLAYING'}
-                                    selected={selectedCard === card.id}
-                                    onClick={() => handleCardClick(card.id)}
-                                  />
-                                </div>
-                              ))}
+                              {myHand.slice(0, 8).map((card, index) => {
+                                const canPlay = currentPlayer && gameState
+                                  ? canPlayCard(gameState, currentPlayer.seatIndex, card.id)
+                                  : false;
+                                const isPlayable = isMyTurn && gameState.phase === 'PLAYING' && canPlay;
+
+                                return (
+                                  <div
+                                    key={card.id}
+                                    className="absolute transition-all duration-200"
+                                    style={{
+                                      left: `${index * 45}px`,
+                                      top: '0',
+                                      zIndex: 30 + index,
+                                    }}
+                                    onMouseEnter={(e) => {
+                                      if (isPlayable) {
+                                        e.currentTarget.style.top = '-20px';
+                                      }
+                                    }}
+                                    onMouseLeave={(e) => {
+                                      if (isPlayable) {
+                                        e.currentTarget.style.top = '0';
+                                      }
+                                    }}
+                                  >
+                                    <div className="relative">
+                                      <TarotCard
+                                        card={card}
+                                        size="lg"
+                                        selectable={isPlayable}
+                                        selected={selectedCard === card.id}
+                                        onClick={() => isPlayable && handleCardClick(card.id)}
+                                      />
+                                      {isMyTurn && gameState.phase === 'PLAYING' && !canPlay && (
+                                        <div className="absolute inset-0 bg-black/60 rounded-lg pointer-events-none" />
+                                      )}
+                                    </div>
+                                  </div>
+                                );
+                              })}
                             </div>
                           </div>
                         </div>
