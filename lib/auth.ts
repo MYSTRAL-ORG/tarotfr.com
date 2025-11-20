@@ -46,6 +46,10 @@ export async function createGuestSession(): Promise<User> {
     throw new Error('Failed to create guest session');
   }
 
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('tarot_guest_id', user.id);
+  }
+
   return {
     id: user.id,
     email: user.email,
@@ -150,6 +154,10 @@ export async function loginUser(email: string, password: string): Promise<User> 
 }
 
 export async function logoutUser(): Promise<void> {
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('tarot_guest_id');
+  }
+
   const { error } = await supabase.auth.signOut();
   if (error) {
     throw new Error(error.message);
@@ -159,47 +167,72 @@ export async function logoutUser(): Promise<void> {
 export async function getCurrentUser(): Promise<User | null> {
   const { data: { session } } = await supabase.auth.getSession();
 
-  if (!session) {
-    return null;
+  if (session) {
+    let { data: user, error } = await supabase
+      .from('users')
+      .select()
+      .eq('id', session.user.id)
+      .maybeSingle();
+
+    if (!user && !error) {
+      const displayName = session.user.user_metadata?.display_name ||
+                          session.user.email?.split('@')[0] ||
+                          'Utilisateur';
+
+      const { data: newUser } = await supabase
+        .from('users')
+        .insert({
+          id: session.user.id,
+          email: session.user.email,
+          display_name: displayName,
+          is_guest: false,
+        })
+        .select()
+        .single();
+
+      if (newUser) {
+        user = newUser;
+      }
+    }
+
+    if (error || !user) {
+      return null;
+    }
+
+    return {
+      id: user.id,
+      email: user.email,
+      displayName: user.display_name,
+      isGuest: user.is_guest,
+      createdAt: user.created_at,
+      updatedAt: user.updated_at,
+    };
   }
 
-  let { data: user, error } = await supabase
-    .from('users')
-    .select()
-    .eq('id', session.user.id)
-    .maybeSingle();
+  if (typeof window !== 'undefined') {
+    const guestId = localStorage.getItem('tarot_guest_id');
+    if (guestId) {
+      const { data: user, error } = await supabase
+        .from('users')
+        .select()
+        .eq('id', guestId)
+        .eq('is_guest', true)
+        .maybeSingle();
 
-  if (!user && !error) {
-    const displayName = session.user.user_metadata?.display_name ||
-                        session.user.email?.split('@')[0] ||
-                        'Utilisateur';
-
-    const { data: newUser } = await supabase
-      .from('users')
-      .insert({
-        id: session.user.id,
-        email: session.user.email,
-        display_name: displayName,
-        is_guest: false,
-      })
-      .select()
-      .single();
-
-    if (newUser) {
-      user = newUser;
+      if (user && !error) {
+        return {
+          id: user.id,
+          email: user.email,
+          displayName: user.display_name,
+          isGuest: user.is_guest,
+          createdAt: user.created_at,
+          updatedAt: user.updated_at,
+        };
+      } else {
+        localStorage.removeItem('tarot_guest_id');
+      }
     }
   }
 
-  if (error || !user) {
-    return null;
-  }
-
-  return {
-    id: user.id,
-    email: user.email,
-    displayName: user.display_name,
-    isGuest: user.is_guest,
-    createdAt: user.created_at,
-    updatedAt: user.updated_at,
-  };
+  return null;
 }

@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '@/lib/types';
 import { getCurrentUser, createGuestSession, loginUser, registerUser, logoutUser } from '@/lib/auth';
+import { supabase } from '@/lib/supabase';
 
 interface AuthContextType {
   user: User | null;
@@ -21,6 +22,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     checkUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        checkUser();
+      } else {
+        const guestId = typeof window !== 'undefined' ? localStorage.getItem('tarot_guest_id') : null;
+        if (!guestId) {
+          setUser(null);
+        }
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   async function checkUser() {
