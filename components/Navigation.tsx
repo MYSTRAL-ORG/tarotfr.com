@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { User, Users, BookOpen, GraduationCap, FileText, Play, LogOut } from 'lucide-react';
+import { User, Users, BookOpen, GraduationCap, FileText, Play, LogOut, LogIn } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 export function Navigation() {
@@ -50,13 +50,13 @@ export function Navigation() {
         backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
       }}></div>
       <div className="container mx-auto px-4 h-20 flex items-center justify-between relative z-10">
-        <Link href="/" className="flex items-center gap-4">
+        <Link href="/" className="flex items-center gap-2 md:gap-4">
           <Image
             src="/img/icon.png"
             alt="TarotFR Icon"
             width={56}
             height={56}
-            className="h-14 w-14 object-contain"
+            className="h-10 w-10 md:h-14 md:w-14 object-contain"
             priority
           />
           <Image
@@ -64,14 +64,14 @@ export function Navigation() {
             alt="TarotFR"
             width={160}
             height={56}
-            className="h-14 w-auto"
+            className="h-14 w-auto hidden md:block"
             priority
           />
           <div className="h-10 w-px bg-white/30 ml-2 hidden md:block"></div>
           <div className="text-white/90 text-sm font-medium hidden md:block">
             <span className="text-green-300 mr-1">{onlinePlayers}</span> joueurs en ligne
           </div>
-          <div className="flex items-center gap-1.5 text-white/90 text-sm font-medium md:hidden ml-2">
+          <div className="flex items-center gap-1.5 text-white/90 text-sm font-medium md:hidden">
             <Users className="w-4 h-4 text-green-300" />
             <span className="text-green-300">{onlinePlayers}</span>
           </div>
@@ -112,7 +112,10 @@ export function Navigation() {
             </div>
           ) : (
             <Link href="/compte">
-              <Button size="sm" className="bg-white hover:bg-blue-50 text-gray-900">Se connecter</Button>
+              <Button size="sm" className="bg-white hover:bg-blue-50 text-gray-900" title="Se connecter">
+                <LogIn className="w-4 h-4 md:mr-2" />
+                <span className="hidden md:inline">Se connecter</span>
+              </Button>
             </Link>
           )}
         </div>
