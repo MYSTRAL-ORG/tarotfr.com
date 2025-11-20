@@ -180,13 +180,12 @@ export default function TablePage() {
   const availableBids: BidType[] = ['PASS', 'PETITE', 'GARDE', 'GARDE_SANS', 'GARDE_CONTRE'];
 
   return (
-    <div className="h-screen overflow-hidden bg-gradient-to-b from-slate-50 to-slate-100">
+    <div className="fixed inset-0 bg-gradient-to-b from-slate-50 to-slate-100 overflow-hidden">
       {!gameState && <Navigation />}
 
-      <div className="container mx-auto px-4 py-6">
-
-
-        <div className="max-w-6xl mx-auto">
+      <div className="h-full flex flex-col">
+        <div className="flex-1 overflow-y-auto">
+          <div className="container mx-auto px-4 py-6">
           {!gameState ? (
             <Card className="p-8">
               <h2 className="text-2xl font-bold text-slate-900 mb-4">
@@ -307,7 +306,7 @@ export default function TablePage() {
               )}
             </Card>
           ) : (
-            <div className="h-full overflow-y-auto pb-6">
+            <div className="space-y-4">
               <div className={`bg-gradient-to-br from-green-700 via-green-800 to-green-900 rounded-xl p-8 shadow-2xl relative overflow-hidden ${isMyTurn ? 'ring-4 ring-blue-500' : ''}`}>
                 <div className="absolute inset-0 opacity-20" style={{
                   backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
@@ -402,10 +401,12 @@ export default function TablePage() {
                   </div>
 
                   {gameState.phase === 'PLAYING' && (
-                    <TrickArea
-                      cards={gameState.currentTrick}
-                      winnerSeat={null}
-                    />
+                    <div className="my-4">
+                      <TrickArea
+                        cards={gameState.currentTrick}
+                        winnerSeat={null}
+                      />
+                    </div>
                   )}
 
                   {gameState.phase === 'BIDDING' && currentPlayer && (
@@ -418,7 +419,7 @@ export default function TablePage() {
                     </div>
                   )}
 
-                  <div className="bg-slate-800 rounded-xl p-6 overflow-hidden" style={{ height: '220px' }}>
+                  <div className="bg-slate-800 rounded-xl p-6 overflow-x-auto" style={{ minHeight: '220px' }}>
                     {myHand && myHand.length > 0 ? (
                       <div className="flex justify-center items-start h-full">
                         <div className="relative" style={{ width: '100%', height: '400px', marginTop: '0' }}>
@@ -519,6 +520,7 @@ export default function TablePage() {
               </div>
             </div>
           )}
+          </div>
         </div>
       </div>
 

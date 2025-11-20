@@ -11,7 +11,7 @@ interface TrickAreaProps {
 export function TrickArea({ cards, className, winnerSeat }: TrickAreaProps) {
 
   return (
-    <div className={cn('relative w-full h-full min-h-[500px] bg-green-700 rounded-xl my-6 flex items-center justify-center p-6', className)}>
+    <div className={cn('relative w-full min-h-[350px] bg-green-700 rounded-xl flex items-center justify-center p-4', className)}>
       <div className="absolute inset-0 flex items-center justify-center opacity-10">
         <img
           src="/img/logo-carpet.svg"
@@ -20,7 +20,7 @@ export function TrickArea({ cards, className, winnerSeat }: TrickAreaProps) {
         />
       </div>
       {cards.map((playedCard, index) => {
-        const offset = 120;
+        const offset = 100;
         const baseLeft = `calc(50% - ${(cards.length - 1) * offset / 2}px + ${index * offset}px)`;
 
         return (
@@ -32,7 +32,7 @@ export function TrickArea({ cards, className, winnerSeat }: TrickAreaProps) {
               left: baseLeft,
             }}
           >
-            <TarotCard card={playedCard.card} size="xl" />
+            <TarotCard card={playedCard.card} size="lg" />
           </div>
         );
       })}
