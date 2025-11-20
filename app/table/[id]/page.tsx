@@ -225,12 +225,12 @@ export default function TablePage() {
                   if (player) {
                     return (
                       <Card key={seatIndex} className="p-4 relative group">
-                        {isPartnerSlot && (
-                          <div className="text-xs font-medium text-slate-500 text-center mb-2">
-                            Mon partenaire
-                          </div>
-                        )}
                         <div className="text-center">
+                          {isPartnerSlot && (
+                            <div className="text-xs font-medium text-blue-600 mb-2">
+                              Mon partenaire
+                            </div>
+                          )}
                           <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
                             <span className="text-2xl font-bold text-blue-600">
                               {player.displayName[0].toUpperCase()}
@@ -263,12 +263,12 @@ export default function TablePage() {
 
                   return (
                     <Card key={seatIndex} className="p-4 border-2 border-dashed border-slate-300">
-                      {isPartnerSlot && (
-                        <div className="text-xs font-medium text-slate-500 text-center mb-2">
-                          Mon partenaire
-                        </div>
-                      )}
                       <div className="text-center space-y-3">
+                        {isPartnerSlot && (
+                          <div className="text-xs font-medium text-blue-600 mb-2">
+                            Mon partenaire
+                          </div>
+                        )}
                         <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto">
                           <span className="text-2xl text-slate-400">?</span>
                         </div>

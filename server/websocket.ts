@@ -484,115 +484,124 @@ async function handleAddBot(ws: WebSocket, payload: any) {
     return;
   }
 
-  try {
-    const { data: existingPlayers, error: fetchError } = await supabase
-      .from('table_players')
-      .select('seat_index')
-      .eq('table_id', client.tableId);
+  let attempts = 0;
+  const maxAttempts = 5;
 
-    if (fetchError) {
-      console.error('[ADD_BOT] Error fetching existing players:', fetchError);
-      sendError(ws, 'Failed to check available seats');
-      return;
-    }
+  while (attempts < maxAttempts) {
+    try {
+      const { data: existingPlayers, error: fetchError } = await supabase
+        .from('table_players')
+        .select('seat_index')
+        .eq('table_id', client.tableId);
 
-    const occupiedSeats = (existingPlayers || []).map(p => p.seat_index);
+      if (fetchError) {
+        console.error('[ADD_BOT] Error fetching existing players:', fetchError);
+        sendError(ws, 'Failed to check available seats');
+        return;
+      }
 
-    if (occupiedSeats.length >= 4) {
-      sendError(ws, 'Table is full');
-      return;
-    }
+      const occupiedSeats = (existingPlayers || []).map(p => p.seat_index);
 
-    const availableSeats = [0, 1, 2, 3].filter(
-      seat => !occupiedSeats.includes(seat)
-    );
+      if (occupiedSeats.length >= 4) {
+        sendError(ws, 'Table is full');
+        return;
+      }
 
-    if (availableSeats.length === 0) {
-      sendError(ws, 'No available seats');
-      return;
-    }
+      const availableSeats = [0, 1, 2, 3].filter(
+        seat => !occupiedSeats.includes(seat)
+      );
 
-    const seatIndex = availableSeats[0];
-    const bot = createBotPlayer(seatIndex, difficulty as BotDifficulty);
+      if (availableSeats.length === 0) {
+        sendError(ws, 'No available seats');
+        return;
+      }
 
-    console.log('[ADD_BOT] Creating bot:', {
-      userId: bot.userId,
-      displayName: bot.displayName,
-      seatIndex,
-      difficulty,
-      occupiedSeats
-    });
+      const seatIndex = availableSeats[0];
+      const bot = createBotPlayer(seatIndex, difficulty as BotDifficulty);
 
-    const { error: userError } = await supabase
-      .from('users')
-      .insert({
-        id: bot.userId,
-        display_name: bot.displayName,
-        is_guest: false,
-        is_bot: true,
-        email: null,
+      console.log('[ADD_BOT] Attempt', attempts + 1, 'Creating bot:', {
+        userId: bot.userId,
+        displayName: bot.displayName,
+        seatIndex,
+        difficulty,
+        occupiedSeats
       });
 
-    if (userError) {
-      console.log('[ADD_BOT] User insert result:', {
-        code: userError.code,
-        message: userError.message,
-        details: userError.details
+      const { error: userError } = await supabase
+        .from('users')
+        .insert({
+          id: bot.userId,
+          display_name: bot.displayName,
+          is_guest: false,
+          is_bot: true,
+          email: null,
+        });
+
+      if (userError && userError.code !== '23505') {
+        console.error('[ADD_BOT] Error creating bot user:', userError);
+        sendError(ws, `Failed to create bot user: ${userError.message}`);
+        return;
+      }
+
+      const { error } = await supabase
+        .from('table_players')
+        .insert({
+          table_id: client.tableId,
+          user_id: bot.userId,
+          seat_index: seatIndex,
+          is_ready: true,
+        });
+
+      if (error && error.code === '23505') {
+        console.log('[ADD_BOT] Seat conflict detected, retrying with next available seat...');
+        attempts++;
+        await new Promise(resolve => setTimeout(resolve, 100));
+        continue;
+      }
+
+      if (error) {
+        console.error('[ADD_BOT] Error adding bot to table_players:', error);
+        sendError(ws, `Failed to add bot to table: ${error.message}`);
+        return;
+      }
+
+      console.log('[ADD_BOT] Bot added to table_players successfully');
+
+      const players = tablePlayers.get(client.tableId) || [];
+      players.push(bot);
+      tablePlayers.set(client.tableId, players);
+      console.log('[ADD_BOT] Players count after adding bot:', players.length);
+
+      broadcastToTable(client.tableId, {
+        type: 'BOT_ADDED',
+        payload: { player: bot },
       });
-    }
 
-    if (userError && userError.code !== '23505') {
-      console.error('[ADD_BOT] Error creating bot user:', userError);
-      console.error('[ADD_BOT] Error details:', JSON.stringify(userError, null, 2));
-      sendError(ws, `Failed to create bot user: ${userError.message}`);
-      return;
-    } else {
-      console.log('[ADD_BOT] Bot user created successfully (or already exists)');
-    }
-
-    const { error } = await supabase
-      .from('table_players')
-      .insert({
-        table_id: client.tableId,
-        user_id: bot.userId,
-        seat_index: seatIndex,
-        is_ready: true,
+      broadcastToTable(client.tableId, {
+        type: 'TABLE_STATE',
+        payload: {
+          tableId: client.tableId,
+          players,
+        },
       });
 
-    if (error) {
-      console.error('[ADD_BOT] Error adding bot to table_players:', error);
-      console.error('[ADD_BOT] Error details:', JSON.stringify(error, null, 2));
-      sendError(ws, `Failed to add bot to table: ${error.message}`);
+      if (players.length === 4 && players.every(p => p.isReady)) {
+        setTimeout(() => startGame(client.tableId!, players), 1000);
+      }
+
       return;
+    } catch (error) {
+      console.error('Error in handleAddBot:', error);
+      if (attempts >= maxAttempts - 1) {
+        sendError(ws, 'Failed to add bot after multiple attempts');
+        return;
+      }
+      attempts++;
+      await new Promise(resolve => setTimeout(resolve, 100));
     }
-
-    console.log('[ADD_BOT] Bot added to table_players successfully');
-
-    const players = tablePlayers.get(client.tableId) || [];
-    players.push(bot);
-    tablePlayers.set(client.tableId, players);
-    console.log('[ADD_BOT] Players count after adding bot:', players.length);
-
-    broadcastToTable(client.tableId, {
-      type: 'BOT_ADDED',
-      payload: { player: bot },
-    });
-
-    broadcastToTable(client.tableId, {
-      type: 'TABLE_STATE',
-      payload: {
-        tableId: client.tableId,
-        players,
-      },
-    });
-
-    if (players.length === 4 && players.every(p => p.isReady)) {
-      setTimeout(() => startGame(client.tableId!, players), 1000);
-    }
-  } catch (error) {
-    console.error('Error in handleAddBot:', error);
-    sendError(ws, 'Failed to add bot');
   }
+
+  sendError(ws, 'Failed to add bot: maximum attempts reached');
 }
 
 async function handleRemoveBot(ws: WebSocket, payload: any) {
