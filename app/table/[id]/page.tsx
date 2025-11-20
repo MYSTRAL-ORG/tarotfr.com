@@ -14,8 +14,23 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useWebSocket } from '@/contexts/WebSocketContext';
 import { BidType, Player } from '@/lib/types';
 import { toast } from 'sonner';
-import { ArrowLeft, Bot } from 'lucide-react';
+import { ArrowLeft, Bot, Trophy, Copy, Check } from 'lucide-react';
 import { DistributionCode } from '@/components/game/DistributionCode';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 
 export default function TablePage() {
   const params = useParams();
@@ -37,6 +52,9 @@ export default function TablePage() {
 
   const [selectedCard, setSelectedCard] = useState<string | null>(null);
   const [hasJoined, setHasJoined] = useState(false);
+  const [copiedDistrib, setCopiedDistrib] = useState(false);
+  const [selectedDifficulty, setSelectedDifficulty] = useState<'EASY' | 'MEDIUM' | 'HARD'>('MEDIUM');
+  const [scoresOpen, setScoresOpen] = useState(false);
 
   const tableId = params.id as string;
 
@@ -88,6 +106,26 @@ export default function TablePage() {
     router.push('/jouer');
   };
 
+  const handleCopyDistribution = async () => {
+    if (distributionInfo?.hashCode) {
+      await navigator.clipboard.writeText(distributionInfo.hashCode);
+      setCopiedDistrib(true);
+      toast.success('Code de distribution copié !');
+      setTimeout(() => setCopiedDistrib(false), 2000);
+    }
+  };
+
+  const handleAddPartner = () => {
+    addBot('HARD');
+  };
+
+  const handleCompleteTable = () => {
+    const emptySeats = 4 - players.length;
+    for (let i = 0; i < emptySeats; i++) {
+      addBot(selectedDifficulty);
+    }
+  };
+
   const myHand = currentPlayer && gameState?.hands[currentPlayer.seatIndex];
 
   const isMyTurn = currentPlayer && gameState?.currentPlayerSeat === currentPlayer.seatIndex;
@@ -101,137 +139,30 @@ export default function TablePage() {
   const availableBids: BidType[] = ['PASS', 'PETITE', 'GARDE', 'GARDE_SANS', 'GARDE_CONTRE'];
 
   return (
-    <div className="min-h-screen game-table-bg">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
       <Navigation />
 
       <div className="container mx-auto px-4 py-6">
-        <div className="mb-4 flex items-center justify-between">
-          <Button variant="ghost" onClick={handleLeave} className="text-white hover:bg-white/10">
+        <div className="mb-6 bg-white rounded-lg shadow-md p-4 flex items-center justify-between">
+          <Button variant="ghost" onClick={handleLeave} className="text-slate-700 hover:bg-slate-100">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Quitter la table
+            Quitter
           </Button>
 
-          {distributionInfo && (
-            <DistributionCode
-              hashCode={distributionInfo.hashCode}
-              distributionNumber={distributionInfo.distributionNumber}
-              sequenceNumber={distributionInfo.sequenceNumber}
-            />
-          )}
-        </div>
-
-
-        <div className="max-w-7xl mx-auto">
-          <div className={`grid grid-cols-1 ${gameState ? 'lg:grid-cols-3' : ''} gap-6`}>
-            <div className={`${gameState ? 'lg:col-span-2' : ''} space-y-6`}>
-              {gameState && (
-                <GameStatusBar
-                  phase={gameState.phase}
-                  contract={gameState.contract}
-                  takerName={takerPlayer?.displayName || null}
-                  currentPlayerName={currentTurnPlayer?.displayName || 'En attente'}
-                />
-              )}
-
-              <div className="game-table-bg rounded-lg p-6 shadow-xl border border-green-600/50">
-                <div className="flex justify-center mb-6">
-                  <PlayerSeat
-                    player={getPlayerAtPosition('top')}
-                    position="top"
-                    isCurrentPlayer={gameState?.currentPlayerSeat === getPlayerAtPosition('top')?.seatIndex}
-                    cardCount={gameState && getPlayerAtPosition('top') ? gameState.hands[getPlayerAtPosition('top')!.seatIndex]?.length : undefined}
-                    onAddBot={() => addBot('HARD')}
-                    onRemoveBot={removeBot}
-                    canModify={true}
-                    gameStarted={!!gameState}
-                  />
-                </div>
-
-                <div className="flex items-center justify-between mb-6">
-                  <PlayerSeat
-                    player={getPlayerAtPosition('left')}
-                    position="left"
-                    isCurrentPlayer={gameState?.currentPlayerSeat === getPlayerAtPosition('left')?.seatIndex}
-                    cardCount={gameState && getPlayerAtPosition('left') ? gameState.hands[getPlayerAtPosition('left')!.seatIndex]?.length : undefined}
-                    onAddBot={() => addBot('HARD')}
-                    onRemoveBot={removeBot}
-                    canModify={true}
-                    gameStarted={!!gameState}
-                  />
-
-                  <div className="flex-1 mx-6">
-                    {gameState && gameState.currentTrick.length > 0 && (
-                      <TrickArea cards={gameState.currentTrick} />
-                    )}
-                    {(!gameState || gameState.currentTrick.length === 0) && (
-                      <div className="h-[200px] flex items-center justify-center">
-                        <div className="w-48 h-32 rounded-lg border-2 border-dashed border-white/30 bg-white/5 flex items-center justify-center">
-                          <span className="text-white/50 text-sm">
-                            Zone de jeu
-                          </span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  <PlayerSeat
-                    player={getPlayerAtPosition('right')}
-                    position="right"
-                    isCurrentPlayer={gameState?.currentPlayerSeat === getPlayerAtPosition('right')?.seatIndex}
-                    cardCount={gameState && getPlayerAtPosition('right') ? gameState.hands[getPlayerAtPosition('right')!.seatIndex]?.length : undefined}
-                    onAddBot={() => addBot('HARD')}
-                    onRemoveBot={removeBot}
-                    canModify={true}
-                    gameStarted={!!gameState}
-                  />
-                </div>
-
-                <div className="flex justify-center">
-                  <PlayerSeat
-                    player={currentPlayer || null}
-                    position="bottom"
-                    isCurrentPlayer={isMyTurn}
-                    gameStarted={!!gameState}
-                  />
-                </div>
-              </div>
-
-              {myHand && myHand.length > 0 && (
-                <Card className="p-6">
-                  <h3 className="text-lg font-semibold mb-4 text-slate-900">
-                    Votre main
-                  </h3>
-                  <div className="flex flex-wrap gap-2 justify-center">
-                    {myHand.map((card) => (
-                      <TarotCard
-                        key={card.id}
-                        card={card}
-                        selectable={isMyTurn && gameState?.phase === 'PLAYING'}
-                        selected={selectedCard === card.id}
-                        onClick={() => handleCardClick(card.id)}
-                        size="md"
-                      />
-                    ))}
-                  </div>
-                </Card>
-              )}
-            </div>
-
+          <div className="flex gap-2">
             {gameState && (
-              <div className="space-y-6">
-                {gameState.phase === 'BIDDING' && currentPlayer && (
-                  <BiddingPanel
-                    onBid={handleBid}
-                    isMyTurn={isMyTurn || false}
-                    availableBids={availableBids}
-                  />
-                )}
-
-                <Card className="p-6">
-                  <h3 className="text-lg font-semibold mb-4 text-slate-900">
-                    Joueurs
-                  </h3>
-                  <div className="space-y-3">
+              <Dialog open={scoresOpen} onOpenChange={setScoresOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline">
+                    <Trophy className="w-4 h-4 mr-2" />
+                    Scores
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Scores de la partie</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-2 mt-4">
                     {players.map((player) => (
                       <div
                         key={player.userId}
@@ -246,39 +177,259 @@ export default function TablePage() {
                             {player.userId === user?.id && ' (Vous)'}
                           </span>
                         </div>
-                        {player.isReady && (
-                          <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
-                            Prêt
-                          </span>
-                        )}
+                        <span className="font-bold text-slate-900">
+                          {gameState.scores[player.seatIndex] || 0}
+                        </span>
                       </div>
                     ))}
                   </div>
-                </Card>
+                </DialogContent>
+              </Dialog>
+            )}
 
-                {gameState.scores && Object.keys(gameState.scores).length > 0 && (
-                  <Card className="p-6">
-                    <h3 className="text-lg font-semibold mb-4 text-slate-900">
-                      Scores
-                    </h3>
-                    <div className="space-y-2">
-                      {players.map((player) => (
-                        <div
-                          key={player.userId}
-                          className="flex items-center justify-between"
-                        >
-                          <span className="text-slate-700">{player.displayName}</span>
-                          <span className="font-bold text-slate-900">
-                            {gameState.scores[player.seatIndex] || 0}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </Card>
+            {distributionInfo && (
+              <Button
+                variant="outline"
+                onClick={handleCopyDistribution}
+                disabled={copiedDistrib}
+              >
+                {copiedDistrib ? (
+                  <Check className="w-4 h-4 mr-2" />
+                ) : (
+                  <Copy className="w-4 h-4 mr-2" />
                 )}
-              </div>
+                {copiedDistrib ? 'Copié !' : 'Copier distrib'}
+              </Button>
             )}
           </div>
+        </div>
+
+
+        <div className="max-w-6xl mx-auto">
+          {!gameState ? (
+            <Card className="p-8">
+              <h2 className="text-2xl font-bold text-slate-900 mb-4">
+                Salle d'attente
+              </h2>
+              <p className="text-slate-600 mb-6">
+                En attente des joueurs... ({players.length}/4)
+              </p>
+
+              <div className="grid md:grid-cols-4 gap-4 mb-6">
+                {[0, 1, 2, 3].map((seatIndex) => {
+                  const player = players.find(p => p.seatIndex === seatIndex);
+                  const canAddBots = players.length < 4;
+
+                  if (player) {
+                    return (
+                      <Card key={seatIndex} className="p-4 relative group">
+                        <div className="text-center">
+                          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                            <span className="text-2xl font-bold text-blue-600">
+                              {player.displayName[0].toUpperCase()}
+                            </span>
+                          </div>
+                          <p className="font-medium text-slate-900">{player.displayName}</p>
+                          {player.isBot && (
+                            <Badge variant="outline" className="mt-2">
+                              <Bot className="w-3 h-3 mr-1" />
+                              {player.difficulty === 'EASY' ? 'Faible' : player.difficulty === 'MEDIUM' ? 'Moyen' : 'Fort'}
+                            </Badge>
+                          )}
+                          {player.isReady && (
+                            <Badge className="mt-2 bg-green-600">Prêt</Badge>
+                          )}
+                        </div>
+                        {player.isBot && (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => removeBot(player.userId)}
+                            className="absolute -top-2 -right-2 w-6 h-6 p-0 bg-red-500 hover:bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            ×
+                          </Button>
+                        )}
+                      </Card>
+                    );
+                  }
+
+                  return (
+                    <Card key={seatIndex} className="p-4 border-2 border-dashed border-slate-300">
+                      <div className="text-center space-y-3">
+                        <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto">
+                          <span className="text-2xl text-slate-400">?</span>
+                        </div>
+                        <p className="text-sm text-slate-400">En attente...</p>
+
+                        {canAddBots && players.length === 1 && (
+                          <div className="space-y-2">
+                            <Button
+                              size="sm"
+                              onClick={handleAddPartner}
+                              className="w-full text-xs"
+                              variant="outline"
+                            >
+                              <Bot className="w-3 h-3 mr-1" />
+                              Ajouter partenaire
+                            </Button>
+                            <div className="space-y-1">
+                              <Select
+                                value={selectedDifficulty}
+                                onValueChange={(value) => setSelectedDifficulty(value as 'EASY' | 'MEDIUM' | 'HARD')}
+                              >
+                                <SelectTrigger className="w-full h-8 text-xs">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="EASY">Faible</SelectItem>
+                                  <SelectItem value="MEDIUM">Moyen</SelectItem>
+                                  <SelectItem value="HARD">Fort</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <Button
+                                size="sm"
+                                onClick={handleCompleteTable}
+                                className="w-full text-xs"
+                                variant="secondary"
+                              >
+                                Compléter la table
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </Card>
+                  );
+                })}
+              </div>
+            </Card>
+          ) : (
+            <div className="space-y-6">
+              <div className="bg-gradient-to-br from-green-700 via-green-800 to-green-900 rounded-xl p-8 shadow-2xl relative overflow-hidden">
+                <div className="absolute inset-0 opacity-20" style={{
+                  backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
+                }}></div>
+
+                <div className="relative z-10">
+                  <GameStatusBar
+                    phase={gameState.phase}
+                    currentPlayerName={currentTurnPlayer?.displayName || 'En attente'}
+                    contract={gameState.contract}
+                    takerName={takerPlayer?.displayName || null}
+                    className="mb-6"
+                  />
+
+                  <div className="grid grid-cols-3 gap-4 mb-6">
+                    <PlayerSeat
+                      player={getPlayerAtPosition('left')}
+                      position="top"
+                      isCurrentPlayer={gameState.currentPlayerSeat === getPlayerAtPosition('left')?.seatIndex}
+                      playerColor="yellow"
+                    />
+                    <PlayerSeat
+                      player={getPlayerAtPosition('top')}
+                      position="top"
+                      isCurrentPlayer={gameState.currentPlayerSeat === getPlayerAtPosition('top')?.seatIndex}
+                      playerColor="red"
+                    />
+                    <PlayerSeat
+                      player={getPlayerAtPosition('right')}
+                      position="top"
+                      isCurrentPlayer={gameState.currentPlayerSeat === getPlayerAtPosition('right')?.seatIndex}
+                      playerColor="purple"
+                    />
+                  </div>
+
+                  {gameState.phase === 'PLAYING' && (
+                    <TrickArea cards={gameState.currentTrick} />
+                  )}
+
+                  {gameState.phase === 'BIDDING' && currentPlayer && (
+                    <div className="bg-white rounded-lg p-6 mb-6">
+                      <BiddingPanel
+                        onBid={handleBid}
+                        isMyTurn={isMyTurn || false}
+                        availableBids={availableBids}
+                      />
+                    </div>
+                  )}
+
+                  <div className="bg-slate-800 rounded-xl p-6 overflow-hidden" style={{ height: '220px' }}>
+                    {myHand && myHand.length > 0 ? (
+                      <div className="flex justify-center items-start h-full">
+                        <div className="relative" style={{ width: '100%', height: '400px', marginTop: '0' }}>
+                          <div className="absolute top-0 left-1/2 -translate-x-1/2">
+                            <div className="relative" style={{ width: `${Math.min(myHand.length - 8, 7) * 45 + 128}px`, height: '200px' }}>
+                              {myHand.slice(8).map((card, index) => (
+                                <div
+                                  key={card.id}
+                                  className="absolute transition-all duration-200"
+                                  style={{
+                                    left: `${index * 45}px`,
+                                    top: '0',
+                                    zIndex: 10 + index,
+                                  }}
+                                  onMouseEnter={(e) => {
+                                    e.currentTarget.style.top = '-20px';
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    e.currentTarget.style.top = '0';
+                                  }}
+                                >
+                                  <TarotCard
+                                    card={card}
+                                    size="lg"
+                                    selectable={isMyTurn && gameState.phase === 'PLAYING'}
+                                    selected={selectedCard === card.id}
+                                    onClick={() => handleCardClick(card.id)}
+                                  />
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div className="absolute left-1/2 -translate-x-1/2" style={{ top: '80px' }}>
+                            <div className="relative" style={{ width: `${Math.min(myHand.length, 8) * 45 + 128}px`, height: '200px' }}>
+                              {myHand.slice(0, 8).map((card, index) => (
+                                <div
+                                  key={card.id}
+                                  className="absolute transition-all duration-200"
+                                  style={{
+                                    left: `${index * 45}px`,
+                                    top: '0',
+                                    zIndex: 30 + index,
+                                  }}
+                                  onMouseEnter={(e) => {
+                                    e.currentTarget.style.top = '-20px';
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    e.currentTarget.style.top = '0';
+                                  }}
+                                >
+                                  <TarotCard
+                                    card={card}
+                                    size="lg"
+                                    selectable={isMyTurn && gameState.phase === 'PLAYING'}
+                                    selected={selectedCard === card.id}
+                                    onClick={() => handleCardClick(card.id)}
+                                  />
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center h-full">
+                        <span className="text-white/50 text-sm">En attente des cartes...</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
