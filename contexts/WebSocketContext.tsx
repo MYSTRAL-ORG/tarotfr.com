@@ -118,18 +118,25 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
   }, [connect]);
 
   const handleServerMessage = (message: WSServerMessage) => {
+    console.log('[WS] Received message:', message.type, message.payload);
     switch (message.type) {
       case 'TABLE_STATE':
         setTableId(message.payload.tableId);
         setPlayers(message.payload.players);
+        console.log('[WS] Table state updated, players:', message.payload.players.length);
         break;
 
       case 'GAME_STATE':
+        console.log('[WS] Game state received, phase:', message.payload.phase);
         setGameState(message.payload);
         break;
 
       case 'PLAYER_JOINED':
-        setPlayers(prev => [...prev, message.payload.player]);
+        setPlayers(prev => {
+          const exists = prev.some(p => p.userId === message.payload.player.userId);
+          if (exists) return prev;
+          return [...prev, message.payload.player];
+        });
         break;
 
       case 'PLAYER_LEFT':
@@ -145,7 +152,11 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
         break;
 
       case 'BOT_ADDED':
-        setPlayers(prev => [...prev, message.payload.player]);
+        setPlayers(prev => {
+          const exists = prev.some(p => p.userId === message.payload.player.userId);
+          if (exists) return prev;
+          return [...prev, message.payload.player];
+        });
         break;
 
       case 'BOT_REMOVED':

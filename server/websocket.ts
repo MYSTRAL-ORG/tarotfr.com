@@ -153,13 +153,25 @@ async function handleJoinTable(ws: WebSocket, payload: any) {
 
     const gameState = tableGames.get(tableId);
     if (gameState) {
+      console.log('[JOIN] Game already started, sending game state to new player');
       sendGameState(ws, gameState);
     } else if (players.length === 4) {
+      console.log('[JOIN] 4 players present, scheduling auto-start in 2 seconds');
       setTimeout(() => {
         const currentPlayers = tablePlayers.get(tableId) || [];
-        if (currentPlayers.length === 4 && !tableGames.get(tableId)) {          startGame(tableId, currentPlayers);
+        console.log('[AUTO-START] Checking conditions:', {
+          playerCount: currentPlayers.length,
+          hasGame: !!tableGames.get(tableId)
+        });
+        if (currentPlayers.length === 4 && !tableGames.get(tableId)) {
+          console.log('[AUTO-START] Starting game automatically');
+          startGame(tableId, currentPlayers);
+        } else {
+          console.log('[AUTO-START] Conditions not met, aborting');
         }
       }, 2000);
+    } else {
+      console.log(`[JOIN] Waiting for more players (${players.length}/4)`);
     }
   } catch (error) {
     console.error('Error in handleJoinTable:', error);
@@ -491,6 +503,22 @@ async function handleAddBot(ws: WebSocket, payload: any) {
   const bot = createBotPlayer(seatIndex, difficulty as BotDifficulty);
 
   try {
+    const { error: userError } = await supabase
+      .from('users')
+      .insert({
+        id: bot.userId,
+        display_name: bot.displayName,
+        is_guest: false,
+        email: null,
+      });
+
+    if (userError && userError.code !== '23505') {
+      console.error('Error creating bot user:', userError);
+      console.error('Error details:', JSON.stringify(userError, null, 2));
+      sendError(ws, 'Failed to create bot user');
+      return;
+    }
+
     const { error } = await supabase
       .from('table_players')
       .insert({
