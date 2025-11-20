@@ -643,18 +643,23 @@ function executeBotTurn(tableId, gameState) {
         const updatedGameState = tableGames.get(tableId);
         if (!updatedGameState)
             return;
+        const currentPlayerInUpdatedState = updatedGameState.players.find(p => p.seatIndex === updatedGameState.currentPlayerSeat);
+        if (!currentPlayerInUpdatedState || !currentPlayerInUpdatedState.isBot)
+            return;
+        if (currentPlayerInUpdatedState.seatIndex !== currentPlayer.seatIndex)
+            return;
         if (updatedGameState.phase === 'BIDDING') {
             const currentHighestBid = updatedGameState.bids.length > 0
                 ? updatedGameState.bids.reduce((highest, bid) => bid.bidType !== 'PASS' ? bid : highest).bidType
                 : null;
-            const hand = updatedGameState.hands[currentPlayer.seatIndex];
-            const bidDecision = (0, botPlayer_1.decideBid)(hand, currentPlayer.difficulty, currentHighestBid);
+            const hand = updatedGameState.hands[currentPlayerInUpdatedState.seatIndex];
+            const bidDecision = (0, botPlayer_1.decideBid)(hand, currentPlayerInUpdatedState.difficulty, currentHighestBid);
             try {
-                const newState = (0, tarotEngine_1.applyBid)(updatedGameState, currentPlayer.seatIndex, bidDecision);
+                const newState = (0, tarotEngine_1.applyBid)(updatedGameState, currentPlayerInUpdatedState.seatIndex, bidDecision);
                 tableGames.set(tableId, newState);
                 broadcastToTable(tableId, {
                     type: 'BID_PLACED',
-                    payload: { playerSeat: currentPlayer.seatIndex, bidType: bidDecision },
+                    payload: { playerSeat: currentPlayerInUpdatedState.seatIndex, bidType: bidDecision },
                 });
                 if (newState.phase === 'DOG_REVEAL') {
                     const revealedState = (0, tarotEngine_1.revealDog)(newState);
@@ -678,15 +683,15 @@ function executeBotTurn(tableId, gameState) {
             }
         }
         else if (updatedGameState.phase === 'PLAYING') {
-            const cardToPlay = (0, botPlayer_1.chooseCardToPlay)(updatedGameState, currentPlayer.seatIndex, currentPlayer.difficulty);
+            const cardToPlay = (0, botPlayer_1.chooseCardToPlay)(updatedGameState, currentPlayerInUpdatedState.seatIndex, currentPlayerInUpdatedState.difficulty);
             if (cardToPlay) {
                 try {
-                    const newState = (0, tarotEngine_1.playCard)(updatedGameState, currentPlayer.seatIndex, cardToPlay);
+                    const newState = (0, tarotEngine_1.playCard)(updatedGameState, currentPlayerInUpdatedState.seatIndex, cardToPlay);
                     const trickJustCompleted = newState.currentTrick.length === 0 && newState.completedTricks.length > updatedGameState.completedTricks.length;
                     tableGames.set(tableId, newState);
                     broadcastToTable(tableId, {
                         type: 'CARD_PLAYED',
-                        payload: { playerSeat: currentPlayer.seatIndex, cardId: cardToPlay },
+                        payload: { playerSeat: currentPlayerInUpdatedState.seatIndex, cardId: cardToPlay },
                     });
                     if (trickJustCompleted) {
                         setTimeout(() => {
