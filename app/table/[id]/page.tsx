@@ -419,13 +419,13 @@ export default function TablePage() {
                     </div>
                   )}
 
-                  <div style={{ height: '180px' }}>
+                  <div style={{ height: '200px' }}>
                     {myHand && myHand.length > 0 ? (
                       <div className="flex justify-center items-start h-full">
-                        <div className="relative" style={{ width: '100%', height: '160px', marginTop: '0' }}>
+                        <div className="relative" style={{ width: '100%', height: '180px', marginTop: '0' }}>
                           {myHand.length > 8 && (
                             <div className="absolute top-0 left-1/2 -translate-x-1/2">
-                              <div className="relative" style={{ width: `${(myHand.length - 8) * 45 + 128}px`, height: '160px' }}>
+                              <div className="relative" style={{ width: `${(myHand.length - 8) * 45 + 128}px`, height: '180px' }}>
                                 {myHand.slice(8).map((card, index) => {
                                   const canPlay = currentPlayer && gameState
                                     ? canPlayCard(gameState, currentPlayer.seatIndex, card.id)
@@ -459,7 +459,7 @@ export default function TablePage() {
                                         selected={selectedCard === card.id}
                                         onClick={() => isPlayable && handleCardClick(card.id)}
                                       />
-                                      {(!isMyTurn || (isMyTurn && gameState.phase === 'PLAYING' && !canPlay)) && (
+                                      {(isMyTurn && gameState.phase === 'PLAYING' && !canPlay) && (
                                         <div className="absolute inset-0 bg-black/60 rounded-lg pointer-events-none" />
                                       )}
                                     </div>
@@ -469,8 +469,8 @@ export default function TablePage() {
                             </div>
                           )}
 
-                          <div className="absolute left-1/2 -translate-x-1/2" style={{ top: '40px' }}>
-                            <div className="relative" style={{ width: `${Math.min(myHand.length, 8) * 45 + 128}px`, height: '160px' }}>
+                          <div className="absolute left-1/2 -translate-x-1/2" style={{ top: '60px' }}>
+                            <div className="relative" style={{ width: `${Math.min(myHand.length, 8) * 45 + 128}px`, height: '180px' }}>
                               {myHand.slice(0, Math.min(8, myHand.length)).map((card, index) => {
                                 const canPlay = currentPlayer && gameState
                                   ? canPlayCard(gameState, currentPlayer.seatIndex, card.id)
@@ -504,7 +504,7 @@ export default function TablePage() {
                                       selected={selectedCard === card.id}
                                       onClick={() => isPlayable && handleCardClick(card.id)}
                                     />
-                                    {(!isMyTurn || (isMyTurn && gameState.phase === 'PLAYING' && !canPlay)) && (
+                                    {(isMyTurn && gameState.phase === 'PLAYING' && !canPlay) && (
                                       <div className="absolute inset-0 bg-black/60 rounded-lg pointer-events-none" />
                                     )}
                                   </div>
