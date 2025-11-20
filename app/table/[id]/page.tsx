@@ -122,8 +122,8 @@ export default function TablePage() {
 
 
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 space-y-6">
+          <div className={`grid grid-cols-1 ${gameState ? 'lg:grid-cols-3' : ''} gap-6`}>
+            <div className={`${gameState ? 'lg:col-span-2' : ''} space-y-6`}>
               {gameState && (
                 <GameStatusBar
                   phase={gameState.phase}
@@ -217,70 +217,67 @@ export default function TablePage() {
               )}
             </div>
 
-            <div className="space-y-6">
-              {gameState?.phase === 'BIDDING' && currentPlayer && (
-                <BiddingPanel
-                  onBid={handleBid}
-                  isMyTurn={isMyTurn || false}
-                  availableBids={availableBids}
-                />
-              )}
+            {gameState && (
+              <div className="space-y-6">
+                {gameState.phase === 'BIDDING' && currentPlayer && (
+                  <BiddingPanel
+                    onBid={handleBid}
+                    isMyTurn={isMyTurn || false}
+                    availableBids={availableBids}
+                  />
+                )}
 
-              <Card className="p-6">
-                <h3 className="text-lg font-semibold mb-4 text-slate-900">
-                  Joueurs
-                </h3>
-                <div className="space-y-3">
-                  {players.map((player) => (
-                    <div
-                      key={player.userId}
-                      className="flex items-center justify-between p-3 bg-slate-50 rounded-lg"
-                    >
-                      <div className="flex items-center gap-2">
-                        {player.isBot && (
-                          <Bot className="w-4 h-4 text-blue-600" />
-                        )}
-                        <span className="font-medium text-slate-900">
-                          {player.displayName}
-                          {player.userId === user?.id && ' (Vous)'}
-                        </span>
-                      </div>
-                      {player.isReady && (
-                        <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
-                          Prêt
-                        </span>
-                      )}
-                    </div>
-                  ))}
-                  {players.length < 4 && (
-                    <div className="p-3 border-2 border-dashed border-slate-300 rounded-lg text-center text-slate-400 text-sm">
-                      En attente...
-                    </div>
-                  )}
-                </div>
-              </Card>
-
-              {gameState?.scores && Object.keys(gameState.scores).length > 0 && (
                 <Card className="p-6">
                   <h3 className="text-lg font-semibold mb-4 text-slate-900">
-                    Scores
+                    Joueurs
                   </h3>
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     {players.map((player) => (
                       <div
                         key={player.userId}
-                        className="flex items-center justify-between"
+                        className="flex items-center justify-between p-3 bg-slate-50 rounded-lg"
                       >
-                        <span className="text-slate-700">{player.displayName}</span>
-                        <span className="font-bold text-slate-900">
-                          {gameState.scores[player.seatIndex] || 0}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          {player.isBot && (
+                            <Bot className="w-4 h-4 text-blue-600" />
+                          )}
+                          <span className="font-medium text-slate-900">
+                            {player.displayName}
+                            {player.userId === user?.id && ' (Vous)'}
+                          </span>
+                        </div>
+                        {player.isReady && (
+                          <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
+                            Prêt
+                          </span>
+                        )}
                       </div>
                     ))}
                   </div>
                 </Card>
-              )}
-            </div>
+
+                {gameState.scores && Object.keys(gameState.scores).length > 0 && (
+                  <Card className="p-6">
+                    <h3 className="text-lg font-semibold mb-4 text-slate-900">
+                      Scores
+                    </h3>
+                    <div className="space-y-2">
+                      {players.map((player) => (
+                        <div
+                          key={player.userId}
+                          className="flex items-center justify-between"
+                        >
+                          <span className="text-slate-700">{player.displayName}</span>
+                          <span className="font-bold text-slate-900">
+                            {gameState.scores[player.seatIndex] || 0}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </Card>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
