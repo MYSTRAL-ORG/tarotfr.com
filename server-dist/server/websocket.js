@@ -434,6 +434,7 @@ async function handleAddBot(ws, payload) {
             id: bot.userId,
             display_name: bot.displayName,
             is_guest: false,
+            is_bot: true,
             email: null,
         });
         if (userError) {
