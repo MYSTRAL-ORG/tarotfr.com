@@ -98,7 +98,7 @@ export function Navigation() {
   }, [user]);
 
   return (
-    <nav className="border-b-4 border-red-600 bg-gradient-to-br from-green-700 via-green-800 to-green-900 relative overflow-hidden">
+    <nav className="border-b-4 border-red-600 bg-gradient-to-r from-slate-800 to-slate-900 relative overflow-hidden">
       <div className="absolute inset-0 opacity-20" style={{
         backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
       }}></div>
