@@ -178,6 +178,8 @@ export default function PlayPage() {
     (currentRoomIndex + 1) * roomsPerSlide
   );
 
+  const currentCategory = currentSlideRooms.length > 0 ? currentSlideRooms[0].category : '';
+
   const getCategoryColor = (category: string) => {
     switch (category) {
       case 'DEBUTANT': return 'from-green-500 to-green-600';
@@ -286,6 +288,13 @@ export default function PlayPage() {
 
                 <div className="flex-1 max-w-6xl">
                   <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className="flex-1 h-px bg-white/30"></div>
+                      <h2 className="text-2xl font-bold text-white tracking-wider">
+                        {currentCategory}
+                      </h2>
+                      <div className="flex-1 h-px bg-white/30"></div>
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       {currentSlideRooms.map((room) => {
                       const isRoomLocked = wallet ? (wallet.level < room.min_level) : false;

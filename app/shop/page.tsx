@@ -172,7 +172,16 @@ export default function ShopPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="flex-1 h-px bg-white/30"></div>
+              <h2 className="text-2xl font-bold text-white tracking-wider">
+                PACKS DE JETONS
+              </h2>
+              <div className="flex-1 h-px bg-white/30"></div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {items.map((item, index) => {
               const Icon = getPackIcon(index);
               const isBestValue = index === bestValueIndex;
@@ -247,6 +256,7 @@ export default function ShopPage() {
                 </Card>
               );
             })}
+            </div>
           </div>
 
           <div className="mt-12 text-center">

@@ -68,6 +68,7 @@ export function Navigation() {
       const data = await res.json();
       if (data.wallet) {
         setWallet(data.wallet);
+        console.log('Wallet loaded:', data.wallet);
       }
     } catch (error) {
       console.error('Error fetching wallet:', error);
