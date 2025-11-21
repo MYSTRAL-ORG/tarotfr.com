@@ -6,113 +6,95 @@ import { Navigation } from '@/components/Navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
-import { Users, Clock } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Lock, Coins, Trophy, Zap, ShoppingBag } from 'lucide-react';
 import { toast } from 'sonner';
 
-interface TableWithPlayers {
+interface RoomType {
   id: string;
-  status: string;
-  maxPlayers: number;
-  playerCount: number;
-  createdAt: string;
+  name: string;
+  category: string;
+  buy_in: number;
+  reward_first: number;
+  reward_second: number;
+  reward_draw: number;
+  xp_reward: number;
+  league_points: number;
+  min_level: number;
+  sort_order: number;
+}
+
+interface UserWallet {
+  tokens: number;
+  xp: number;
+  level: number;
+  league_points: number;
 }
 
 export default function PlayPage() {
   const router = useRouter();
-  const { user, createGuest, loading: authLoading } = useAuth();
-  const [tables, setTables] = useState<TableWithPlayers[]>([]);
+  const { user, createGuest } = useAuth();
+  const [rooms, setRooms] = useState<RoomType[]>([]);
+  const [wallet, setWallet] = useState<UserWallet | null>(null);
+  const [currentRoomIndex, setCurrentRoomIndex] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [creating, setCreating] = useState(false);
-  const [creatingNew, setCreatingNew] = useState(false);
+  const [joining, setJoining] = useState(false);
 
   useEffect(() => {
-    fetchTables();
-    const interval = setInterval(fetchTables, 3000);
-    return () => clearInterval(interval);
-  }, []);
+    fetchRoomsAndWallet();
+  }, [user]);
 
-  async function fetchTables() {
+  async function fetchRoomsAndWallet() {
     try {
-      const res = await fetch('/api/tables/list');
-      const data = await res.json();
-      if (data.tables) {
-        setTables(data.tables);
+      const roomsRes = await fetch('/api/rooms/list');
+      const roomsData = await roomsRes.json();
+
+      if (roomsData.rooms) {
+        setRooms(roomsData.rooms);
+      }
+
+      if (user) {
+        const walletRes = await fetch(`/api/wallet/${user.id}`);
+        const walletData = await walletRes.json();
+
+        if (walletData.wallet) {
+          setWallet(walletData.wallet);
+        }
       }
     } catch (error) {
-      console.error('Error fetching tables:', error);
+      console.error('Error fetching data:', error);
     } finally {
       setLoading(false);
     }
   }
 
-  async function handleQuickPlay() {
-    try {
-      setCreating(true);
+  function getXPProgress(): number {
+    if (!wallet) return 0;
+    const levelConfigs = [
+      { level: 1, xp: 0 },
+      { level: 2, xp: 100 },
+      { level: 3, xp: 250 },
+      { level: 4, xp: 500 },
+      { level: 5, xp: 1000 },
+      { level: 10, xp: 6000 },
+      { level: 15, xp: 17000 },
+      { level: 20, xp: 30000 },
+      { level: 25, xp: 50000 },
+    ];
 
-      let currentUser = user;
-      if (!currentUser) {
-        await createGuest();
-        const checkUser = async () => {
-          await new Promise(resolve => setTimeout(resolve, 500));
-        };
-        await checkUser();
-        currentUser = user;
-      }
+    const currentLevelConfig = levelConfigs.find(c => c.level === wallet.level) || levelConfigs[0];
+    const nextLevelConfig = levelConfigs.find(c => c.level === wallet.level + 1);
 
-      if (!currentUser) {
-        toast.error('Veuillez vous connecter pour jouer');
-        return;
-      }
+    if (!nextLevelConfig) return 100;
 
-      const availableTables = tables
-        .filter(t => t.status === 'WAITING' && t.playerCount < 4)
-        .sort((a, b) => b.playerCount - a.playerCount);
+    const xpInLevel = wallet.xp - currentLevelConfig.xp;
+    const xpNeeded = nextLevelConfig.xp - currentLevelConfig.xp;
 
-      let tableId: string;
-
-      if (availableTables.length > 0) {
-        tableId = availableTables[0].id;
-        toast.success(`Table trouvée avec ${availableTables[0].playerCount} joueur(s)`);
-      } else {
-        const createRes = await fetch('/api/tables/create', {
-          method: 'POST',
-        });
-        const createData = await createRes.json();
-
-        if (!createData.table) {
-          toast.error('Erreur lors de la création de la table');
-          return;
-        }
-
-        tableId = createData.table.id;
-        toast.success('Nouvelle table créée');
-      }
-
-      const joinRes = await fetch(`/api/tables/${tableId}/join`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: currentUser.id }),
-      });
-
-      const joinData = await joinRes.json();
-
-      if (!joinData.success) {
-        toast.error('Erreur lors de la connexion à la table');
-        return;
-      }
-
-      router.push(`/table/${tableId}`);
-    } catch (error) {
-      console.error('Error in quick play:', error);
-      toast.error('Une erreur est survenue');
-    } finally {
-      setCreating(false);
-    }
+    return Math.min((xpInLevel / xpNeeded) * 100, 100);
   }
 
-  async function handleCreateTable() {
+  async function handleJoinRoom(room: RoomType) {
     try {
-      setCreatingNew(true);
+      setJoining(true);
 
       let currentUser = user;
       if (!currentUser) {
@@ -126,9 +108,35 @@ export default function PlayPage() {
         return;
       }
 
+      if (!wallet) {
+        toast.error('Chargement du portefeuille...');
+        return;
+      }
+
+      if (wallet.tokens < room.buy_in) {
+        toast.error(`Jetons insuffisants! Il vous faut ${room.buy_in} jetons.`, {
+          action: {
+            label: 'Acheter',
+            onClick: () => router.push('/shop')
+          }
+        });
+        return;
+      }
+
+      if (wallet.level < room.min_level) {
+        toast.error(`Niveau ${room.min_level} requis pour cette salle`);
+        return;
+      }
+
       const createRes = await fetch('/api/tables/create', {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          roomTypeId: room.id,
+          buyIn: room.buy_in
+        }),
       });
+
       const createData = await createRes.json();
 
       if (!createData.table) {
@@ -141,156 +149,257 @@ export default function PlayPage() {
       const joinRes = await fetch(`/api/tables/${tableId}/join`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: currentUser.id }),
+        body: JSON.stringify({
+          userId: currentUser.id,
+          buyIn: room.buy_in
+        }),
       });
 
       const joinData = await joinRes.json();
 
       if (!joinData.success) {
-        toast.error('Erreur lors de la connexion à la table');
+        toast.error(joinData.error || 'Erreur lors de la connexion à la table');
         return;
       }
 
-      toast.success('Table créée avec succès');
       router.push(`/table/${tableId}`);
     } catch (error) {
-      console.error('Error creating table:', error);
+      console.error('Error joining room:', error);
       toast.error('Une erreur est survenue');
     } finally {
-      setCreatingNew(false);
+      setJoining(false);
     }
   }
 
-  async function handleJoinTable(tableId: string) {
-    try {
-      let currentUser = user;
-      if (!currentUser) {
-        await createGuest();
-        await new Promise(resolve => setTimeout(resolve, 500));
-        currentUser = user;
-      }
+  const currentRoom = rooms[currentRoomIndex];
+  const isRoomLocked = wallet && currentRoom ? wallet.level < currentRoom.min_level : true;
+  const hasEnoughTokens = wallet && currentRoom ? wallet.tokens >= currentRoom.buy_in : false;
 
-      if (!currentUser) {
-        toast.error('Veuillez vous connecter pour jouer');
-        return;
-      }
-
-      const joinRes = await fetch(`/api/tables/${tableId}/join`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: currentUser.id }),
-      });
-
-      const joinData = await joinRes.json();
-
-      if (!joinData.success) {
-        toast.error('Erreur lors de la connexion à la table');
-        return;
-      }
-
-      router.push(`/table/${tableId}`);
-    } catch (error) {
-      console.error('Error joining table:', error);
-      toast.error('Une erreur est survenue');
+  const getCategoryColor = (category: string) => {
+    switch (category) {
+      case 'DEBUTANT': return 'from-green-500 to-green-600';
+      case 'PRO': return 'from-blue-500 to-blue-600';
+      case 'LEGENDES': return 'from-purple-500 to-purple-600';
+      case 'CYBORG': return 'from-red-500 to-red-600';
+      default: return 'from-gray-500 to-gray-600';
     }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-green-800 to-green-900">
+        <Navigation />
+        <div className="flex items-center justify-center h-screen">
+          <div className="text-white text-2xl">Chargement...</div>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
+    <div className="min-h-screen bg-gradient-to-b from-green-800 to-green-900 relative overflow-hidden">
+      <div className="absolute inset-0 opacity-10" style={{
+        backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 50px, rgba(255,255,255,0.1) 50px, rgba(255,255,255,0.1) 100px)'
+      }} />
+
       <Navigation />
 
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h1 className="text-5xl font-bold mb-4 text-slate-900">Rejoindre une partie</h1>
-            <p className="text-xl text-slate-600">
-              Créez une nouvelle table ou rejoignez une partie en attente de joueurs
+      <div className="container mx-auto px-4 py-8 relative z-10">
+        {wallet && (
+          <div className="max-w-4xl mx-auto mb-8">
+            <Card className="bg-white/95 backdrop-blur p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white text-2xl font-bold">
+                    {wallet.level}
+                  </div>
+                  <div>
+                    <div className="text-sm text-slate-600">Niveau {wallet.level}</div>
+                    <div className="flex items-center gap-2 mt-1">
+                      <div className="w-48 h-3 bg-slate-200 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-gradient-to-r from-orange-400 to-orange-600 transition-all duration-500"
+                          style={{ width: `${getXPProgress()}%` }}
+                        />
+                      </div>
+                      <span className="text-xs text-slate-500">{Math.round(getXPProgress())}%</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-6">
+                  <div className="flex items-center gap-2">
+                    <Coins className="w-6 h-6 text-yellow-500" />
+                    <span className={`text-2xl font-bold ${hasEnoughTokens ? 'text-green-600' : 'text-red-600'}`}>
+                      {wallet.tokens.toLocaleString()}
+                    </span>
+                  </div>
+                  <Button
+                    onClick={() => router.push('/shop')}
+                    className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600"
+                  >
+                    <ShoppingBag className="w-4 h-4 mr-2" />
+                    Boutique
+                  </Button>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-6 text-sm">
+                <div className="flex items-center gap-2">
+                  <Trophy className="w-4 h-4 text-blue-600" />
+                  <span className="text-slate-600">Points de Ligue:</span>
+                  <span className="font-semibold text-slate-900">{wallet.league_points.toLocaleString()}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Zap className="w-4 h-4 text-purple-600" />
+                  <span className="text-slate-600">XP:</span>
+                  <span className="font-semibold text-slate-900">{wallet.xp.toLocaleString()}</span>
+                </div>
+              </div>
+            </Card>
+          </div>
+        )}
+
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-8">
+            <h1 className="text-5xl font-bold mb-2 text-white drop-shadow-lg">Choisir une Salle</h1>
+            <p className="text-xl text-green-100">
+              Sélectionnez votre niveau de jeu
             </p>
           </div>
 
-          <div className="space-y-8">
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              size="lg"
-              variant="destructive"
-              onClick={handleCreateTable}
-              disabled={creatingNew || authLoading}
-              className="text-lg px-8 py-6 bg-red-600 hover:bg-red-700"
-            >
-              {creatingNew ? 'Création...' : 'Créer une table'}
-            </Button>
-            <Button
-              size="lg"
-              onClick={handleQuickPlay}
-              disabled={creating || authLoading}
-              className="text-lg px-8 py-6 bg-green-600 hover:bg-green-700"
-            >
-              {creating ? 'Connexion...' : 'Jouer maintenant'}
-            </Button>
-          </div>
+          {rooms.length > 0 && currentRoom && (
+            <div className="relative">
+              <div className="flex items-center justify-center gap-4">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-12 w-12 rounded-full bg-white/90 hover:bg-white"
+                  onClick={() => setCurrentRoomIndex(Math.max(0, currentRoomIndex - 1))}
+                  disabled={currentRoomIndex === 0}
+                >
+                  <ChevronLeft className="w-6 h-6" />
+                </Button>
 
-          <Card className="p-8">
-            <h2 className="text-2xl font-bold text-slate-900 mb-6">Tables disponibles</h2>
+                <Card className="w-full max-w-2xl bg-white/95 backdrop-blur overflow-hidden">
+                  <div className={`h-3 bg-gradient-to-r ${getCategoryColor(currentRoom.category)}`} />
 
-            {loading ? (
-              <Card className="p-8 text-center text-slate-600">
-                Chargement des tables...
-              </Card>
-            ) : tables.length === 0 ? (
-              <Card className="p-8 text-center text-slate-600">
-                Aucune table disponible. Créez-en une pour commencer !
-              </Card>
-            ) : (
-              <div className="space-y-3">
-                {tables
-                  .sort((a, b) => b.playerCount - a.playerCount)
-                  .map((table) => (
-                  <Card key={table.id} className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-4">
-                          <div className="flex items-center gap-2 text-slate-700">
-                            <Users className="w-5 h-5" />
-                            <span className="font-semibold">
-                              {table.playerCount} / {table.maxPlayers} joueurs
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2 text-slate-500 text-sm">
-                            <Clock className="w-4 h-4" />
-                            <span>
-                              {table.createdAt
-                                ? new Date(table.createdAt).toLocaleTimeString('fr-FR', {
-                                    hour: '2-digit',
-                                    minute: '2-digit'
-                                  })
-                                : '--:--'
-                              }
-                            </span>
-                          </div>
-                        </div>
-                        <div>
-                          <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
-                            table.status === 'WAITING'
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-yellow-100 text-yellow-800'
-                          }`}>
-                            {table.status === 'WAITING' ? 'En attente' : 'En cours'}
+                  <div className="p-8">
+                    <div className="text-center mb-6">
+                      <div className="inline-block px-4 py-1 rounded-full bg-slate-100 text-slate-600 text-sm font-medium mb-3">
+                        {currentRoom.category}
+                      </div>
+                      <h2 className="text-4xl font-bold text-slate-900 mb-2">{currentRoom.name}</h2>
+                      <div className="flex items-center justify-center gap-2 text-slate-600">
+                        <span>4 joueurs</span>
+                        <span className="text-xs text-slate-400">(5 joueurs bientôt)</span>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 mb-6">
+                      <div className="bg-slate-50 rounded-lg p-4">
+                        <div className="text-sm text-slate-600 mb-1">Mise d'entrée</div>
+                        <div className="flex items-center gap-2">
+                          <Coins className="w-5 h-5 text-yellow-500" />
+                          <span className="text-2xl font-bold text-slate-900">
+                            {currentRoom.buy_in.toLocaleString()}
                           </span>
                         </div>
                       </div>
-                      <Button
-                        onClick={() => handleJoinTable(table.id)}
-                        disabled={table.playerCount >= 4 || table.status !== 'WAITING'}
-                      >
-                        {table.playerCount >= 4 ? 'Complète' : 'Rejoindre'}
-                      </Button>
+
+                      <div className="bg-slate-50 rounded-lg p-4">
+                        <div className="text-sm text-slate-600 mb-1">Niveau requis</div>
+                        <div className="text-2xl font-bold text-orange-600">
+                          Niveau {currentRoom.min_level}
+                        </div>
+                      </div>
                     </div>
-                  </Card>
+
+                    <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-lg p-6 mb-6">
+                      <div className="text-sm font-semibold text-slate-700 mb-3">Récompenses</div>
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-slate-600">🥇 1ère place</span>
+                          <span className="font-bold text-green-600">+{currentRoom.reward_first.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-slate-600">🥈 2ème place</span>
+                          <span className="font-bold text-blue-600">+{currentRoom.reward_second.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-slate-600">🥉 3ème place</span>
+                          <span className="font-bold text-orange-600">+{currentRoom.reward_draw.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-slate-600">4ème place</span>
+                          <span className="font-bold text-red-600">-{currentRoom.buy_in.toLocaleString()}</span>
+                        </div>
+                      </div>
+
+                      <div className="mt-4 pt-4 border-t border-slate-200 flex justify-between text-sm">
+                        <div className="flex items-center gap-1">
+                          <Zap className="w-4 h-4 text-purple-500" />
+                          <span className="text-slate-600">+{currentRoom.xp_reward} XP</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Trophy className="w-4 h-4 text-blue-500" />
+                          <span className="text-slate-600">+{currentRoom.league_points} Points</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {isRoomLocked ? (
+                      <Button
+                        className="w-full h-14 text-lg bg-slate-400 cursor-not-allowed"
+                        disabled
+                      >
+                        <Lock className="w-5 h-5 mr-2" />
+                        Débloqué au niveau {currentRoom.min_level}
+                      </Button>
+                    ) : !hasEnoughTokens ? (
+                      <Button
+                        className="w-full h-14 text-lg bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600"
+                        onClick={() => router.push('/shop')}
+                      >
+                        <ShoppingBag className="w-5 h-5 mr-2" />
+                        Acheter des jetons
+                      </Button>
+                    ) : (
+                      <Button
+                        className="w-full h-14 text-lg bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
+                        onClick={() => handleJoinRoom(currentRoom)}
+                        disabled={joining}
+                      >
+                        {joining ? 'Connexion...' : 'REJOINDRE'}
+                      </Button>
+                    )}
+                  </div>
+                </Card>
+
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-12 w-12 rounded-full bg-white/90 hover:bg-white"
+                  onClick={() => setCurrentRoomIndex(Math.min(rooms.length - 1, currentRoomIndex + 1))}
+                  disabled={currentRoomIndex === rooms.length - 1}
+                >
+                  <ChevronRight className="w-6 h-6" />
+                </Button>
+              </div>
+
+              <div className="flex justify-center gap-2 mt-6">
+                {rooms.map((_, index) => (
+                  <button
+                    key={index}
+                    className={`w-2 h-2 rounded-full transition-all ${
+                      index === currentRoomIndex ? 'bg-white w-8' : 'bg-white/50'
+                    }`}
+                    onClick={() => setCurrentRoomIndex(index)}
+                  />
                 ))}
               </div>
-            )}
-          </Card>
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

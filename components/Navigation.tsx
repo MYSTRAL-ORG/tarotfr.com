@@ -4,12 +4,18 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { User, Users, BookOpen, GraduationCap, FileText, Play, LogOut, LogIn } from 'lucide-react';
+import { User, Users, BookOpen, GraduationCap, FileText, Play, LogOut, LogIn, Coins, ShoppingBag } from 'lucide-react';
 import { useState, useEffect } from 'react';
+
+interface UserWallet {
+  tokens: number;
+  level: number;
+}
 
 export function Navigation() {
   const { user, logout } = useAuth();
   const [onlinePlayers, setOnlinePlayers] = useState(0);
+  const [wallet, setWallet] = useState<UserWallet | null>(null);
 
   useEffect(() => {
     const calculateOnlinePlayers = () => {
@@ -43,6 +49,30 @@ export function Navigation() {
 
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      fetchWallet();
+      const interval = setInterval(fetchWallet, 10000);
+      return () => clearInterval(interval);
+    } else {
+      setWallet(null);
+    }
+  }, [user]);
+
+  async function fetchWallet() {
+    if (!user) return;
+
+    try {
+      const res = await fetch(`/api/wallet/${user.id}`);
+      const data = await res.json();
+      if (data.wallet) {
+        setWallet(data.wallet);
+      }
+    } catch (error) {
+      console.error('Error fetching wallet:', error);
+    }
+  }
 
   return (
     <nav className="border-b-4 border-red-600 bg-gradient-to-br from-green-700 via-green-800 to-green-900 relative overflow-hidden">
@@ -99,6 +129,27 @@ export function Navigation() {
 
           {user ? (
             <div className="flex items-center gap-2">
+              {wallet && (
+                <>
+                  <Link href="/shop" className="hidden md:block">
+                    <Button variant="outline" size="sm" className="bg-yellow-500 hover:bg-yellow-600 text-white border-yellow-600">
+                      <ShoppingBag className="w-4 h-4 mr-1" />
+                      Boutique
+                    </Button>
+                  </Link>
+                  <div className="bg-white/20 backdrop-blur px-3 py-1.5 rounded-md flex items-center gap-2">
+                    <Coins className="w-4 h-4 text-yellow-300" />
+                    <span className="text-white font-bold text-sm">
+                      {wallet.tokens.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="bg-white/20 backdrop-blur px-3 py-1.5 rounded-md hidden md:flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white text-xs font-bold">
+                      {wallet.level}
+                    </div>
+                  </div>
+                </>
+              )}
               <Link href="/compte">
                 <Button variant="outline" size="sm" className="bg-white hover:bg-blue-50 text-gray-900 border-white hover:border-blue-200">
                   <User className="w-4 h-4 md:mr-2" />

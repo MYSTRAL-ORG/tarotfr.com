@@ -4,6 +4,8 @@ import { generateNewDistribution } from '@/lib/distributionSeeder';
 
 export async function POST(request: NextRequest) {
   try {
+    const body = await request.json();
+    const { roomTypeId, buyIn } = body;
 
     // Generate a new distribution automatically for this table
     const distribution = generateNewDistribution();
@@ -41,6 +43,8 @@ export async function POST(request: NextRequest) {
         status: 'WAITING',
         max_players: 4,
         distribution_id: distributionData.id,
+        room_type_id: roomTypeId || null,
+        buy_in: buyIn || 0,
       })
       .select()
       .single();

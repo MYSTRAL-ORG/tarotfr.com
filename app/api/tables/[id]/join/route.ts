@@ -6,10 +6,10 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   try {
-    const { userId } = await request.json();
+    const { userId, buyIn } = await request.json();
     const tableId = params.id;
 
-    console.log('[JOIN API] Request received:', { tableId, userId });
+    console.log('[JOIN API] Request received:', { tableId, userId, buyIn });
 
     if (!userId) {
       console.log('[JOIN API] ERROR: Missing userId');
@@ -17,6 +17,53 @@ export async function POST(
         { error: 'User ID is required' },
         { status: 400 }
       );
+    }
+
+    if (buyIn && buyIn > 0) {
+      const { data: wallet } = await supabase
+        .from('user_wallets')
+        .select('tokens, total_tokens_spent')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      if (!wallet || wallet.tokens < buyIn) {
+        return NextResponse.json(
+          { error: 'Jetons insuffisants', insufficientTokens: true },
+          { status: 400 }
+        );
+      }
+
+      const newBalance = wallet.tokens - buyIn;
+      const newTotalSpent = (wallet.total_tokens_spent || 0) + buyIn;
+
+      const { error: walletError } = await supabase
+        .from('user_wallets')
+        .update({
+          tokens: newBalance,
+          total_tokens_spent: newTotalSpent
+        })
+        .eq('user_id', userId);
+
+      if (walletError) {
+        console.error('[JOIN API] Failed to deduct tokens:', walletError);
+        return NextResponse.json(
+          { error: 'Erreur lors de la déduction des jetons' },
+          { status: 500 }
+        );
+      }
+
+      await supabase
+        .from('transactions')
+        .insert({
+          user_id: userId,
+          type: 'buy_in',
+          amount: -buyIn,
+          balance_after: newBalance,
+          game_id: tableId,
+          metadata: { table_id: tableId }
+        });
+
+      console.log('[JOIN API] Deducted', buyIn, 'tokens from user', userId);
     }
 
     const { data: existingPlayers } = await supabase
@@ -48,6 +95,7 @@ export async function POST(
         user_id: userId,
         seat_index: seatIndex,
         is_ready: false,
+        buy_in_paid: buyIn && buyIn > 0,
       })
       .select()
       .single();
