@@ -46,14 +46,8 @@ export default function EconomyPage() {
     try {
       setLoading(true);
       const [roomsRes, levelsRes] = await Promise.all([
-        fetch('/api/admin/room-types', {
-          cache: 'force-cache',
-          next: { revalidate: 60 }
-        }),
-        fetch('/api/admin/level-config', {
-          cache: 'force-cache',
-          next: { revalidate: 60 }
-        })
+        fetch('/api/admin/room-types'),
+        fetch('/api/admin/level-config')
       ]);
 
       if (!roomsRes.ok || !levelsRes.ok) {
