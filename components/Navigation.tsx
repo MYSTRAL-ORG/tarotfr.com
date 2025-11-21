@@ -112,10 +112,6 @@ export function Navigation() {
             <span className="hidden md:inline">Règles</span>
             <BookOpen className="w-5 h-5 md:hidden" />
           </Link>
-          <Link href="/tutoriel" className="text-white/90 hover:text-white font-medium transition-colors" title="Tutoriel">
-            <span className="hidden md:inline">Tutoriel</span>
-            <GraduationCap className="w-5 h-5 md:hidden" />
-          </Link>
           <Link href="/distributions" className="text-white/90 hover:text-white font-medium transition-colors" title="Distributions">
             <span className="hidden md:inline">Distributions</span>
             <FileText className="w-5 h-5 md:hidden" />
@@ -131,22 +127,24 @@ export function Navigation() {
             <div className="flex items-center gap-2">
               {wallet && (
                 <>
-                  <Link href="/shop" className="hidden md:block">
-                    <Button variant="outline" size="sm" className="bg-yellow-500 hover:bg-yellow-600 text-white border-yellow-600">
-                      <ShoppingBag className="w-4 h-4 mr-1" />
-                      Boutique
-                    </Button>
-                  </Link>
                   <div className="bg-white/20 backdrop-blur px-3 py-1.5 rounded-md flex items-center gap-2">
-                    <Coins className="w-4 h-4 text-yellow-300" />
+                    <Coins className="w-5 h-5 text-yellow-300" />
                     <span className="text-white font-bold text-sm">
                       {wallet.tokens.toLocaleString()}
                     </span>
+                    <Link href="/shop">
+                      <button className="w-5 h-5 rounded-full bg-yellow-500 hover:bg-yellow-600 flex items-center justify-center text-white text-xs font-bold transition-colors">
+                        +
+                      </button>
+                    </Link>
                   </div>
-                  <div className="bg-white/20 backdrop-blur px-3 py-1.5 rounded-md hidden md:flex items-center gap-2">
+                  <div className="bg-white/20 backdrop-blur px-3 py-1.5 rounded-md flex items-center gap-2">
                     <div className="w-6 h-6 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white text-xs font-bold">
                       {wallet.level}
                     </div>
+                    <span className="text-white font-semibold text-sm hidden md:inline">
+                      Niv. {wallet.level}
+                    </span>
                   </div>
                 </>
               )}

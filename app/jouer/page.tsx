@@ -287,7 +287,7 @@ export default function PlayPage() {
                 <div className="flex-1 max-w-6xl">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {currentSlideRooms.map((room) => {
-                      const isRoomLocked = wallet ? wallet.level < room.min_level : true;
+                      const isRoomLocked = wallet ? (wallet.level < room.min_level) : false;
                       const hasEnoughTokens = wallet ? wallet.tokens >= room.buy_in : false;
 
                       return (
