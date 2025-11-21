@@ -66,33 +66,63 @@ export default function LevelsPage() {
 
   const xpSources = [
     {
-      action: 'Victoire en tant que preneur',
-      xp: '+30 XP',
-      color: 'bg-green-100 text-green-800 border-green-300',
+      room: 'DÉBUTANT 1',
+      xp: '+10 XP',
+      color: 'bg-gray-100 text-gray-800 border-gray-300',
     },
     {
-      action: 'Victoire en tant que défenseur',
+      room: 'DÉBUTANT 2',
+      xp: '+15 XP',
+      color: 'bg-gray-100 text-gray-800 border-gray-300',
+    },
+    {
+      room: 'DÉBUTANT 3',
       xp: '+20 XP',
+      color: 'bg-gray-100 text-gray-800 border-gray-300',
+    },
+    {
+      room: 'PRO 1',
+      xp: '+30 XP',
       color: 'bg-blue-100 text-blue-800 border-blue-300',
     },
     {
-      action: 'Défaite en tant que preneur',
-      xp: '+5 XP',
-      color: 'bg-orange-100 text-orange-800 border-orange-300',
+      room: 'PRO 2',
+      xp: '+45 XP',
+      color: 'bg-blue-100 text-blue-800 border-blue-300',
     },
     {
-      action: 'Défaite en tant que défenseur',
-      xp: '+10 XP',
+      room: 'PRO 3',
+      xp: '+60 XP',
+      color: 'bg-blue-100 text-blue-800 border-blue-300',
+    },
+    {
+      room: 'LÉGENDES 1',
+      xp: '+80 XP',
       color: 'bg-purple-100 text-purple-800 border-purple-300',
     },
     {
-      action: 'Réaliser un petit au bout',
-      xp: '+15 XP bonus',
-      color: 'bg-yellow-100 text-yellow-800 border-yellow-300',
+      room: 'LÉGENDES 2',
+      xp: '+150 XP',
+      color: 'bg-purple-100 text-purple-800 border-purple-300',
     },
     {
-      action: 'Réaliser une Garde Contre',
-      xp: '+50 XP bonus',
+      room: 'LÉGENDES 3',
+      xp: '+200 XP',
+      color: 'bg-purple-100 text-purple-800 border-purple-300',
+    },
+    {
+      room: 'CYBORG 1',
+      xp: '+300 XP',
+      color: 'bg-red-100 text-red-800 border-red-300',
+    },
+    {
+      room: 'CYBORG 2',
+      xp: '+500 XP',
+      color: 'bg-red-100 text-red-800 border-red-300',
+    },
+    {
+      room: 'CYBORG 3',
+      xp: '+800 XP',
       color: 'bg-red-100 text-red-800 border-red-300',
     },
   ];
@@ -137,17 +167,17 @@ export default function LevelsPage() {
                 </div>
                 <div>
                   <h2 className="text-3xl font-bold text-slate-900">Sources d&apos;XP</h2>
-                  <p className="text-lg text-slate-600 mt-2">Gagnez de l&apos;expérience en jouant</p>
+                  <p className="text-lg text-slate-600 mt-2">XP gagnés par partie selon la salle</p>
                 </div>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid md:grid-cols-3 gap-4">
                 {xpSources.map((source, index) => (
                   <div
                     key={index}
                     className={`p-4 rounded-lg border-2 ${source.color} flex justify-between items-center`}
                   >
-                    <span className="font-semibold">{source.action}</span>
+                    <span className="font-semibold">{source.room}</span>
                     <Badge variant="secondary" className="text-lg font-bold">
                       {source.xp}
                     </Badge>
@@ -157,8 +187,8 @@ export default function LevelsPage() {
 
               <div className="mt-6 p-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg border-l-4 border-yellow-500">
                 <p className="text-slate-700">
-                  <strong>Astuce :</strong> Même en perdant, vous gagnez de l&apos;XP! L&apos;important est de jouer et
-                  de s&apos;améliorer continuellement.
+                  <strong>Astuce :</strong> Plus la salle est difficile, plus vous gagnez d&apos;XP par partie!
+                  Montez en niveau pour accéder aux salles supérieures et progresser plus rapidement.
                 </p>
               </div>
             </Card>

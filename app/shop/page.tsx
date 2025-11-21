@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
-import { Coins, ShoppingCart, Sparkles, Crown, Star, Zap } from 'lucide-react';
+import { Coins, ShoppingCart, Sparkles, Crown, Star, Zap, Wand2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface ShopItem {
@@ -85,23 +85,14 @@ export default function ShopPage() {
     }
   }
 
-  const getPackIcon = (index: number) => {
-    const icons = [Coins, Sparkles, Star, Zap, Crown, Trophy];
-    const Icon = icons[index] || Coins;
-    return Icon;
-  };
-
-  const getPackColor = (index: number) => {
-    const colors = [
-      'from-gray-400 to-gray-600',
-      'from-blue-400 to-blue-600',
-      'from-green-400 to-green-600',
-      'from-purple-400 to-purple-600',
-      'from-yellow-400 to-yellow-600',
-      'from-red-400 to-red-600',
-    ];
-    return colors[index] || colors[0];
-  };
+  const tarotThemes = [
+    { icon: Coins, color: 'from-gray-400 to-gray-600', bgColor: 'bg-gray-50', name: 'Le Bateleur', desc: 'Pour débuter votre aventure' },
+    { icon: Sparkles, color: 'from-blue-400 to-blue-600', bgColor: 'bg-blue-50', name: 'La Papesse', desc: 'La sagesse des premières parties' },
+    { icon: Star, color: 'from-green-400 to-green-600', bgColor: 'bg-green-50', name: 'L\'Impératrice', desc: 'L\'abondance pour progresser' },
+    { icon: Wand2, color: 'from-purple-400 to-purple-600', bgColor: 'bg-purple-50', name: 'Le Magicien', desc: 'Le pouvoir de la maîtrise' },
+    { icon: Crown, color: 'from-yellow-400 to-yellow-600', bgColor: 'bg-yellow-50', name: 'L\'Empereur', desc: 'La richesse des grands maîtres' },
+    { icon: Zap, color: 'from-red-400 to-red-600', bgColor: 'bg-red-50', name: 'Le Monde', desc: 'La plénitude absolue' },
+  ];
 
   const getBestValueIndex = () => {
     if (items.length === 0) return -1;
@@ -145,7 +136,7 @@ export default function ShopPage() {
           <div className="text-center mb-12">
             <h1 className="text-5xl font-bold mb-4 text-white drop-shadow-lg">Boutique</h1>
             <p className="text-xl text-green-100">
-              Achetez des jetons pour continuer à jouer
+              Achetez des jetons pour continuer votre quête
             </p>
           </div>
 
@@ -161,12 +152,13 @@ export default function ShopPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {items.map((item, index) => {
               const isBestValue = index === bestValueIndex;
-              const ratio = (item.tokens / item.price_eur).toFixed(0);
+              const theme = tarotThemes[index] || tarotThemes[0];
+              const Icon = theme.icon;
 
               return (
                 <Card
                   key={item.id}
-                  className="relative bg-white/95 backdrop-blur overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105"
+                  className="bg-white/95 backdrop-blur overflow-hidden hover:shadow-xl transition-all"
                 >
                   {isBestValue && (
                     <div className="absolute top-4 right-4 z-10">
@@ -177,89 +169,65 @@ export default function ShopPage() {
                     </div>
                   )}
 
-                  <div className={`h-32 bg-gradient-to-br ${getPackColor(index)} flex items-center justify-center relative overflow-hidden`}>
-                    <div className="absolute inset-0 opacity-20" style={{
-                      backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px)',
-                      backgroundSize: '20px 20px'
-                    }} />
-                    <Coins className="w-20 h-20 text-white drop-shadow-lg relative z-10" />
-                  </div>
+                  <div className={`h-2 bg-gradient-to-r ${theme.color}`} />
 
                   <div className="p-6">
-                    <h3 className="text-2xl font-bold text-slate-900 mb-2">{item.title}</h3>
-                    <p className="text-slate-600 text-sm mb-4">{item.description}</p>
+                    <div className="text-center mb-4">
+                      <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full ${theme.bgColor} mb-3`}>
+                        <Icon className={`w-8 h-8 bg-gradient-to-br ${theme.color} bg-clip-text text-transparent`} style={{
+                          filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'
+                        }} />
+                      </div>
+                      <h3 className="text-2xl font-bold text-slate-900 mb-1">{theme.name}</h3>
+                      <p className="text-xs text-slate-500">{theme.desc}</p>
+                    </div>
 
-                    <div className="space-y-3 mb-6">
-                      <div className="flex items-center justify-between">
-                        <span className="text-slate-600">Jetons</span>
-                        <div className="flex items-center gap-1">
+                    <div className="space-y-3 mb-4">
+                      <div className="bg-slate-50 rounded-lg p-3">
+                        <div className="text-xs text-slate-600 mb-1">Jetons inclus</div>
+                        <div className="flex items-center gap-2">
                           <Coins className="w-5 h-5 text-yellow-500" />
-                          <span className="text-xl font-bold text-slate-900">
+                          <span className="text-lg font-bold text-slate-900">
                             {item.tokens.toLocaleString()}
                           </span>
                         </div>
                       </div>
+                    </div>
 
-                      <div className="flex items-center justify-between">
-                        <span className="text-slate-600">Prix</span>
-                        <span className="text-2xl font-bold text-green-600">
-                          €{item.price_eur.toFixed(2)}
-                        </span>
-                      </div>
-
-                      <div className="pt-2 border-t border-slate-200">
-                        <div className="text-xs text-slate-500 text-center">
-                          Ratio: {ratio} jetons/€
+                    <div className={`bg-gradient-to-br ${theme.color} rounded-lg p-4 mb-4 text-white`}>
+                      <div className="text-center">
+                        <div className="text-sm opacity-90 mb-1">Prix</div>
+                        <div className="text-3xl font-bold">
+                          {item.price_eur.toFixed(2)} €
+                        </div>
+                        <div className="text-xs opacity-75 mt-1">
+                          {(item.tokens / item.price_eur).toFixed(0)} jetons/€
                         </div>
                       </div>
                     </div>
 
                     <Button
-                      className="w-full h-12 text-lg bg-blue-600 hover:bg-blue-700 text-white"
+                      className={`w-full h-12 text-sm bg-gradient-to-r ${theme.color} hover:opacity-90 text-white`}
                       onClick={() => handlePurchase(item)}
                       disabled={purchasing === item.id}
                     >
-                      {purchasing === item.id ? (
-                        'Traitement...'
-                      ) : (
-                        <>
-                          <ShoppingCart className="w-5 h-5 mr-2" />
-                          Acheter
-                        </>
-                      )}
+                      <ShoppingCart className="w-4 h-4 mr-2" />
+                      {purchasing === item.id ? 'Traitement...' : 'ACHETER'}
                     </Button>
                   </div>
                 </Card>
               );
             })}
             </div>
+
+            <div className="mt-8 text-center">
+              <p className="text-white/80 text-sm">
+                Paiements sécurisés via Stripe • Tous les prix sont en euros TTC
+              </p>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  );
-}
-
-function Trophy(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
-      <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
-      <path d="M4 22h16" />
-      <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
-      <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
-      <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
-    </svg>
   );
 }
