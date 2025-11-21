@@ -238,7 +238,7 @@ export default function LeagueRulesPage() {
               <div className="text-center mb-6">
                 <h2 className="text-3xl font-bold text-slate-900 mb-2">Les 15 Ligues</h2>
                 <p className="text-lg text-slate-600">
-                  De la ligue Bronze à la ligue Immortelle - Cliquez pour voir les récompenses
+                  De la ligue Bronze à la ligue Immortelle avec leurs récompenses
                 </p>
               </div>
 
@@ -254,13 +254,11 @@ export default function LeagueRulesPage() {
                   <tbody>
                     {leagues.map((league) => {
                       const rewards = rewardsByLeague[league.id] || [];
-                      const isExpanded = expandedLeague === league.id;
                       return (
                         <>
                           <tr
                             key={league.id}
-                            className="border-b border-slate-200 hover:bg-slate-50 transition-colors cursor-pointer"
-                            onClick={() => setExpandedLeague(isExpanded ? null : league.id)}
+                            className="border-b border-slate-200"
                           >
                             <td className="px-6 py-4 text-center">
                               <Badge variant="outline" className="font-bold text-base">
@@ -273,39 +271,26 @@ export default function LeagueRulesPage() {
                               </span>
                             </td>
                             <td className="px-6 py-4 text-center">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="w-full"
-                              >
-                                {isExpanded ? (
-                                  <ChevronUp className="w-4 h-4 mr-2" />
-                                ) : (
-                                  <ChevronDown className="w-4 h-4 mr-2" />
-                                )}
-                                Top {rewards.length}
-                              </Button>
+                              <span className="text-sm text-slate-600">Top {rewards.length}</span>
                             </td>
                           </tr>
-                          {isExpanded && (
-                            <tr key={`${league.id}-rewards`}>
-                              <td colSpan={3} className="px-6 py-4 bg-slate-50">
-                                <div className="grid grid-cols-10 gap-2">
-                                  {rewards.map((reward, idx) => (
-                                    <div
-                                      key={idx}
-                                      className="text-center p-2 bg-white rounded border border-slate-200"
-                                    >
-                                      <div className="text-xs text-slate-600 mb-1">#{idx + 1}</div>
-                                      <div className="font-bold text-amber-600">
-                                        {reward >= 1000 ? `${(reward / 1000).toFixed(0)}k` : reward}
-                                      </div>
+                          <tr key={`${league.id}-rewards`}>
+                            <td colSpan={3} className="px-6 py-4 bg-slate-50 border-b border-slate-200">
+                              <div className="grid grid-cols-10 gap-2">
+                                {rewards.map((reward, idx) => (
+                                  <div
+                                    key={idx}
+                                    className="text-center p-2 bg-white rounded border border-slate-200"
+                                  >
+                                    <div className="text-xs text-slate-600 mb-1">#{idx + 1}</div>
+                                    <div className="font-bold text-amber-600">
+                                      {reward >= 1000 ? `${(reward / 1000).toFixed(0)}k` : reward}
                                     </div>
-                                  ))}
-                                </div>
-                              </td>
-                            </tr>
-                          )}
+                                  </div>
+                                ))}
+                              </div>
+                            </td>
+                          </tr>
                         </>
                       );
                     })}
