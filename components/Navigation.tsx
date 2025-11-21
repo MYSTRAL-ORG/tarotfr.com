@@ -18,8 +18,6 @@ export function Navigation() {
   const [onlinePlayers, setOnlinePlayers] = useState(0);
   const [wallet, setWallet] = useState<UserWallet | null>(null);
 
-  console.log('Navigation render - user:', user, 'wallet:', wallet);
-
   useEffect(() => {
     const calculateOnlinePlayers = () => {
       const now = new Date();
@@ -54,19 +52,13 @@ export function Navigation() {
   }, []);
 
   useEffect(() => {
-    console.log('useEffect triggered - user:', user);
-
     async function fetchWallet() {
       if (!user) {
-        console.log('No user, skipping wallet fetch');
         return;
       }
 
       try {
-        console.log('Fetching wallet for user:', user.id, 'isGuest:', user.isGuest);
         const res = await fetch(`/api/wallet/${user.id}`);
-        console.log('Wallet API response status:', res.status);
-
         if (!res.ok) {
           console.error('Wallet API error:', res.status, res.statusText);
           const errorText = await res.text();
@@ -75,8 +67,6 @@ export function Navigation() {
         }
 
         const data = await res.json();
-        console.log('Wallet response data:', data);
-
         if (data.wallet) {
           const leagueRes = await fetch(`/api/leagues/current?userId=${user.id}`);
           let leaguePoints = 0;
@@ -92,10 +82,8 @@ export function Navigation() {
             ...data.wallet,
             leaguePoints
           });
-          console.log('Wallet loaded successfully:', data.wallet);
-        } else {
-          console.warn('No wallet in response:', data);
-        }
+          } else {
+          }
       } catch (error) {
         console.error('Error fetching wallet:', error);
       }
@@ -106,7 +94,6 @@ export function Navigation() {
       const interval = setInterval(fetchWallet, 30000);
       return () => clearInterval(interval);
     } else {
-      console.log('Clearing wallet - no user');
       setWallet(null);
     }
   }, [user]);

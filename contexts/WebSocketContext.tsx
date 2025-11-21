@@ -52,7 +52,6 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
       const ws = new WebSocket(WS_URL);
 
     ws.onopen = () => {
-      console.log('WebSocket connected');
       setStatus('connected');
       setError(null);
       reconnectAttemptsRef.current = 0;
@@ -79,7 +78,6 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
     };
 
     ws.onclose = () => {
-      console.log('WebSocket disconnected');
       setStatus('disconnected');
 
       if (pingIntervalRef.current) {
@@ -124,19 +122,13 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
   }, [connect]);
 
   const handleServerMessage = (message: WSServerMessage) => {
-    console.log('[WS] Received message:', message.type, message.payload);
     switch (message.type) {
       case 'TABLE_STATE':
         setTableId(message.payload.tableId);
         setPlayers(message.payload.players);
-        console.log('[WS] Table state updated, players:', message.payload.players.length);
         break;
 
       case 'GAME_STATE':
-        console.log('[WS] Game state received, phase:', message.payload.phase);
-        console.log('[WS] Current trick length:', message.payload.currentTrick?.length || 0);
-        console.log('[WS] Current trick:', message.payload.currentTrick);
-        console.log('[WS] Current trick winner:', message.payload.currentTrickWinner);
         setGameState(message.payload);
         break;
 
@@ -216,8 +208,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
         break;
 
       default:
-        console.warn('Unknown message type:', message.type);
-    }
+        }
   };
 
   const sendMessage = useCallback((message: WSClientMessage) => {

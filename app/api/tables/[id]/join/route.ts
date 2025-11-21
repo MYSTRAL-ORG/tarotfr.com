@@ -9,10 +9,7 @@ export async function POST(
     const { userId, buyIn } = await request.json();
     const tableId = params.id;
 
-    console.log('[JOIN API] Request received:', { tableId, userId, buyIn });
-
     if (!userId) {
-      console.log('[JOIN API] ERROR: Missing userId');
       return NextResponse.json(
         { error: 'User ID is required' },
         { status: 400 }
@@ -63,18 +60,14 @@ export async function POST(
           metadata: { table_id: tableId }
         });
 
-      console.log('[JOIN API] Deducted', buyIn, 'tokens from user', userId);
-    }
+      }
 
     const { data: existingPlayers } = await supabase
       .from('table_players')
       .select('*')
       .eq('table_id', tableId);
 
-    console.log('[JOIN API] Existing players:', existingPlayers?.length || 0);
-
     if (existingPlayers && existingPlayers.length >= 4) {
-      console.log('[JOIN API] ERROR: Table is full');
       return NextResponse.json(
         { error: 'Table is full' },
         { status: 400 }

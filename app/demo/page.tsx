@@ -147,8 +147,8 @@ export default function DemoPage() {
                 <div className="space-y-4">
                   <BotSelector
                     players={mockPlayers}
-                    onAddBot={(difficulty) => console.log('Add bot', difficulty)}
-                    onRemoveBot={(botId) => console.log('Remove bot', botId)}
+                    onAddBot={() => {}}
+                    onRemoveBot={() => {}}
                     disabled={false}
                   />
                   <Button className="w-full" size="lg">

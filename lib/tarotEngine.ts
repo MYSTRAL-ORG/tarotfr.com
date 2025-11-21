@@ -221,22 +221,15 @@ export function applyBid(state: TarotGameState, playerSeat: number, bidType: Bid
 
 export function canPlayCard(state: TarotGameState, playerSeat: number, cardId: string): boolean {
   if (state.phase !== 'PLAYING') {
-    console.log('[canPlayCard] FAILED: phase is not PLAYING:', state.phase);
     return false;
   }
   if (state.currentPlayerSeat !== playerSeat) {
-    console.log('[canPlayCard] FAILED: not current player:', { currentPlayerSeat: state.currentPlayerSeat, playerSeat });
     return false;
   }
 
   const playerHand = state.hands[playerSeat];
   const card = playerHand.find((c) => c.id === cardId);
   if (!card) {
-    console.log('[canPlayCard] FAILED: card not found in hand:', {
-      cardId,
-      handCardIds: playerHand.map(c => c.id),
-      handCards: playerHand.map(c => `${c.suit}_${c.rank}`)
-    });
     return false;
   }
 
@@ -251,19 +244,7 @@ export function canPlayCard(state: TarotGameState, playerSeat: number, cardId: s
   const hasLeadSuit = playerHand.some((c) => c.suit === leadCard.suit);
   const hasTrump = playerHand.some((c) => c.suit === 'TRUMPS');
 
-  console.log('[canPlayCard] Checking card:', {
-    cardId,
-    cardSuit: card.suit,
-    cardRank: card.rank,
-    leadCardSuit: leadCard.suit,
-    leadCardRank: leadCard.rank,
-    hasLeadSuit,
-    hasTrump,
-    trickLength: trick.length
-  });
-
   if (card.suit === 'EXCUSE') {
-    console.log('[canPlayCard] Card is EXCUSE, allowing play');
     return true;
   }
 
