@@ -99,9 +99,6 @@ export function Navigation() {
 
   return (
     <nav className="border-b-4 border-red-600 bg-gradient-to-r from-slate-800 to-slate-900 relative overflow-hidden">
-      <div className="absolute inset-0 opacity-20" style={{
-        backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)',
-      }}></div>
       <div className="container mx-auto px-4 h-20 flex items-center justify-between relative z-10">
         <Link href="/" className="flex items-center gap-2 md:gap-4">
           <Image
