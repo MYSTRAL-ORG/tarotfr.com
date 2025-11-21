@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
-import { Coins, ShoppingCart, Sparkles, Crown, Star, Zap, Wand2 } from 'lucide-react';
+import { Coins, ShoppingCart, Star } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface ShopItem {
@@ -86,12 +86,12 @@ export default function ShopPage() {
   }
 
   const tarotThemes = [
-    { icon: Coins, color: 'from-gray-400 to-gray-600', bgColor: 'bg-gray-50', name: 'Le Bateleur', desc: 'Pour débuter votre aventure' },
-    { icon: Sparkles, color: 'from-blue-400 to-blue-600', bgColor: 'bg-blue-50', name: 'La Papesse', desc: 'La sagesse des premières parties' },
-    { icon: Star, color: 'from-green-400 to-green-600', bgColor: 'bg-green-50', name: 'L\'Impératrice', desc: 'L\'abondance pour progresser' },
-    { icon: Wand2, color: 'from-purple-400 to-purple-600', bgColor: 'bg-purple-50', name: 'Le Magicien', desc: 'Le pouvoir de la maîtrise' },
-    { icon: Crown, color: 'from-yellow-400 to-yellow-600', bgColor: 'bg-yellow-50', name: 'L\'Empereur', desc: 'La richesse des grands maîtres' },
-    { icon: Zap, color: 'from-red-400 to-red-600', bgColor: 'bg-red-50', name: 'Le Monde', desc: 'La plénitude absolue' },
+    { color: 'from-gray-400 to-gray-600', bgColor: 'bg-gray-50', name: 'Le Bateleur', desc: 'Pour débuter votre aventure', card: 1 },
+    { color: 'from-blue-400 to-blue-600', bgColor: 'bg-blue-50', name: 'La Papesse', desc: 'La sagesse des premières parties', card: 2 },
+    { color: 'from-green-400 to-green-600', bgColor: 'bg-green-50', name: 'L\'Impératrice', desc: 'L\'abondance pour progresser', card: 3 },
+    { color: 'from-purple-400 to-purple-600', bgColor: 'bg-purple-50', name: 'Le Magicien', desc: 'Le pouvoir de la maîtrise', card: 11 },
+    { color: 'from-yellow-400 to-yellow-600', bgColor: 'bg-yellow-50', name: 'L\'Empereur', desc: 'La richesse des grands maîtres', card: 4 },
+    { color: 'from-red-400 to-red-600', bgColor: 'bg-red-50', name: 'Le Monde', desc: 'La plénitude absolue', card: 21 },
   ];
 
   const getBestValueIndex = () => {
@@ -153,7 +153,6 @@ export default function ShopPage() {
             {items.map((item, index) => {
               const isBestValue = index === bestValueIndex;
               const theme = tarotThemes[index] || tarotThemes[0];
-              const Icon = theme.icon;
 
               return (
                 <Card
@@ -173,10 +172,12 @@ export default function ShopPage() {
 
                   <div className="p-6">
                     <div className="text-center mb-4">
-                      <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full ${theme.bgColor} mb-3`}>
-                        <Icon className={`w-8 h-8 bg-gradient-to-br ${theme.color} bg-clip-text text-transparent`} style={{
-                          filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'
-                        }} />
+                      <div className={`relative w-24 h-36 mx-auto mb-3 rounded-lg overflow-hidden ${theme.bgColor} shadow-lg`}>
+                        <img
+                          src={`/img/cards/trumps/${theme.card}.png`}
+                          alt={theme.name}
+                          className="w-full h-full object-cover"
+                        />
                       </div>
                       <h3 className="text-2xl font-bold text-slate-900 mb-1">{theme.name}</h3>
                       <p className="text-xs text-slate-500">{theme.desc}</p>
@@ -207,7 +208,7 @@ export default function ShopPage() {
                     </div>
 
                     <Button
-                      className={`w-full h-12 text-sm bg-gradient-to-r ${theme.color} hover:opacity-90 text-white`}
+                      className="w-full h-12 text-sm bg-blue-600 hover:bg-blue-700 text-white"
                       onClick={() => handlePurchase(item)}
                       disabled={purchasing === item.id}
                     >
