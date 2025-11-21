@@ -171,9 +171,12 @@ export default function PlayPage() {
     }
   }
 
-  const currentRoom = rooms[currentRoomIndex];
-  const isRoomLocked = wallet && currentRoom ? wallet.level < currentRoom.min_level : true;
-  const hasEnoughTokens = wallet && currentRoom ? wallet.tokens >= currentRoom.buy_in : false;
+  const roomsPerSlide = 3;
+  const totalSlides = Math.ceil(rooms.length / roomsPerSlide);
+  const currentSlideRooms = rooms.slice(
+    currentRoomIndex * roomsPerSlide,
+    (currentRoomIndex + 1) * roomsPerSlide
+  );
 
   const getCategoryColor = (category: string) => {
     switch (category) {
@@ -230,7 +233,7 @@ export default function PlayPage() {
                 <div className="flex items-center gap-6">
                   <div className="flex items-center gap-2">
                     <Coins className="w-6 h-6 text-yellow-500" />
-                    <span className={`text-2xl font-bold ${hasEnoughTokens ? 'text-green-600' : 'text-red-600'}`}>
+                    <span className="text-2xl font-bold text-green-600">
                       {wallet.tokens.toLocaleString()}
                     </span>
                   </div>
@@ -268,7 +271,7 @@ export default function PlayPage() {
             </p>
           </div>
 
-          {rooms.length > 0 && currentRoom && (
+          {rooms.length > 0 && currentSlideRooms.length > 0 && (
             <div className="relative">
               <div className="flex items-center justify-center gap-4">
                 <Button
@@ -281,114 +284,122 @@ export default function PlayPage() {
                   <ChevronLeft className="w-6 h-6" />
                 </Button>
 
-                <Card className="w-full max-w-2xl bg-white/95 backdrop-blur overflow-hidden">
-                  <div className={`h-3 bg-gradient-to-r ${getCategoryColor(currentRoom.category)}`} />
+                <div className="flex-1 max-w-6xl">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {currentSlideRooms.map((room) => {
+                      const isRoomLocked = wallet ? wallet.level < room.min_level : true;
+                      const hasEnoughTokens = wallet ? wallet.tokens >= room.buy_in : false;
 
-                  <div className="p-8">
-                    <div className="text-center mb-6">
-                      <div className="inline-block px-4 py-1 rounded-full bg-slate-100 text-slate-600 text-sm font-medium mb-3">
-                        {currentRoom.category}
-                      </div>
-                      <h2 className="text-4xl font-bold text-slate-900 mb-2">{currentRoom.name}</h2>
-                      <div className="flex items-center justify-center gap-2 text-slate-600">
-                        <span>4 joueurs</span>
-                        <span className="text-xs text-slate-400">(5 joueurs bientôt)</span>
-                      </div>
-                    </div>
+                      return (
+                        <Card key={room.id} className="bg-white/95 backdrop-blur overflow-hidden hover:shadow-xl transition-all">
+                          <div className={`h-2 bg-gradient-to-r ${getCategoryColor(room.category)}`} />
 
-                    <div className="grid grid-cols-2 gap-4 mb-6">
-                      <div className="bg-slate-50 rounded-lg p-4">
-                        <div className="text-sm text-slate-600 mb-1">Mise d'entrée</div>
-                        <div className="flex items-center gap-2">
-                          <Coins className="w-5 h-5 text-yellow-500" />
-                          <span className="text-2xl font-bold text-slate-900">
-                            {currentRoom.buy_in.toLocaleString()}
-                          </span>
-                        </div>
-                      </div>
+                          <div className="p-6">
+                            <div className="text-center mb-4">
+                              <div className="inline-block px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-medium mb-2">
+                                {room.category}
+                              </div>
+                              <h3 className="text-2xl font-bold text-slate-900 mb-1">{room.name}</h3>
+                              <div className="text-xs text-slate-500">4 joueurs</div>
+                            </div>
 
-                      <div className="bg-slate-50 rounded-lg p-4">
-                        <div className="text-sm text-slate-600 mb-1">Niveau requis</div>
-                        <div className="text-2xl font-bold text-orange-600">
-                          Niveau {currentRoom.min_level}
-                        </div>
-                      </div>
-                    </div>
+                            <div className="space-y-3 mb-4">
+                              <div className="bg-slate-50 rounded-lg p-3">
+                                <div className="text-xs text-slate-600 mb-1">Mise d'entrée</div>
+                                <div className="flex items-center gap-2">
+                                  <Coins className="w-4 h-4 text-yellow-500" />
+                                  <span className="text-lg font-bold text-slate-900">
+                                    {room.buy_in.toLocaleString()}
+                                  </span>
+                                </div>
+                              </div>
 
-                    <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-lg p-6 mb-6">
-                      <div className="text-sm font-semibold text-slate-700 mb-3">Récompenses</div>
-                      <div className="space-y-2">
-                        <div className="flex justify-between items-center">
-                          <span className="text-slate-600">🥇 1ère place</span>
-                          <span className="font-bold text-green-600">+{currentRoom.reward_first.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-slate-600">🥈 2ème place</span>
-                          <span className="font-bold text-blue-600">+{currentRoom.reward_second.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-slate-600">🥉 3ème place</span>
-                          <span className="font-bold text-orange-600">+{currentRoom.reward_draw.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-slate-600">4ème place</span>
-                          <span className="font-bold text-red-600">-{currentRoom.buy_in.toLocaleString()}</span>
-                        </div>
-                      </div>
+                              <div className="bg-slate-50 rounded-lg p-3">
+                                <div className="text-xs text-slate-600 mb-1">Niveau requis</div>
+                                <div className="text-lg font-bold text-orange-600">
+                                  Niveau {room.min_level}
+                                </div>
+                              </div>
+                            </div>
 
-                      <div className="mt-4 pt-4 border-t border-slate-200 flex justify-between text-sm">
-                        <div className="flex items-center gap-1">
-                          <Zap className="w-4 h-4 text-purple-500" />
-                          <span className="text-slate-600">+{currentRoom.xp_reward} XP</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Trophy className="w-4 h-4 text-blue-500" />
-                          <span className="text-slate-600">+{currentRoom.league_points} Points</span>
-                        </div>
-                      </div>
-                    </div>
+                            <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-lg p-4 mb-4">
+                              <div className="text-xs font-semibold text-slate-700 mb-2">Récompenses</div>
+                              <div className="space-y-1 text-sm">
+                                <div className="flex justify-between items-center">
+                                  <span className="text-slate-600">🥇 1ère</span>
+                                  <span className="font-bold text-green-600">+{room.reward_first.toLocaleString()}</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-slate-600">🥈 2ème</span>
+                                  <span className="font-bold text-blue-600">+{room.reward_second.toLocaleString()}</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-slate-600">🥉 3ème</span>
+                                  <span className="font-bold text-orange-600">+{room.reward_draw.toLocaleString()}</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-slate-600">4ème</span>
+                                  <span className="font-bold text-red-600">-{room.buy_in.toLocaleString()}</span>
+                                </div>
+                              </div>
 
-                    {isRoomLocked ? (
-                      <Button
-                        className="w-full h-14 text-lg bg-slate-400 cursor-not-allowed"
-                        disabled
-                      >
-                        <Lock className="w-5 h-5 mr-2" />
-                        Débloqué au niveau {currentRoom.min_level}
-                      </Button>
-                    ) : !hasEnoughTokens ? (
-                      <Button
-                        className="w-full h-14 text-lg bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600"
-                        onClick={() => router.push('/shop')}
-                      >
-                        <ShoppingBag className="w-5 h-5 mr-2" />
-                        Acheter des jetons
-                      </Button>
-                    ) : (
-                      <Button
-                        className="w-full h-14 text-lg bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
-                        onClick={() => handleJoinRoom(currentRoom)}
-                        disabled={joining}
-                      >
-                        {joining ? 'Connexion...' : 'REJOINDRE'}
-                      </Button>
-                    )}
+                              <div className="mt-3 pt-3 border-t border-slate-200 flex justify-between text-xs">
+                                <div className="flex items-center gap-1">
+                                  <Zap className="w-3 h-3 text-purple-500" />
+                                  <span className="text-slate-600">+{room.xp_reward} XP</span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <Trophy className="w-3 h-3 text-blue-500" />
+                                  <span className="text-slate-600">+{room.league_points} PTS</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {isRoomLocked ? (
+                              <Button
+                                className="w-full h-12 text-sm bg-slate-400 cursor-not-allowed"
+                                disabled
+                              >
+                                <Lock className="w-4 h-4 mr-2" />
+                                Niveau {room.min_level}
+                              </Button>
+                            ) : !hasEnoughTokens ? (
+                              <Button
+                                className="w-full h-12 text-sm bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600"
+                                onClick={() => router.push('/shop')}
+                              >
+                                <ShoppingBag className="w-4 h-4 mr-2" />
+                                Acheter
+                              </Button>
+                            ) : (
+                              <Button
+                                className="w-full h-12 text-sm bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
+                                onClick={() => handleJoinRoom(room)}
+                                disabled={joining}
+                              >
+                                {joining ? 'Connexion...' : 'REJOINDRE'}
+                              </Button>
+                            )}
+                          </div>
+                        </Card>
+                      );
+                    })}
                   </div>
-                </Card>
+                </div>
 
                 <Button
                   variant="outline"
                   size="icon"
                   className="h-12 w-12 rounded-full bg-white/90 hover:bg-white"
-                  onClick={() => setCurrentRoomIndex(Math.min(rooms.length - 1, currentRoomIndex + 1))}
-                  disabled={currentRoomIndex === rooms.length - 1}
+                  onClick={() => setCurrentRoomIndex(Math.min(totalSlides - 1, currentRoomIndex + 1))}
+                  disabled={currentRoomIndex === totalSlides - 1}
                 >
                   <ChevronRight className="w-6 h-6" />
                 </Button>
               </div>
 
               <div className="flex justify-center gap-2 mt-6">
-                {rooms.map((_, index) => (
+                {Array.from({ length: totalSlides }).map((_, index) => (
                   <button
                     key={index}
                     className={`w-2 h-2 rounded-full transition-all ${
