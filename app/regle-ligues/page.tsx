@@ -275,17 +275,22 @@ export default function LeagueRulesPage() {
                             </td>
                           </tr>
                           <tr key={`${league.id}-rewards`}>
-                            <td colSpan={3} className="px-6 py-4 bg-slate-50 border-b border-slate-200">
+                            <td colSpan={3} className="px-6 py-4 bg-gradient-to-r from-amber-50 to-yellow-50 border-b border-slate-200">
+                              <div className="mb-2 flex items-center justify-center gap-2">
+                                <Award className="w-4 h-4 text-amber-600" />
+                                <span className="text-sm font-semibold text-slate-700">Récompenses en jetons par position</span>
+                              </div>
                               <div className="grid grid-cols-10 gap-2">
                                 {rewards.map((reward, idx) => (
                                   <div
                                     key={idx}
-                                    className="text-center p-2 bg-white rounded border border-slate-200"
+                                    className="text-center p-2 bg-white rounded border-2 border-amber-200 shadow-sm"
                                   >
-                                    <div className="text-xs text-slate-600 mb-1">#{idx + 1}</div>
-                                    <div className="font-bold text-amber-600">
+                                    <div className="text-xs font-semibold text-slate-700 mb-1">#{idx + 1}</div>
+                                    <div className="font-bold text-lg text-amber-600">
                                       {reward >= 1000 ? `${(reward / 1000).toFixed(0)}k` : reward}
                                     </div>
+                                    <div className="text-xs text-slate-500">jetons</div>
                                   </div>
                                 ))}
                               </div>
