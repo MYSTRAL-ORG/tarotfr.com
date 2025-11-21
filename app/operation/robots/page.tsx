@@ -17,10 +17,12 @@ import {
   Users,
   Brain,
   Sparkles,
-  Shield
+  Shield,
+  Save
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
+import { AdminPageLayout } from '@/components/admin/AdminPageLayout';
 
 interface BotConfig {
   id: string;
@@ -148,15 +150,58 @@ export default function BotsPage() {
   };
 
   if (loading || !currentConfig) {
-    return <div className="flex items-center justify-center h-64">Chargement...</div>;
+    return (
+      <AdminPageLayout
+        title="Gestion des bots"
+        description="Configurez le comportement des adversaires virtuels"
+        icon={Bot}
+        loading={true}
+      >
+        <div></div>
+      </AdminPageLayout>
+    );
   }
 
   return (
-    <div className="space-y-6 max-w-7xl">
-      <div>
-        <h1 className="text-3xl font-bold text-slate-900">Gestion des bots</h1>
-        <p className="text-slate-600 mt-2">Configurez le comportement des adversaires virtuels</p>
-      </div>
+    <AdminPageLayout
+      title="Gestion des bots"
+      description="Configurez le comportement des adversaires virtuels"
+      icon={Bot}
+      stats={[
+        {
+          label: 'Bots Configurés',
+          value: botConfigs.length,
+          icon: Bot
+        },
+        {
+          label: 'Bots Actifs',
+          value: botConfigs.filter(b => b.is_active).length,
+          icon: Zap,
+          color: 'text-green-600'
+        },
+        {
+          label: 'Niveau Sélectionné',
+          value: getLevelLabel(currentConfig.level),
+          icon: TrendingUp,
+          color: 'text-blue-600'
+        }
+      ]}
+      actions={
+        <Button onClick={saveConfig} disabled={saving}>
+          {saving ? (
+            <>
+              <Save className="mr-2 h-4 w-4 animate-spin" />
+              Sauvegarde...
+            </>
+          ) : (
+            <>
+              <Save className="mr-2 h-4 w-4" />
+              Sauvegarder
+            </>
+          )}
+        </Button>
+      }
+    >
 
       <div className="flex gap-3">
         {botConfigs.map((bot) => (
@@ -663,14 +708,6 @@ export default function BotsPage() {
         </TabsContent>
       </Tabs>
 
-      <div className="flex justify-end gap-3">
-        <Button variant="outline" onClick={loadBotConfigs}>
-          Réinitialiser
-        </Button>
-        <Button onClick={saveConfig} disabled={saving}>
-          {saving ? 'Sauvegarde...' : 'Sauvegarder la configuration'}
-        </Button>
-      </div>
-    </div>
+    </AdminPageLayout>
   );
 }

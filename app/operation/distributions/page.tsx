@@ -6,8 +6,9 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, ExternalLink, ChevronLeft, ChevronRight, ArrowUpDown } from 'lucide-react';
+import { Search, ExternalLink, ChevronLeft, ChevronRight, ArrowUpDown, Layers } from 'lucide-react';
 import { createClient } from '@supabase/supabase-js';
+import { AdminPageLayout, AdminSection } from '@/components/admin/AdminPageLayout';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -113,31 +114,39 @@ export default function DistributionsListPage() {
   const endIndex = startIndex + itemsPerPage;
   const currentDistributions = filteredDistributions.slice(startIndex, endIndex);
 
-  if (loading) {
-    return (
-      <div className="space-y-6">
-        <div className="text-center py-12">
-          <p className="text-slate-600">Chargement des distributions...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900">Distributions</h1>
-          <p className="text-slate-600 mt-2">
-            {filteredDistributions.length} distribution{filteredDistributions.length > 1 ? 's' : ''} trouvée{filteredDistributions.length > 1 ? 's' : ''}
-          </p>
-        </div>
+    <AdminPageLayout
+      title="Distributions"
+      description={`${filteredDistributions.length} distribution${filteredDistributions.length > 1 ? 's' : ''} trouvée${filteredDistributions.length > 1 ? 's' : ''}`}
+      icon={Layers}
+      loading={loading}
+      stats={[
+        {
+          label: 'Total',
+          value: distributions.length,
+          icon: Layers
+        },
+        {
+          label: 'Utilisées',
+          value: distributions.filter(d => d.used_count > 0).length,
+          icon: ExternalLink,
+          color: 'text-green-600'
+        },
+        {
+          label: 'Non utilisées',
+          value: distributions.filter(d => d.used_count === 0).length,
+          icon: Layers,
+          color: 'text-blue-600'
+        }
+      ]}
+      actions={
         <Link href="/operation/seed">
           <Button>
             Générer des distributions
           </Button>
         </Link>
-      </div>
+      }
+    >
 
       <Card className="p-6">
         <div className="space-y-4">
@@ -285,6 +294,6 @@ export default function DistributionsListPage() {
           </div>
         )}
       </Card>
-    </div>
+    </AdminPageLayout>
   );
 }

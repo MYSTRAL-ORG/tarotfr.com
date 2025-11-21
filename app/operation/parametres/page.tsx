@@ -1,13 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/lib/supabase';
-import { Loader2 } from 'lucide-react';
+import { Settings, Save } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { AdminPageLayout, AdminSection } from '@/components/admin/AdminPageLayout';
 
 export default function SettingsPage() {
   const [landingPageMode, setLandingPageMode] = useState(false);
@@ -86,36 +86,26 @@ export default function SettingsPage() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-6 max-w-4xl">
-      <div>
-        <h1 className="text-3xl font-bold text-slate-900">Paramètres</h1>
-        <p className="text-slate-600 mt-2">Configurez votre application</p>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Apparence du site</CardTitle>
-          <CardDescription>
-            Contrôlez l'affichage du site pour les visiteurs
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex items-center justify-between">
+    <AdminPageLayout
+      title="Paramètres"
+      description="Configuration générale du site"
+      icon={Settings}
+      loading={loading}
+    >
+      <AdminSection
+        title="Page d'accueil"
+        description="Configurez le mode d'affichage de la page d'accueil"
+        icon={Settings}
+      >
+        <div className="space-y-6">
+          <div className="flex items-center justify-between p-4 border rounded-lg">
             <div className="space-y-0.5">
               <Label htmlFor="landing-mode" className="text-base">
                 Mode Landing Page
               </Label>
-              <p className="text-sm text-slate-500">
-                Active une page d'accueil minimaliste avec seulement le logo et le footer
+              <p className="text-sm text-muted-foreground">
+                Afficher une landing page marketing au lieu du jeu directement
               </p>
             </div>
             <Switch
@@ -125,38 +115,23 @@ export default function SettingsPage() {
             />
           </div>
 
-          <div className="pt-4 border-t">
+          <div className="flex justify-end">
             <Button onClick={handleSave} disabled={saving}>
               {saving ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Save className="mr-2 h-4 w-4 animate-spin" />
                   Enregistrement...
                 </>
               ) : (
-                'Enregistrer les modifications'
+                <>
+                  <Save className="mr-2 h-4 w-4" />
+                  Enregistrer
+                </>
               )}
             </Button>
           </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Informations</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-sm text-slate-600 space-y-2">
-            <p>
-              <strong>Mode Landing Page :</strong> Lorsqu'il est activé, le site affiche uniquement
-              une page d'accueil simplifiée avec le logo du site. Idéal pour mettre le site en maintenance
-              ou avant le lancement officiel.
-            </p>
-            <p>
-              <strong>Mode Normal :</strong> Le site affiche l'interface complète avec toutes les fonctionnalités.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+        </div>
+      </AdminSection>
+    </AdminPageLayout>
   );
 }
