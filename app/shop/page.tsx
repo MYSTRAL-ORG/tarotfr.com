@@ -172,15 +172,14 @@ export default function ShopPage() {
 
                   <div className="p-6">
                     <div className="text-center mb-4">
-                      <div className="relative w-full mb-3 bg-gradient-to-br from-green-700 via-green-800 to-green-900 rounded-lg" style={{
-                        backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.05) 40px, rgba(255,255,255,0.05) 80px)',
-                        padding: '10px'
+                      <div className="relative w-full mb-3 p-4 bg-gradient-to-br from-green-700 via-green-800 to-green-900 rounded-lg" style={{
+                        backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.05) 40px, rgba(255,255,255,0.05) 80px)'
                       }}>
-                        <div className="relative w-full h-32 overflow-hidden rounded-md">
+                        <div className="relative w-full h-32 bg-white/10 backdrop-blur-sm rounded-md overflow-hidden">
                           <img
                             src={`/img/cards/trumps/${theme.card}.png`}
                             alt={theme.name}
-                            className="w-full h-full object-cover object-top"
+                            className="w-full h-full object-contain"
                           />
                         </div>
                       </div>
@@ -189,11 +188,11 @@ export default function ShopPage() {
                     </div>
 
                     <div className="space-y-3 mb-4">
-                      <div className="bg-slate-50 rounded-lg p-3">
-                        <div className="text-xs text-slate-600 mb-1">Jetons inclus</div>
-                        <div className="flex items-center gap-2">
-                          <Coins className="w-5 h-5 text-yellow-500" />
-                          <span className="text-lg font-bold text-slate-900">
+                      <div className="bg-slate-50 rounded-lg p-4">
+                        <div className="text-sm text-slate-600 mb-2">Jetons inclus</div>
+                        <div className="flex items-center justify-center gap-2">
+                          <Coins className="w-7 h-7 text-yellow-500" />
+                          <span className="text-3xl font-bold text-slate-900">
                             {item.tokens.toLocaleString()}
                           </span>
                         </div>
