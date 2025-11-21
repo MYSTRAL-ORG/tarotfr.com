@@ -68,17 +68,17 @@ export default function LevelsPage() {
     {
       room: 'DÉBUTANT 1',
       xp: '+10 XP',
-      color: 'bg-gray-100 text-gray-800 border-gray-300',
+      color: 'bg-green-100 text-green-800 border-green-300',
     },
     {
       room: 'DÉBUTANT 2',
       xp: '+15 XP',
-      color: 'bg-gray-100 text-gray-800 border-gray-300',
+      color: 'bg-green-100 text-green-800 border-green-300',
     },
     {
       room: 'DÉBUTANT 3',
       xp: '+20 XP',
-      color: 'bg-gray-100 text-gray-800 border-gray-300',
+      color: 'bg-green-100 text-green-800 border-green-300',
     },
     {
       room: 'PRO 1',

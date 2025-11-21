@@ -131,10 +131,6 @@ export function Navigation() {
         </Link>
 
         <div className="flex items-center gap-3 md:gap-6">
-          <Link href="/niveaux" className="text-white/90 hover:text-white font-medium transition-colors" title="Niveaux">
-            <span className="hidden md:inline">Niveaux</span>
-            <TrendingUp className="w-5 h-5 md:hidden" />
-          </Link>
           {user && (
             <Link href="/jouer" className="text-white/90 hover:text-white font-medium transition-colors" title="Jouer">
               <span className="hidden md:inline">Jouer</span>
@@ -157,14 +153,14 @@ export function Navigation() {
                       </button>
                     </Link>
                   </div>
-                  <div className="bg-white/20 backdrop-blur px-3 py-1.5 rounded-md flex items-center gap-2">
+                  <Link href="/niveaux" className="bg-white/20 backdrop-blur px-3 py-1.5 rounded-md flex items-center gap-2 hover:bg-white/30 transition-colors">
                     <span className="text-white font-semibold text-sm">
                       Niveau
                     </span>
                     <div className="w-6 h-6 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white text-xs font-bold">
                       {wallet.level}
                     </div>
-                  </div>
+                  </Link>
                 </>
               )}
               <Link href="/compte">
