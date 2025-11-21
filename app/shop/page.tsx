@@ -184,13 +184,15 @@ export default function ShopPage() {
                     </div>
 
                     <div className="space-y-3 mb-4">
-                      <div className="bg-slate-50 rounded-lg p-3">
-                        <div className="text-xs text-slate-600 mb-1">Jetons inclus</div>
-                        <div className="flex items-center gap-2">
-                          <Coins className="w-5 h-5 text-yellow-500" />
-                          <span className="text-lg font-bold text-slate-900">
-                            {item.tokens.toLocaleString()}
-                          </span>
+                      <div className="bg-slate-50 rounded-lg p-4">
+                        <div className="text-center">
+                          <div className="text-sm text-slate-600 mb-2">Jetons inclus</div>
+                          <div className="flex items-center justify-center gap-2">
+                            <Coins className="w-6 h-6 text-yellow-500" />
+                            <span className="text-3xl font-bold text-slate-900">
+                              {item.tokens.toLocaleString()}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
