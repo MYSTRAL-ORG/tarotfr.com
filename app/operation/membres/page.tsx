@@ -1,13 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Users, UserPlus, Mail, Calendar, UserCheck, UserX, Search, Trash2 } from 'lucide-react';
+import { Users, Mail, Calendar, UserCheck, UserX, Search, Trash2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
+import { AdminPageLayout, AdminSection } from '@/components/admin/AdminPageLayout';
 
 interface Member {
   id: string;
@@ -88,77 +88,51 @@ export default function MembersPage() {
   );
 
   return (
-    <div className="space-y-6 max-w-6xl">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900">Gestion des membres</h1>
-          <p className="text-slate-600 mt-2">Gérez les utilisateurs de votre application</p>
-        </div>
-      </div>
-
-      <div className="grid md:grid-cols-3 gap-4">
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-slate-600">
-              Membres enregistrés
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">{stats.registered}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-slate-600">
-              Invités
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-blue-600">{stats.guests}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-slate-600">
-              Total
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.total}</div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <Users className="mr-2 h-5 w-5" />
-            Liste des membres
-          </CardTitle>
-          <CardDescription>
-            Tous les utilisateurs enregistrés et invités
-          </CardDescription>
-          <div className="pt-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-              <Input
-                placeholder="Rechercher par nom ou email..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
+    <AdminPageLayout
+      title="Gestion des membres"
+      description="Gérez les utilisateurs de votre application"
+      icon={Users}
+      stats={[
+        {
+          label: 'Membres enregistrés',
+          value: stats.registered,
+          icon: UserCheck,
+          color: 'text-green-600'
+        },
+        {
+          label: 'Invités',
+          value: stats.guests,
+          icon: UserX,
+          color: 'text-blue-600'
+        },
+        {
+          label: 'Total',
+          value: stats.total,
+          icon: Users
+        }
+      ]}
+    >
+      <AdminSection
+        title="Liste des membres"
+        description="Tous les utilisateurs enregistrés et invités"
+      >
+        <div className="space-y-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Rechercher par nom ou email..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
           </div>
-        </CardHeader>
-        <CardContent>
+
           {loading ? (
-            <div className="text-center py-12 text-slate-500">
+            <div className="text-center py-12 text-muted-foreground">
               <p>Chargement...</p>
             </div>
           ) : filteredMembers.length === 0 ? (
-            <div className="text-center py-12 text-slate-500">
+            <div className="text-center py-12 text-muted-foreground">
               <Users className="h-16 w-16 mx-auto mb-4 opacity-20" />
               <p className="text-lg font-medium">Aucun membre trouvé</p>
               <p className="text-sm mt-2">Les nouveaux membres apparaîtront ici</p>
@@ -168,26 +142,26 @@ export default function MembersPage() {
               {filteredMembers.map((member) => (
                 <div
                   key={member.id}
-                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-slate-50 transition-colors"
+                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent transition-colors"
                 >
                   <div className="flex items-center gap-4 flex-1">
-                    <div className="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center">
+                    <div className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center">
                       {member.is_guest ? (
-                        <UserX className="w-5 h-5 text-slate-600" />
+                        <UserX className="w-5 h-5 text-muted-foreground" />
                       ) : (
                         <UserCheck className="w-5 h-5 text-green-600" />
                       )}
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <h3 className="font-semibold text-slate-900">{member.display_name}</h3>
+                        <h3 className="font-semibold">{member.display_name}</h3>
                         {member.is_guest ? (
                           <Badge variant="outline" className="text-xs">Invité</Badge>
                         ) : (
                           <Badge className="text-xs bg-green-600">Membre</Badge>
                         )}
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-slate-600 mt-1">
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
                         {member.email && (
                           <span className="flex items-center gap-1">
                             <Mail className="w-3 h-3" />
@@ -213,8 +187,8 @@ export default function MembersPage() {
               ))}
             </div>
           )}
-        </CardContent>
-      </Card>
-    </div>
+        </div>
+      </AdminSection>
+    </AdminPageLayout>
   );
 }

@@ -7,8 +7,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Save, Plus } from 'lucide-react';
+import { Coins, TrendingUp, Target } from 'lucide-react';
 import { toast } from 'sonner';
+import { AdminPageLayout, AdminSection } from '@/components/admin/AdminPageLayout';
 
 interface RoomType {
   id: string;
@@ -118,18 +119,47 @@ export default function EconomyPage() {
   };
 
   if (loading) {
-    return <div className="p-8">Chargement...</div>;
+    return (
+      <AdminPageLayout
+        title="Économie du Jeu"
+        description="Gérer les types de salles et la progression des niveaux"
+        icon={Coins}
+      >
+        <div className="text-center py-12 text-muted-foreground">
+          <p>Chargement...</p>
+        </div>
+      </AdminPageLayout>
+    );
   }
 
-  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Économie du Jeu</h1>
-        <p className="text-muted-foreground">
-          Gérer les types de salles et la progression des niveaux
-        </p>
-      </div>
+  const totalRooms = roomTypes.length;
+  const enabledRooms = roomTypes.filter(r => r.enabled).length;
+  const totalLevels = levelConfig.length;
 
+  return (
+    <AdminPageLayout
+      title="Économie du Jeu"
+      description="Gérer les types de salles et la progression des niveaux"
+      icon={Coins}
+      stats={[
+        {
+          label: 'Types de Salles',
+          value: totalRooms,
+          icon: Target,
+        },
+        {
+          label: 'Salles Actives',
+          value: enabledRooms,
+          icon: Target,
+          color: 'text-green-600'
+        },
+        {
+          label: 'Niveaux Configurés',
+          value: totalLevels,
+          icon: TrendingUp,
+        }
+      ]}
+    >
       <Tabs defaultValue="rooms" className="space-y-4">
         <TabsList>
           <TabsTrigger value="rooms">Types de Salles</TabsTrigger>
@@ -137,185 +167,178 @@ export default function EconomyPage() {
         </TabsList>
 
         <TabsContent value="rooms" className="space-y-4">
-          <div className="grid gap-4">
-            {roomTypes.map((room) => (
-              <Card key={room.id}>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle>{room.name}</CardTitle>
-                      <CardDescription>Catégorie: {room.category}</CardDescription>
-                    </div>
-                    <Switch
-                      checked={room.enabled}
-                      onCheckedChange={(checked) => {
-                        const updated = { ...room, enabled: checked };
+          {roomTypes.map((room) => (
+            <Card key={room.id}>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>{room.name}</CardTitle>
+                    <CardDescription>Catégorie: {room.category}</CardDescription>
+                  </div>
+                  <Switch
+                    checked={room.enabled}
+                    onCheckedChange={(checked) => {
+                      const updated = { ...room, enabled: checked };
+                      setRoomTypes(rooms => rooms.map(r => r.id === room.id ? updated : r));
+                      updateRoomType(updated);
+                    }}
+                  />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="space-y-2">
+                    <Label>Buy-in (Jetons)</Label>
+                    <Input
+                      type="number"
+                      value={room.buy_in}
+                      onChange={(e) => {
+                        const updated = { ...room, buy_in: parseInt(e.target.value) || 0 };
                         setRoomTypes(rooms => rooms.map(r => r.id === room.id ? updated : r));
-                        updateRoomType(updated);
                       }}
+                      onBlur={() => updateRoomType(room)}
                     />
                   </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="space-y-2">
-                      <Label>Buy-in (Jetons)</Label>
-                      <Input
-                        type="number"
-                        value={room.buy_in}
-                        onChange={(e) => {
-                          const updated = { ...room, buy_in: parseInt(e.target.value) || 0 };
-                          setRoomTypes(rooms => rooms.map(r => r.id === room.id ? updated : r));
-                        }}
-                        onBlur={() => updateRoomType(room)}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Récompense 1er</Label>
-                      <Input
-                        type="number"
-                        value={room.reward_first}
-                        onChange={(e) => {
-                          const updated = { ...room, reward_first: parseInt(e.target.value) || 0 };
-                          setRoomTypes(rooms => rooms.map(r => r.id === room.id ? updated : r));
-                        }}
-                        onBlur={() => updateRoomType(room)}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Récompense 2ème</Label>
-                      <Input
-                        type="number"
-                        value={room.reward_second}
-                        onChange={(e) => {
-                          const updated = { ...room, reward_second: parseInt(e.target.value) || 0 };
-                          setRoomTypes(rooms => rooms.map(r => r.id === room.id ? updated : r));
-                        }}
-                        onBlur={() => updateRoomType(room)}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Récompense Égalité</Label>
-                      <Input
-                        type="number"
-                        value={room.reward_draw}
-                        onChange={(e) => {
-                          const updated = { ...room, reward_draw: parseInt(e.target.value) || 0 };
-                          setRoomTypes(rooms => rooms.map(r => r.id === room.id ? updated : r));
-                        }}
-                        onBlur={() => updateRoomType(room)}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>XP Gagnée</Label>
-                      <Input
-                        type="number"
-                        value={room.xp_reward}
-                        onChange={(e) => {
-                          const updated = { ...room, xp_reward: parseInt(e.target.value) || 0 };
-                          setRoomTypes(rooms => rooms.map(r => r.id === room.id ? updated : r));
-                        }}
-                        onBlur={() => updateRoomType(room)}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Points de Ligue</Label>
-                      <Input
-                        type="number"
-                        value={room.league_points}
-                        onChange={(e) => {
-                          const updated = { ...room, league_points: parseInt(e.target.value) || 0 };
-                          setRoomTypes(rooms => rooms.map(r => r.id === room.id ? updated : r));
-                        }}
-                        onBlur={() => updateRoomType(room)}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Niveau Minimum</Label>
-                      <Input
-                        type="number"
-                        value={room.min_level}
-                        onChange={(e) => {
-                          const updated = { ...room, min_level: parseInt(e.target.value) || 1 };
-                          setRoomTypes(rooms => rooms.map(r => r.id === room.id ? updated : r));
-                        }}
-                        onBlur={() => updateRoomType(room)}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Ordre d'affichage</Label>
-                      <Input
-                        type="number"
-                        value={room.sort_order}
-                        onChange={(e) => {
-                          const updated = { ...room, sort_order: parseInt(e.target.value) || 0 };
-                          setRoomTypes(rooms => rooms.map(r => r.id === room.id ? updated : r));
-                        }}
-                        onBlur={() => updateRoomType(room)}
-                      />
-                    </div>
+                  <div className="space-y-2">
+                    <Label>Récompense 1er</Label>
+                    <Input
+                      type="number"
+                      value={room.reward_first}
+                      onChange={(e) => {
+                        const updated = { ...room, reward_first: parseInt(e.target.value) || 0 };
+                        setRoomTypes(rooms => rooms.map(r => r.id === room.id ? updated : r));
+                      }}
+                      onBlur={() => updateRoomType(room)}
+                    />
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  <div className="space-y-2">
+                    <Label>Récompense 2ème</Label>
+                    <Input
+                      type="number"
+                      value={room.reward_second}
+                      onChange={(e) => {
+                        const updated = { ...room, reward_second: parseInt(e.target.value) || 0 };
+                        setRoomTypes(rooms => rooms.map(r => r.id === room.id ? updated : r));
+                      }}
+                      onBlur={() => updateRoomType(room)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Récompense Égalité</Label>
+                    <Input
+                      type="number"
+                      value={room.reward_draw}
+                      onChange={(e) => {
+                        const updated = { ...room, reward_draw: parseInt(e.target.value) || 0 };
+                        setRoomTypes(rooms => rooms.map(r => r.id === room.id ? updated : r));
+                      }}
+                      onBlur={() => updateRoomType(room)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>XP Gagnée</Label>
+                    <Input
+                      type="number"
+                      value={room.xp_reward}
+                      onChange={(e) => {
+                        const updated = { ...room, xp_reward: parseInt(e.target.value) || 0 };
+                        setRoomTypes(rooms => rooms.map(r => r.id === room.id ? updated : r));
+                      }}
+                      onBlur={() => updateRoomType(room)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Points de Ligue</Label>
+                    <Input
+                      type="number"
+                      value={room.league_points}
+                      onChange={(e) => {
+                        const updated = { ...room, league_points: parseInt(e.target.value) || 0 };
+                        setRoomTypes(rooms => rooms.map(r => r.id === room.id ? updated : r));
+                      }}
+                      onBlur={() => updateRoomType(room)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Niveau Minimum</Label>
+                    <Input
+                      type="number"
+                      value={room.min_level}
+                      onChange={(e) => {
+                        const updated = { ...room, min_level: parseInt(e.target.value) || 1 };
+                        setRoomTypes(rooms => rooms.map(r => r.id === room.id ? updated : r));
+                      }}
+                      onBlur={() => updateRoomType(room)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Ordre d'affichage</Label>
+                    <Input
+                      type="number"
+                      value={room.sort_order}
+                      onChange={(e) => {
+                        const updated = { ...room, sort_order: parseInt(e.target.value) || 0 };
+                        setRoomTypes(rooms => rooms.map(r => r.id === room.id ? updated : r));
+                      }}
+                      onBlur={() => updateRoomType(room)}
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </TabsContent>
 
         <TabsContent value="levels" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Configuration des Niveaux</CardTitle>
-              <CardDescription>
-                Définir l'XP requise pour chaque niveau et les récompenses
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2 max-h-[600px] overflow-y-auto">
-                <div className="grid grid-cols-4 gap-4 font-semibold pb-2 border-b sticky top-0 bg-background">
-                  <div>Niveau</div>
-                  <div>XP Requise</div>
-                  <div>Récompense Jetons</div>
-                  <div>Débloque Salle</div>
-                </div>
-                {levelConfig.map((level) => (
-                  <div key={level.level} className="grid grid-cols-4 gap-4 py-2 border-b">
-                    <div className="flex items-center font-bold">
-                      Niveau {level.level}
-                    </div>
-                    <Input
-                      type="number"
-                      value={level.xp_required}
-                      onChange={(e) => {
-                        const updated = { ...level, xp_required: parseInt(e.target.value) || 0 };
-                        setLevelConfig(levels => levels.map(l => l.level === level.level ? updated : l));
-                      }}
-                      onBlur={() => updateLevelConfig(level)}
-                    />
-                    <Input
-                      type="number"
-                      value={level.reward_tokens}
-                      onChange={(e) => {
-                        const updated = { ...level, reward_tokens: parseInt(e.target.value) || 0 };
-                        setLevelConfig(levels => levels.map(l => l.level === level.level ? updated : l));
-                      }}
-                      onBlur={() => updateLevelConfig(level)}
-                    />
-                    <Input
-                      value={level.unlocks_room || ''}
-                      onChange={(e) => {
-                        const updated = { ...level, unlocks_room: e.target.value || null };
-                        setLevelConfig(levels => levels.map(l => l.level === level.level ? updated : l));
-                      }}
-                      onBlur={() => updateLevelConfig(level)}
-                      placeholder="Nom de la salle"
-                    />
-                  </div>
-                ))}
+          <AdminSection
+            title="Configuration des Niveaux"
+            description="Définir l'XP requise pour chaque niveau et les récompenses"
+          >
+            <div className="space-y-2 max-h-[600px] overflow-y-auto">
+              <div className="grid grid-cols-4 gap-4 font-semibold pb-2 border-b sticky top-0 bg-background">
+                <div>Niveau</div>
+                <div>XP Requise</div>
+                <div>Récompense Jetons</div>
+                <div>Débloque Salle</div>
               </div>
-            </CardContent>
-          </Card>
+              {levelConfig.map((level) => (
+                <div key={level.level} className="grid grid-cols-4 gap-4 py-2 border-b">
+                  <div className="flex items-center font-bold">
+                    Niveau {level.level}
+                  </div>
+                  <Input
+                    type="number"
+                    value={level.xp_required}
+                    onChange={(e) => {
+                      const updated = { ...level, xp_required: parseInt(e.target.value) || 0 };
+                      setLevelConfig(levels => levels.map(l => l.level === level.level ? updated : l));
+                    }}
+                    onBlur={() => updateLevelConfig(level)}
+                  />
+                  <Input
+                    type="number"
+                    value={level.reward_tokens}
+                    onChange={(e) => {
+                      const updated = { ...level, reward_tokens: parseInt(e.target.value) || 0 };
+                      setLevelConfig(levels => levels.map(l => l.level === level.level ? updated : l));
+                    }}
+                    onBlur={() => updateLevelConfig(level)}
+                  />
+                  <Input
+                    value={level.unlocks_room || ''}
+                    onChange={(e) => {
+                      const updated = { ...level, unlocks_room: e.target.value || null };
+                      setLevelConfig(levels => levels.map(l => l.level === level.level ? updated : l));
+                    }}
+                    onBlur={() => updateLevelConfig(level)}
+                    placeholder="Nom de la salle"
+                  />
+                </div>
+              ))}
+            </div>
+          </AdminSection>
         </TabsContent>
       </Tabs>
-    </div>
+    </AdminPageLayout>
   );
 }

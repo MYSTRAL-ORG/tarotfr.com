@@ -7,8 +7,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import { Save, Plus, ShoppingBag } from 'lucide-react';
+import { ShoppingBag, Package } from 'lucide-react';
 import { toast } from 'sonner';
+import { AdminPageLayout } from '@/components/admin/AdminPageLayout';
 
 interface ShopItem {
   id: string;
@@ -73,24 +74,41 @@ export default function ShopConfigPage() {
   };
 
   if (loading) {
-    return <div className="p-8">Chargement...</div>;
+    return (
+      <AdminPageLayout
+        title="Configuration Boutique"
+        description="Gérer les packs de jetons disponibles à l'achat"
+        icon={ShoppingBag}
+      >
+        <div className="text-center py-12 text-muted-foreground">
+          <p>Chargement...</p>
+        </div>
+      </AdminPageLayout>
+    );
   }
 
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Configuration Boutique</h1>
-          <p className="text-muted-foreground">
-            Gérer les packs de jetons disponibles à l'achat
-          </p>
-        </div>
-        <Button>
-          <Plus className="w-4 h-4 mr-2" />
-          Ajouter un Pack
-        </Button>
-      </div>
+  const totalItems = shopItems.length;
+  const enabledItems = shopItems.filter(i => i.enabled).length;
 
+  return (
+    <AdminPageLayout
+      title="Configuration Boutique"
+      description="Gérer les packs de jetons disponibles à l'achat"
+      icon={ShoppingBag}
+      stats={[
+        {
+          label: 'Packs Disponibles',
+          value: totalItems,
+          icon: Package,
+        },
+        {
+          label: 'Packs Actifs',
+          value: enabledItems,
+          icon: Package,
+          color: 'text-green-600'
+        }
+      ]}
+    >
       <div className="grid gap-4">
         {shopItems.map((item) => (
           <Card key={item.id}>
@@ -119,7 +137,7 @@ export default function ShopConfigPage() {
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label>Titre du Pack</Label>
+                    <Label>Titre</Label>
                     <Input
                       value={item.title}
                       onChange={(e) => {
@@ -129,6 +147,7 @@ export default function ShopConfigPage() {
                       onBlur={() => updateShopItem(item)}
                     />
                   </div>
+
                   <div className="space-y-2">
                     <Label>Description</Label>
                     <Textarea
@@ -141,6 +160,9 @@ export default function ShopConfigPage() {
                       rows={3}
                     />
                   </div>
+                </div>
+
+                <div className="space-y-4">
                   <div className="space-y-2">
                     <Label>Nombre de Jetons</Label>
                     <Input
@@ -153,12 +175,10 @@ export default function ShopConfigPage() {
                       onBlur={() => updateShopItem(item)}
                     />
                   </div>
-                </div>
 
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label>Prix (EUR)</Label>
-                    <div className="relative">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Prix (EUR)</Label>
                       <Input
                         type="number"
                         step="0.01"
@@ -169,28 +189,22 @@ export default function ShopConfigPage() {
                         }}
                         onBlur={() => updateShopItem(item)}
                       />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                        €
-                      </span>
                     </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Prix (VND)</Label>
-                    <div className="relative">
+
+                    <div className="space-y-2">
+                      <Label>Prix (VND)</Label>
                       <Input
                         type="number"
                         value={item.price_vnd}
                         onChange={(e) => {
-                          const updated = { ...item, price_vnd: parseFloat(e.target.value) || 0 };
+                          const updated = { ...item, price_vnd: parseInt(e.target.value) || 0 };
                           setShopItems(items => items.map(i => i.id === item.id ? updated : i));
                         }}
                         onBlur={() => updateShopItem(item)}
                       />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                        ₫
-                      </span>
                     </div>
                   </div>
+
                   <div className="space-y-2">
                     <Label>Ordre d'affichage</Label>
                     <Input
@@ -205,24 +219,10 @@ export default function ShopConfigPage() {
                   </div>
                 </div>
               </div>
-
-              <div className="mt-4 pt-4 border-t">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">ID: {item.id}</span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => updateShopItem(item)}
-                  >
-                    <Save className="w-4 h-4 mr-2" />
-                    Sauvegarder
-                  </Button>
-                </div>
-              </div>
             </CardContent>
           </Card>
         ))}
       </div>
-    </div>
+    </AdminPageLayout>
   );
 }
