@@ -7,22 +7,36 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const divisionId = searchParams.get('divisionId');
+    const leagueId = searchParams.get('leagueId');
+    const divisionNumber = searchParams.get('divisionNumber');
     const userId = searchParams.get('userId');
-
-    if (!divisionId) {
-      return NextResponse.json(
-        { error: 'Division ID is required' },
-        { status: 400 }
-      );
-    }
 
     const supabase = createClient();
 
-    const { data: division } = await supabase
-      .from('league_divisions')
-      .select('*, league:leagues(*)')
-      .eq('id', divisionId)
-      .maybeSingle();
+    let division;
+
+    // Support both divisionId and leagueId+divisionNumber
+    if (divisionId) {
+      const { data } = await supabase
+        .from('league_divisions')
+        .select('*, league:leagues(*)')
+        .eq('id', divisionId)
+        .maybeSingle();
+      division = data;
+    } else if (leagueId && divisionNumber) {
+      const { data } = await supabase
+        .from('league_divisions')
+        .select('*, league:leagues(*)')
+        .eq('league_id', parseInt(leagueId))
+        .eq('division_number', parseInt(divisionNumber))
+        .maybeSingle();
+      division = data;
+    } else {
+      return NextResponse.json(
+        { error: 'Either divisionId or leagueId+divisionNumber is required' },
+        { status: 400 }
+      );
+    }
 
     if (!division) {
       return NextResponse.json(
@@ -52,7 +66,7 @@ export async function GET(request: Request) {
         *,
         user:users(id, display_name)
       `)
-      .eq('division_id', divisionId)
+      .eq('division_id', division.id)
       .eq('season_id', season.id)
       .order('league_points', { ascending: false })
       .order('joined_at', { ascending: true });

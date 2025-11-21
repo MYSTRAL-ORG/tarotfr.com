@@ -23,53 +23,64 @@ export default function LiguesPage() {
 
   useEffect(() => {
     async function fetchLeagueData() {
-      if (!user) return;
-
       try {
-        const currentRes = await fetch(`/api/leagues/current?userId=${user.id}`);
-        if (currentRes.ok) {
-          const currentData = await currentRes.json();
-          if (currentData.membership) {
-            setMembership(currentData.membership);
+        // Try to get user's current league membership
+        if (user) {
+          const currentRes = await fetch(`/api/leagues/current?userId=${user.id}`);
+          if (currentRes.ok) {
+            const currentData = await currentRes.json();
+            if (currentData.membership) {
+              setMembership(currentData.membership);
 
-            const rankingsRes = await fetch(
-              `/api/leagues/rankings?divisionId=${currentData.membership.division_id}&userId=${user.id}`
-            );
-            if (rankingsRes.ok) {
-              const rankingsData = await rankingsRes.json();
-              setRankings(rankingsData.rankings);
-              setRewards(rankingsData.rewards);
+              const rankingsRes = await fetch(
+                `/api/leagues/rankings?divisionId=${currentData.membership.division_id}&userId=${user.id}`
+              );
+              if (rankingsRes.ok) {
+                const rankingsData = await rankingsRes.json();
+                setRankings(rankingsData.rankings);
+                setRewards(rankingsData.rewards);
+              }
+
+              if (currentData.season && currentData.season.end_date) {
+                const endDate = new Date(currentData.season.end_date);
+                const updateTimeLeft = () => {
+                  const now = new Date();
+                  const diff = endDate.getTime() - now.getTime();
+
+                  if (diff <= 0) {
+                    setTimeLeft('Saison terminée');
+                    return;
+                  }
+
+                  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+                  setTimeLeft(`${days}j ${hours}h ${minutes}m`);
+                };
+
+                updateTimeLeft();
+                const interval = setInterval(updateTimeLeft, 60000);
+                return () => clearInterval(interval);
+              }
             }
+          }
 
-            if (currentData.season && currentData.season.end_date) {
-              const endDate = new Date(currentData.season.end_date);
-              const updateTimeLeft = () => {
-                const now = new Date();
-                const diff = endDate.getTime() - now.getTime();
-
-                if (diff <= 0) {
-                  setTimeLeft('Saison terminée');
-                  return;
-                }
-
-                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-
-                setTimeLeft(`${days}j ${hours}h ${minutes}m`);
-              };
-
-              updateTimeLeft();
-              const interval = setInterval(updateTimeLeft, 60000);
-              return () => clearInterval(interval);
-            }
+          const historyRes = await fetch(`/api/leagues/history?userId=${user.id}`);
+          if (historyRes.ok) {
+            const historyData = await historyRes.json();
+            setHistory(historyData.history);
           }
         }
 
-        const historyRes = await fetch(`/api/leagues/history?userId=${user.id}`);
-        if (historyRes.ok) {
-          const historyData = await historyRes.json();
-          setHistory(historyData.history);
+        // If no membership found, fetch first division of league 1 as example
+        if (!membership) {
+          const exampleRes = await fetch('/api/leagues/rankings?leagueId=1&divisionNumber=1');
+          if (exampleRes.ok) {
+            const exampleData = await exampleRes.json();
+            setRankings(exampleData.rankings);
+            setRewards(exampleData.rewards);
+          }
         }
       } catch (error) {
         console.error('Error fetching league data:', error);
@@ -79,7 +90,7 @@ export default function LiguesPage() {
     }
 
     fetchLeagueData();
-  }, [user]);
+  }, [user, membership]);
 
   const getPromotionZone = (rank: number) => {
     if (rank <= 10) return 'promotion';
@@ -141,24 +152,8 @@ export default function LiguesPage() {
     );
   }
 
-  if (!membership) {
-    return (
-      <>
-        <Navigation />
-        <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 flex items-center justify-center">
-          <Card>
-            <CardContent className="pt-6">
-              <p className="text-center text-slate-600">Vous n&apos;êtes pas encore assigné à une ligue. Jouez votre première partie !</p>
-            </CardContent>
-          </Card>
-        </div>
-        <Footer />
-      </>
-    );
-  }
-
-  const league = membership.division?.league;
-  const userRank = membership.rank || 0;
+  const league = membership?.division?.league;
+  const userRank = membership?.rank || 0;
   const zone = getPromotionZone(userRank);
 
   return (
@@ -172,52 +167,77 @@ export default function LiguesPage() {
               Ligues Compétitives
             </h1>
             <p className="text-slate-600">
-              Affrontez les meilleurs joueurs chaque semaine pour gravir les échelons
+              {membership
+                ? 'Affrontez les meilleurs joueurs chaque semaine pour gravir les échelons'
+                : 'Aperçu de la Ligue Bronze - Division 1'
+              }
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-slate-600 mb-1">Votre ligue</p>
-                    <p className="text-2xl font-bold text-slate-900">{league?.name}</p>
-                    <p className="text-xs text-slate-500">Division {membership.division?.divisionNumber}</p>
+          {membership ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-slate-600 mb-1">Votre ligue</p>
+                      <p className="text-2xl font-bold text-slate-900">{league?.name}</p>
+                      <p className="text-xs text-slate-500">Division {membership.division?.divisionNumber}</p>
+                    </div>
+                    <Trophy className="w-12 h-12 text-amber-500" />
                   </div>
-                  <Trophy className="w-12 h-12 text-amber-500" />
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
 
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-slate-600 mb-1">Votre classement</p>
-                    <p className="text-2xl font-bold text-slate-900">#{userRank}</p>
-                    <p className="text-xs text-slate-500">{membership.leaguePoints} points</p>
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-slate-600 mb-1">Votre classement</p>
+                      <p className="text-2xl font-bold text-slate-900">#{userRank}</p>
+                      <p className="text-xs text-slate-500">{membership.leaguePoints} points</p>
+                    </div>
+                    <div className={`p-3 rounded-full ${getZoneColor(zone)}`}>
+                      {getZoneIcon(zone)}
+                    </div>
                   </div>
-                  <div className={`p-3 rounded-full ${getZoneColor(zone)}`}>
-                    {getZoneIcon(zone)}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
 
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-slate-600 mb-1">Fin de saison</p>
-                    <p className="text-2xl font-bold text-slate-900">{timeLeft}</p>
-                    <p className="text-xs text-slate-500">Saison {membership.season?.seasonNumber}</p>
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-slate-600 mb-1">Fin de saison</p>
+                      <p className="text-2xl font-bold text-slate-900">{timeLeft}</p>
+                      <p className="text-xs text-slate-500">Saison {membership.season?.seasonNumber}</p>
+                    </div>
+                    <Clock className="w-12 h-12 text-blue-500" />
                   </div>
-                  <Clock className="w-12 h-12 text-blue-500" />
+                </CardContent>
+              </Card>
+            </div>
+          ) : (
+            <Card className="mb-6 bg-gradient-to-r from-blue-50 to-cyan-50 border-blue-200">
+              <CardContent className="pt-6">
+                <div className="text-center">
+                  <Trophy className="w-16 h-16 text-amber-500 mx-auto mb-4" />
+                  <h3 className="text-2xl font-bold text-slate-900 mb-2">
+                    Rejoignez les ligues compétitives !
+                  </h3>
+                  <p className="text-slate-700 mb-4">
+                    Vous n&apos;êtes pas encore assigné à une ligue. Jouez votre première partie pour être automatiquement assigné à la Ligue Bronze !
+                  </p>
+                  <Link href="/jouer">
+                    <Button className="bg-amber-600 hover:bg-amber-700">
+                      <Trophy className="w-4 h-4 mr-2" />
+                      Jouer maintenant
+                    </Button>
+                  </Link>
                 </div>
               </CardContent>
             </Card>
-          </div>
+          )}
 
           <Tabs defaultValue="rankings" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
@@ -228,14 +248,25 @@ export default function LiguesPage() {
             <TabsContent value="rankings" className="mt-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Classement de votre division</CardTitle>
+                  <CardTitle>
+                    {membership ? 'Classement de votre division' : 'Exemple de classement - Ligue Bronze Division 1'}
+                  </CardTitle>
                   <CardDescription>
                     Top 10 montent | Milieu 10 restent | Bottom 10 descendent
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-2">
-                    {rankings.map((ranking) => {
+                  {rankings.length === 0 ? (
+                    <div className="text-center py-12">
+                      <Trophy className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+                      <p className="text-slate-600 mb-2">Aucun joueur dans cette division pour le moment</p>
+                      <p className="text-sm text-slate-500">
+                        Cette division sera remplie au fur et à mesure que les joueurs rejoignent les ligues
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {rankings.map((ranking) => {
                       const zone = getPromotionZone(ranking.rank);
                       const reward = rewards.find(r => r.rank === ranking.rank);
 
@@ -279,19 +310,22 @@ export default function LiguesPage() {
                         </div>
                       );
                     })}
-                  </div>
-
-                  <div className="mt-6 p-4 bg-slate-50 rounded-lg">
-                    <h4 className="font-semibold text-slate-900 mb-3">Récompenses de fin de saison</h4>
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
-                      {rewards.slice(0, 10).map((reward) => (
-                        <div key={reward.rank} className="text-center p-2 bg-white rounded border border-slate-200">
-                          <p className="text-xs text-slate-600">#{reward.rank}</p>
-                          <p className="font-bold text-amber-600">{reward.rewardTokens}</p>
-                        </div>
-                      ))}
                     </div>
-                  </div>
+                  )}
+
+                  {rewards.length > 0 && (
+                    <div className="mt-6 p-4 bg-slate-50 rounded-lg">
+                      <h4 className="font-semibold text-slate-900 mb-3">Récompenses de fin de saison</h4>
+                      <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+                        {rewards.slice(0, 10).map((reward) => (
+                          <div key={reward.rank} className="text-center p-2 bg-white rounded border border-slate-200">
+                            <p className="text-xs text-slate-600">#{reward.rank}</p>
+                            <p className="font-bold text-amber-600">{reward.rewardTokens}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>
