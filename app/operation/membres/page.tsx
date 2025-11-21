@@ -20,7 +20,7 @@ interface Member {
 
 export default function MembersPage() {
   const [members, setMembers] = useState<Member[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [stats, setStats] = useState({
     total: 0,
@@ -34,10 +34,12 @@ export default function MembersPage() {
 
   async function fetchMembers() {
     try {
+      setLoading(true);
       const { data, error } = await supabase
         .from('users')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(100);
 
       if (error) throw error;
 

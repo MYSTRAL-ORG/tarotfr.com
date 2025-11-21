@@ -35,7 +35,7 @@ interface LevelConfig {
 export default function EconomyPage() {
   const [roomTypes, setRoomTypes] = useState<RoomType[]>([]);
   const [levelConfig, setLevelConfig] = useState<LevelConfig[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [updating, setUpdating] = useState(false);
 
   useEffect(() => {
@@ -44,6 +44,7 @@ export default function EconomyPage() {
 
   const fetchData = async () => {
     try {
+      setLoading(true);
       const [roomsRes, levelsRes] = await Promise.all([
         fetch('/api/admin/room-types'),
         fetch('/api/admin/level-config')

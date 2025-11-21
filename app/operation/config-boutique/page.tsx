@@ -23,7 +23,7 @@ interface ShopItem {
 
 export default function ShopConfigPage() {
   const [shopItems, setShopItems] = useState<ShopItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [updating, setUpdating] = useState(false);
 
   useEffect(() => {
@@ -32,6 +32,7 @@ export default function ShopConfigPage() {
 
   const fetchShopItems = async () => {
     try {
+      setLoading(true);
       const res = await fetch('/api/admin/shop-items');
       const data = await res.json();
       setShopItems(data.shopItems || []);

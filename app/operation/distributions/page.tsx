@@ -25,7 +25,7 @@ type SortField = 'created_at' | 'used_count' | 'hash_code';
 type SortOrder = 'asc' | 'desc';
 
 export default function DistributionsListPage() {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [distributions, setDistributions] = useState<Distribution[]>([]);
   const [filteredDistributions, setFilteredDistributions] = useState<Distribution[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -45,11 +45,13 @@ export default function DistributionsListPage() {
 
   const loadDistributions = async () => {
     const supabase = createClient(supabaseUrl, supabaseKey);
+    setLoading(true);
 
     const { data } = await supabase
       .from('card_distributions')
       .select('*')
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .limit(200);
 
     if (data) {
       setDistributions(data);

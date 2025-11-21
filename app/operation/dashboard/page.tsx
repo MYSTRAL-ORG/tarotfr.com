@@ -24,7 +24,7 @@ interface DailyData {
 }
 
 export default function DashboardPage() {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [stats, setStats] = useState<Stats>({
     totalDistributions: 0,
     usedDistributions: 0,
@@ -47,57 +47,63 @@ export default function DashboardPage() {
     const sevenDaysAgo = new Date(today);
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-    const [
-      { count: totalDist },
-      { count: usedDist },
-      { count: totalGames },
-      { count: activeGames },
-      { count: completedGames },
-      { count: todayDist },
-      { data: recentDist }
-    ] = await Promise.all([
-      supabase.from('card_distributions').select('*', { count: 'exact', head: true }),
-      supabase.from('card_distributions').select('*', { count: 'exact', head: true }).gt('used_count', 0),
-      supabase.from('tables').select('*', { count: 'exact', head: true }),
-      supabase.from('tables').select('*', { count: 'exact', head: true }).eq('status', 'IN_GAME'),
-      supabase.from('tables').select('*', { count: 'exact', head: true }).eq('status', 'FINISHED'),
-      supabase.from('card_distributions').select('*', { count: 'exact', head: true }).gte('created_at', today.toISOString()),
-      supabase.from('card_distributions').select('created_at').gte('created_at', sevenDaysAgo.toISOString())
-    ]);
+    try {
+      const statsPromises = Promise.all([
+        supabase.from('card_distributions').select('*', { count: 'exact', head: true }),
+        supabase.from('card_distributions').select('*', { count: 'exact', head: true }).gt('used_count', 0),
+        supabase.from('tables').select('*', { count: 'exact', head: true }),
+        supabase.from('tables').select('*', { count: 'exact', head: true }).eq('status', 'IN_GAME'),
+        supabase.from('tables').select('*', { count: 'exact', head: true }).eq('status', 'FINISHED'),
+        supabase.from('card_distributions').select('*', { count: 'exact', head: true }).gte('created_at', today.toISOString()),
+      ]);
 
-    const distributions = recentDist || [];
+      const chartPromise = supabase.from('card_distributions').select('created_at').gte('created_at', sevenDaysAgo.toISOString());
 
-    const last7Days: DailyData[] = [];
-    for (let i = 6; i >= 0; i--) {
-      const date = new Date();
-      date.setDate(date.getDate() - i);
-      date.setHours(0, 0, 0, 0);
+      const [
+        [
+          { count: totalDist },
+          { count: usedDist },
+          { count: totalGames },
+          { count: activeGames },
+          { count: completedGames },
+          { count: todayDist }
+        ],
+        { data: recentDist }
+      ] = await Promise.all([statsPromises, chartPromise]);
 
-      const nextDate = new Date(date);
-      nextDate.setDate(nextDate.getDate() + 1);
-
-      const count = distributions.filter((d: any) => {
-        const created = new Date(d.created_at);
-        return created >= date && created < nextDate;
-      }).length;
-
-      last7Days.push({
-        date: date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }),
-        count
+      setStats({
+        totalDistributions: totalDist || 0,
+        usedDistributions: usedDist || 0,
+        totalGames: totalGames || 0,
+        activeGames: activeGames || 0,
+        completedGames: completedGames || 0,
+        todayDistributions: todayDist || 0,
       });
+
+      const distributions = recentDist || [];
+      const last7Days: DailyData[] = [];
+      for (let i = 6; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        date.setHours(0, 0, 0, 0);
+
+        const nextDate = new Date(date);
+        nextDate.setDate(nextDate.getDate() + 1);
+
+        const count = distributions.filter((d: any) => {
+          const created = new Date(d.created_at);
+          return created >= date && created < nextDate;
+        }).length;
+
+        last7Days.push({
+          date: date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }),
+          count
+        });
+      }
+      setDailyData(last7Days);
+    } catch (error) {
+      console.error('Error loading stats:', error);
     }
-    setDailyData(last7Days);
-
-    setStats({
-      totalDistributions: totalDist || 0,
-      usedDistributions: usedDist || 0,
-      totalGames: totalGames || 0,
-      activeGames: activeGames || 0,
-      completedGames: completedGames || 0,
-      todayDistributions: todayDist || 0,
-    });
-
-    setLoading(false);
   };
 
   const statCards = [
@@ -134,16 +140,6 @@ export default function DashboardPage() {
       description: 'Nouvelles distributions',
     },
   ];
-
-  if (loading) {
-    return (
-      <div className="space-y-6">
-        <div className="text-center py-12">
-          <p className="text-slate-600">Chargement des statistiques...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">
