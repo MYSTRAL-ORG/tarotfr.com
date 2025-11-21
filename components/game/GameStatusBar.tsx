@@ -1,6 +1,7 @@
 import { GamePhase, BidType } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { ReactNode } from 'react';
+import Image from 'next/image';
 
 interface GameStatusBarProps {
   phase: GamePhase;
@@ -74,7 +75,7 @@ export function GameStatusBar({
         </div>
 
         <div className="flex-shrink-0 mx-4">
-          <img src="/img/icon.png" alt="Tarot" className="w-12 h-12" />
+          <Image src="/img/icon.png" alt="Tarot" width={48} height={48} />
         </div>
 
         {actions ? (

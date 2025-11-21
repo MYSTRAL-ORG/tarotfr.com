@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Navigation } from '@/components/Navigation';
 import { Button } from '@/components/ui/button';
@@ -39,11 +39,7 @@ export default function PlayPage() {
   const [loading, setLoading] = useState(true);
   const [joining, setJoining] = useState(false);
 
-  useEffect(() => {
-    fetchRoomsAndWallet();
-  }, [user]);
-
-  async function fetchRoomsAndWallet() {
+  const fetchRoomsAndWallet = useCallback(async () => {
     try {
       const roomsRes = await fetch('/api/rooms/list');
       const roomsData = await roomsRes.json();
@@ -65,7 +61,11 @@ export default function PlayPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [user]);
+
+  useEffect(() => {
+    fetchRoomsAndWallet();
+  }, [fetchRoomsAndWallet]);
 
   function getXPProgress(): number {
     if (!wallet) return 0;

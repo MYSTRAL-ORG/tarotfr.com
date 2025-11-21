@@ -1,7 +1,8 @@
 import { PlayedCard, Player } from '@/lib/types';
 import { TarotCard } from './TarotCard';
 import { cn } from '@/lib/utils';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
+import Image from 'next/image';
 
 interface TrickAreaProps {
   cards: PlayedCard[];
@@ -24,6 +25,32 @@ export function TrickArea({ cards, className, winnerSeat, players = [], currentP
   const [settledCards, setSettledCards] = useState<PlayedCard[]>([]);
   const prevCardsLengthRef = useRef(0);
   const trickAreaRef = useRef<HTMLDivElement>(null);
+
+  const getPlayerCardStartPosition = useCallback((playerSeat: number): { x: number; y: number } => {
+    if (!trickAreaRef.current) return { x: 0, y: 0 };
+
+    const rect = trickAreaRef.current.getBoundingClientRect();
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    const currentPlayer = players.find(p => p.seatIndex === currentPlayerSeat);
+    if (!currentPlayer) return { x: centerX, y: centerY };
+
+    const relativePosition = (playerSeat - currentPlayer.seatIndex + 4) % 4;
+
+    switch (relativePosition) {
+      case 0:
+        return { x: centerX, y: rect.height + 150 };
+      case 1:
+        return { x: rect.width + 200, y: centerY };
+      case 2:
+        return { x: centerX, y: -150 };
+      case 3:
+        return { x: -200, y: centerY };
+      default:
+        return { x: centerX, y: centerY };
+    }
+  }, [players, currentPlayerSeat]);
 
   useEffect(() => {
     if (cards.length === 0) {
@@ -50,7 +77,7 @@ export function TrickArea({ cards, className, winnerSeat, players = [], currentP
     }
 
     prevCardsLengthRef.current = cards.length;
-  }, [cards]);
+  }, [cards, getPlayerCardStartPosition]);
 
   useEffect(() => {
     if (winnerSeat !== null && winnerSeat !== undefined && cards.length === 4) {
@@ -63,32 +90,6 @@ export function TrickArea({ cards, className, winnerSeat, players = [], currentP
       setAnimatingToWinner(false);
     }
   }, [winnerSeat, cards.length]);
-
-  const getPlayerCardStartPosition = (playerSeat: number): { x: number; y: number } => {
-    if (!trickAreaRef.current) return { x: 0, y: 0 };
-
-    const rect = trickAreaRef.current.getBoundingClientRect();
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-
-    const currentPlayer = players.find(p => p.seatIndex === currentPlayerSeat);
-    if (!currentPlayer) return { x: centerX, y: centerY };
-
-    const relativePosition = (playerSeat - currentPlayer.seatIndex + 4) % 4;
-
-    switch (relativePosition) {
-      case 0:
-        return { x: centerX, y: rect.height + 150 };
-      case 1:
-        return { x: rect.width + 200, y: centerY };
-      case 2:
-        return { x: centerX, y: -150 };
-      case 3:
-        return { x: -200, y: centerY };
-      default:
-        return { x: centerX, y: centerY };
-    }
-  };
 
   const getWinnerPosition = () => {
     if (winnerSeat === null || winnerSeat === undefined || !players.length) return { x: 0, y: 0 };
@@ -120,10 +121,12 @@ export function TrickArea({ cards, className, winnerSeat, players = [], currentP
   return (
     <div ref={trickAreaRef} className={cn('relative w-full h-full bg-green-700 rounded-xl mb-5 flex items-center justify-center', className)}>
       <div className="absolute inset-0 flex items-center justify-center opacity-10">
-        <img
+        <Image
           src="/img/logo-carpet.svg"
           alt=""
-          className="w-72 h-72 object-contain"
+          width={288}
+          height={288}
+          className="object-contain"
         />
       </div>
       <div className="absolute inset-[20px] border-[10px] border-white/10 rounded-xl pointer-events-none"></div>

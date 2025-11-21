@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { User, Trophy, TrendingUp, LogIn, UserPlus, UserCheck } from 'lucide-react';
+import Image from 'next/image';
 
 export default function AccountPage() {
   const { user, login, register, logout, createGuest, loading } = useAuth();
@@ -207,7 +208,7 @@ export default function AccountPage() {
                   }}></div>
                   <div className="relative z-10 text-center">
                     <div className="mb-8 animate-bounce">
-                      <img src="/img/cards/excuse.png" alt="Joker" className="w-48 h-auto mx-auto shadow-2xl rounded-lg" />
+                      <Image src="/img/cards/excuse.png" alt="Joker" width={192} height={288} className="mx-auto shadow-2xl rounded-lg" />
                     </div>
                     <h2 className="text-4xl font-bold text-white mb-4">Joker</h2>
                     <p className="text-xl text-white/90">Sois plus qu'un simple joker et rejoins-nous</p>
@@ -241,7 +242,7 @@ export default function AccountPage() {
                   }}></div>
                   <div className="relative z-10 text-center">
                     <div className="mb-8 animate-bounce">
-                      <img src="/img/cards/trumps/21.png" alt="Atout 21" className="w-48 h-auto mx-auto shadow-2xl rounded-lg" />
+                      <Image src="/img/cards/trumps/21.png" alt="Atout 21" width={192} height={288} className="mx-auto shadow-2xl rounded-lg" />
                     </div>
                     <h2 className="text-4xl font-bold text-white mb-4">Enfin de retour !</h2>
                     <p className="text-xl text-white/90">Tu es le véritable atout du jeu</p>
@@ -298,7 +299,7 @@ export default function AccountPage() {
                   }}></div>
                   <div className="relative z-10 text-center">
                     <div className="mb-8 animate-bounce">
-                      <img src="/img/cards/trumps/1.png" alt="Atout 1" className="w-48 h-auto mx-auto shadow-2xl rounded-lg" />
+                      <Image src="/img/cards/trumps/1.png" alt="Atout 1" width={192} height={288} className="mx-auto shadow-2xl rounded-lg" />
                     </div>
                     <h2 className="text-4xl font-bold text-white mb-4">Rejoins la communauté</h2>
                     <p className="text-xl text-white/90">Des milliers de vrais joueurs de tarot français</p>

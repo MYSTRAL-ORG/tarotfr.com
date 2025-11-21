@@ -133,7 +133,7 @@ export default function LeagueRulesPage() {
                   <h2 className="text-3xl font-bold mb-4 text-slate-900">Comment fonctionnent les ligues ?</h2>
                   <div className="space-y-3 text-lg text-slate-700 leading-relaxed">
                     <p>
-                      Les ligues sont un <strong className="text-amber-700">classement hebdomadaire</strong> d&apos;un groupe
+                      Les ligues sont un <strong className="text-amber-700">classement hebdomadaire</strong> d'un groupe
                       de 30 joueurs maximum appelé <strong className="text-purple-700">division</strong>. Il existe{' '}
                       <strong className="text-blue-700">15 ligues numérotées de 1 à 15</strong>, la ligue 1 étant celle de départ.
                     </p>

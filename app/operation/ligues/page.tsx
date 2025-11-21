@@ -121,7 +121,7 @@ export default function AdminLiguesPage() {
     >
       <Tabs defaultValue="overview" className="w-full">
         <TabsList>
-          <TabsTrigger value="overview">Vue d&apos;ensemble</TabsTrigger>
+          <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
           <TabsTrigger value="distribution">Distribution</TabsTrigger>
         </TabsList>
 

@@ -7,6 +7,7 @@ import { Navigation } from '@/components/Navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Spade, Users, Clock, Shield, Hash, Check, Trophy, BookOpen, FileText } from 'lucide-react';
+import Image from 'next/image';
 import LandingPage from '@/components/LandingPage';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
@@ -114,9 +115,11 @@ export default function Home() {
                         zIndex: 3,
                       }}
                     >
-                      <img
+                      <Image
                         src="/img/cards/trumps/21.png"
                         alt="Trump 21"
+                        width={192}
+                        height={288}
                         className="w-full h-auto rounded-xl shadow-2xl"
                       />
                     </div>
@@ -127,9 +130,11 @@ export default function Home() {
                         zIndex: 2,
                       }}
                     >
-                      <img
+                      <Image
                         src="/img/cards/excuse.png"
                         alt="Excuse"
+                        width={192}
+                        height={288}
                         className="w-full h-auto rounded-xl shadow-2xl"
                       />
                     </div>
@@ -140,9 +145,11 @@ export default function Home() {
                         zIndex: 1,
                       }}
                     >
-                      <img
+                      <Image
                         src="/img/cards/trumps/1.png"
                         alt="Trump 1"
+                        width={192}
+                        height={288}
                         className="w-full h-auto rounded-xl shadow-2xl"
                       />
                     </div>
@@ -460,23 +467,29 @@ export default function Home() {
                     </div>
                     <div className="grid grid-cols-3 gap-3 pt-2">
                       <div className="transform rotate-3">
-                        <img
+                        <Image
                           src="/img/cards/trumps/1.png"
                           alt="Atout 1"
+                          width={96}
+                          height={144}
                           className="w-full h-auto rounded-lg shadow-xl"
                         />
                       </div>
                       <div className="transform -rotate-2">
-                        <img
+                        <Image
                           src="/img/cards/trumps/21.png"
                           alt="Atout 21"
+                          width={96}
+                          height={144}
                           className="w-full h-auto rounded-lg shadow-xl"
                         />
                       </div>
                       <div className="transform rotate-2">
-                        <img
+                        <Image
                           src="/img/cards/excuse.png"
                           alt="Excuse"
+                          width={96}
+                          height={144}
                           className="w-full h-auto rounded-lg shadow-xl"
                         />
                       </div>

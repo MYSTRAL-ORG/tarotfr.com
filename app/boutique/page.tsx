@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Navigation } from '@/components/Navigation';
 import { Button } from '@/components/ui/button';
@@ -32,11 +32,7 @@ export default function ShopPage() {
   const [loading, setLoading] = useState(true);
   const [purchasing, setPurchasing] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchShopData();
-  }, [user]);
-
-  async function fetchShopData() {
+  const fetchShopData = useCallback(async () => {
     try {
       const itemsRes = await fetch('/api/shop/items');
       const itemsData = await itemsRes.json();
@@ -58,7 +54,11 @@ export default function ShopPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [user]);
+
+  useEffect(() => {
+    fetchShopData();
+  }, [fetchShopData]);
 
   async function handlePurchase(item: ShopItem) {
     if (!user) {

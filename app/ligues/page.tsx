@@ -222,7 +222,7 @@ export default function LiguesPage() {
                       Rejoignez les ligues compétitives !
                     </h3>
                     <p className="text-slate-700 mb-4">
-                      Vous n&apos;êtes pas encore assigné à une ligue. Jouez votre première partie pour être automatiquement assigné à la Ligue Bronze !
+                      Vous n'êtes pas encore assigné à une ligue. Jouez votre première partie pour être automatiquement assigné à la Ligue Bronze !
                     </p>
                     <Link href="/jouer">
                       <Button className="bg-amber-600 hover:bg-amber-700">
@@ -372,7 +372,7 @@ export default function LiguesPage() {
                     <h3 className="font-bold text-slate-900 mb-2">Comment fonctionnent les ligues ?</h3>
                     <div className="space-y-2 text-sm text-slate-700">
                       <p>
-                        Les ligues sont un classement hebdomadaire d&apos;un groupe de 30 joueurs (division). Il existe 15 ligues numérotées de 1 à 15.
+                        Les ligues sont un classement hebdomadaire d'un groupe de 30 joueurs (division). Il existe 15 ligues numérotées de 1 à 15.
                       </p>
                       <p>
                         <strong>Chaque fin de semaine :</strong> Les 10 premiers montent, les 10 derniers descendent, les 10 du milieu restent.

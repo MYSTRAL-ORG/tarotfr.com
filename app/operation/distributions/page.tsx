@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -40,11 +40,7 @@ export default function DistributionsListPage() {
     loadDistributions();
   }, []);
 
-  useEffect(() => {
-    filterAndSortDistributions();
-  }, [distributions, searchTerm, usageFilter, sortField, sortOrder]);
-
-  const loadDistributions = async () => {
+  const loadDistributions = useCallback(async () => {
     const supabase = createClient(supabaseUrl, supabaseKey);
     setLoading(true);
 
@@ -59,9 +55,9 @@ export default function DistributionsListPage() {
     }
 
     setLoading(false);
-  };
+  }, []);
 
-  const filterAndSortDistributions = () => {
+  const filterAndSortDistributions = useCallback(() => {
     let filtered = [...distributions];
 
     if (searchTerm) {
@@ -98,7 +94,15 @@ export default function DistributionsListPage() {
 
     setFilteredDistributions(filtered);
     setCurrentPage(1);
-  };
+  }, [distributions, searchTerm, usageFilter, sortField, sortOrder]);
+
+  useEffect(() => {
+    loadDistributions();
+  }, [loadDistributions]);
+
+  useEffect(() => {
+    filterAndSortDistributions();
+  }, [filterAndSortDistributions]);
 
   const toggleSort = (field: SortField) => {
     if (sortField === field) {

@@ -149,11 +149,11 @@ export default function LevelsPage() {
                   <TrendingUp className="w-8 h-8 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-3xl font-bold mb-4 text-slate-900">Comment gagner de l&apos;XP</h2>
+                  <h2 className="text-3xl font-bold mb-4 text-slate-900">Comment gagner de l'XP</h2>
                   <p className="text-lg text-slate-700 leading-relaxed mb-4">
-                    Chaque partie jouée vous rapporte de l&apos;<strong className="text-blue-700">expérience (XP)</strong>.
+                    Chaque partie jouée vous rapporte de l'<strong className="text-blue-700">expérience (XP)</strong>.
                     Plus vous gagnez et plus vous réalisez des exploits, plus vous montez rapidement de niveau.
-                    Accumulez de l&apos;XP pour <strong className="text-purple-700">monter de niveau</strong> et
+                    Accumulez de l'XP pour <strong className="text-purple-700">monter de niveau</strong> et
                     gagner des <strong className="text-green-700">jetons bonus</strong> à chaque palier!
                   </p>
                 </div>
@@ -166,7 +166,7 @@ export default function LevelsPage() {
                   <Zap className="w-8 h-8 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-3xl font-bold text-slate-900">Sources d&apos;XP</h2>
+                  <h2 className="text-3xl font-bold text-slate-900">Sources d'XP</h2>
                   <p className="text-lg text-slate-600 mt-2">XP gagnés par partie selon la salle</p>
                 </div>
               </div>
@@ -187,7 +187,7 @@ export default function LevelsPage() {
 
               <div className="mt-6 p-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg border-l-4 border-yellow-500">
                 <p className="text-slate-700">
-                  <strong>Astuce :</strong> Plus la salle est difficile, plus vous gagnez d&apos;XP par partie!
+                  <strong>Astuce :</strong> Plus la salle est difficile, plus vous gagnez d'XP par partie!
                   Montez en niveau pour accéder aux salles supérieures et progresser plus rapidement.
                 </p>
               </div>

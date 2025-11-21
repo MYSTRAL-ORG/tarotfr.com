@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -62,18 +62,7 @@ export default function BotsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
-    loadBotConfigs();
-  }, []);
-
-  useEffect(() => {
-    const config = botConfigs.find(b => b.level === selectedLevel);
-    if (config) {
-      setCurrentConfig(config);
-    }
-  }, [selectedLevel, botConfigs]);
-
-  const loadBotConfigs = async () => {
+  const loadBotConfigs = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('bot_config')
@@ -92,7 +81,18 @@ export default function BotsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
+
+  useEffect(() => {
+    loadBotConfigs();
+  }, [loadBotConfigs]);
+
+  useEffect(() => {
+    const config = botConfigs.find(b => b.level === selectedLevel);
+    if (config) {
+      setCurrentConfig(config);
+    }
+  }, [selectedLevel, botConfigs]);
 
   const saveConfig = async () => {
     if (!currentConfig) return;
