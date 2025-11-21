@@ -68,7 +68,7 @@ export function TarotCard({
       <div
         className={cn(
           sizeClasses[size],
-          'rounded-lg overflow-hidden shadow-md relative',
+          'rounded-lg overflow-hidden shadow-md relative border-b-4 border-red-600',
           className
         )}
       >
@@ -87,7 +87,7 @@ export function TarotCard({
       onClick={selectable ? onClick : undefined}
       className={cn(
         sizeClasses[size],
-        'rounded-lg overflow-hidden shadow-md transition-all relative',
+        'rounded-lg overflow-hidden shadow-md transition-all relative border-b-4 border-red-600',
         selectable && 'cursor-pointer hover:scale-105 hover:shadow-lg',
         selected && 'ring-4 ring-blue-500 -translate-y-2',
         !selectable && 'cursor-default',
