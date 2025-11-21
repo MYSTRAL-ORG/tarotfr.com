@@ -183,7 +183,6 @@ export default function ShopPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {items.map((item, index) => {
-              const Icon = getPackIcon(index);
               const isBestValue = index === bestValueIndex;
               const ratio = (item.tokens / item.price_eur).toFixed(0);
 
@@ -206,7 +205,7 @@ export default function ShopPage() {
                       backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px)',
                       backgroundSize: '20px 20px'
                     }} />
-                    <Icon className="w-20 h-20 text-white drop-shadow-lg relative z-10" />
+                    <Coins className="w-20 h-20 text-white drop-shadow-lg relative z-10" />
                   </div>
 
                   <div className="p-6">
@@ -239,7 +238,7 @@ export default function ShopPage() {
                     </div>
 
                     <Button
-                      className="w-full h-12 text-lg bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
+                      className="w-full h-12 text-lg bg-blue-600 hover:bg-blue-700 text-white"
                       onClick={() => handlePurchase(item)}
                       disabled={purchasing === item.id}
                     >
@@ -257,23 +256,6 @@ export default function ShopPage() {
               );
             })}
             </div>
-          </div>
-
-          <div className="mt-12 text-center">
-            <Card className="max-w-2xl mx-auto bg-white/95 backdrop-blur p-8">
-              <h3 className="text-xl font-bold text-slate-900 mb-4">Besoin d'aide?</h3>
-              <p className="text-slate-600 mb-4">
-                Les jetons vous permettent de rejoindre des tables et de jouer au tarot.
-                Plus vous jouez dans des salles avec des mises élevées, plus vous pouvez gagner de jetons!
-              </p>
-              <Button
-                variant="outline"
-                onClick={() => router.push('/jouer')}
-                className="mt-4"
-              >
-                Retour au jeu
-              </Button>
-            </Card>
           </div>
         </div>
       </div>
