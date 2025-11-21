@@ -56,16 +56,31 @@ export function Navigation() {
     console.log('useEffect triggered - user:', user);
 
     async function fetchWallet() {
-      if (!user) return;
+      if (!user) {
+        console.log('No user, skipping wallet fetch');
+        return;
+      }
 
       try {
-        console.log('Fetching wallet for user:', user.id);
+        console.log('Fetching wallet for user:', user.id, 'isGuest:', user.isGuest);
         const res = await fetch(`/api/wallet/${user.id}`);
+        console.log('Wallet API response status:', res.status);
+
+        if (!res.ok) {
+          console.error('Wallet API error:', res.status, res.statusText);
+          const errorText = await res.text();
+          console.error('Error response:', errorText);
+          return;
+        }
+
         const data = await res.json();
-        console.log('Wallet response:', data);
+        console.log('Wallet response data:', data);
+
         if (data.wallet) {
           setWallet(data.wallet);
-          console.log('Wallet loaded:', data.wallet);
+          console.log('Wallet loaded successfully:', data.wallet);
+        } else {
+          console.warn('No wallet in response:', data);
         }
       } catch (error) {
         console.error('Error fetching wallet:', error);
@@ -74,9 +89,10 @@ export function Navigation() {
 
     if (user) {
       fetchWallet();
-      const interval = setInterval(fetchWallet, 10000);
+      const interval = setInterval(fetchWallet, 30000);
       return () => clearInterval(interval);
     } else {
+      console.log('Clearing wallet - no user');
       setWallet(null);
     }
   }, [user]);
