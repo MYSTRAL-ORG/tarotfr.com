@@ -142,17 +142,15 @@ export function Navigation() {
             <div className="flex items-center gap-2">
               {wallet && (
                 <>
-                  <div className="bg-white/20 backdrop-blur px-3 py-1.5 rounded-md flex items-center gap-2">
+                  <Link href="/shop" className="bg-white/20 backdrop-blur px-3 py-1.5 rounded-md flex items-center gap-2 hover:bg-white/30 transition-colors">
                     <Coins className="w-5 h-5 text-yellow-300" />
                     <span className="text-white font-bold text-sm">
                       {wallet.tokens.toLocaleString()}
                     </span>
-                    <Link href="/shop">
-                      <button className="w-5 h-5 rounded-full bg-yellow-500 hover:bg-yellow-600 flex items-center justify-center text-white text-xs font-bold transition-colors">
-                        +
-                      </button>
-                    </Link>
-                  </div>
+                    <button className="w-5 h-5 rounded-full bg-yellow-500 hover:bg-yellow-600 flex items-center justify-center text-white text-xs font-bold transition-colors">
+                      +
+                    </button>
+                  </Link>
                   <Link href="/niveaux" className="bg-white/20 backdrop-blur px-3 py-1.5 rounded-md flex items-center gap-2 hover:bg-white/30 transition-colors">
                     <span className="text-white font-semibold text-sm">
                       Niveau
