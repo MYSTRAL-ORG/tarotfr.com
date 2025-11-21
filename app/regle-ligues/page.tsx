@@ -231,7 +231,7 @@ export default function LeagueRulesPage() {
               </div>
             </Card>
 
-            <div className="space-y-4">
+            <Card className="p-8">
               <div className="text-center mb-6">
                 <h2 className="text-3xl font-bold text-slate-900 mb-2">Les 15 Ligues</h2>
                 <p className="text-lg text-slate-600">
@@ -239,37 +239,61 @@ export default function LeagueRulesPage() {
                 </p>
               </div>
 
-              <div className="grid md:grid-cols-3 gap-4">
-                {leagues.map((league) => {
-                  const reward = rewardsByLeague.find(r => r.league === league.id);
-                  return (
-                    <Card
-                      key={league.id}
-                      className={`p-6 bg-gradient-to-br ${league.color} text-white border-2 border-white/20 hover:scale-105 transition-transform`}
-                    >
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-2">
-                          <span className="text-3xl">{league.icon}</span>
-                          <div>
-                            <div className="text-xs opacity-75">Ligue {league.id}</div>
-                            <div className="font-bold text-lg">{league.name.replace('Ligue ', '')}</div>
-                          </div>
-                        </div>
-                      </div>
-                      {reward && (
-                        <div className="mt-4 pt-4 border-t border-white/20">
-                          <div className="text-xs opacity-75 mb-1">Récompenses</div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm">Top {reward.positions}</span>
-                            <span className="font-bold">jusqu&apos;à {reward.maxReward.toLocaleString()}</span>
-                          </div>
-                        </div>
-                      )}
-                    </Card>
-                  );
-                })}
+              <div className="overflow-x-auto">
+                <table className="w-full bg-white rounded-lg overflow-hidden shadow-lg">
+                  <thead className="bg-gradient-to-r from-slate-700 to-slate-900 text-white">
+                    <tr>
+                      <th className="px-6 py-4 text-left font-bold">Ligue</th>
+                      <th className="px-6 py-4 text-left font-bold">Nom</th>
+                      <th className="px-6 py-4 text-center font-bold">Top récompensés</th>
+                      <th className="px-6 py-4 text-right font-bold">Récompense max</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {leagues.map((league) => {
+                      const reward = rewardsByLeague.find(r => r.league === league.id);
+                      return (
+                        <tr
+                          key={league.id}
+                          className="border-b border-slate-200 hover:bg-slate-50 transition-colors"
+                        >
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-3">
+                              <span className="text-2xl">{league.icon}</span>
+                              <Badge variant="outline" className="font-bold text-base">
+                                {league.id}
+                              </Badge>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-semibold text-slate-900">
+                              {league.name}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-center">
+                            {reward && (
+                              <Badge className="bg-amber-600 hover:bg-amber-700 text-white">
+                                Top {reward.positions}
+                              </Badge>
+                            )}
+                          </td>
+                          <td className="px-6 py-4 text-right">
+                            {reward && (
+                              <div className="flex items-center justify-end gap-1">
+                                <Award className="w-5 h-5 text-amber-600" />
+                                <span className="font-bold text-green-700">
+                                  {reward.maxReward.toLocaleString()}
+                                </span>
+                              </div>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
-            </div>
+            </Card>
 
             <Card className="p-8">
               <div className="flex items-start gap-4 mb-6">

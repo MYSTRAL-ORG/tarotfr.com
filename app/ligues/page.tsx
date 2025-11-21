@@ -6,9 +6,11 @@ import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Trophy, TrendingUp, TrendingDown, Minus, Clock, Award, ChevronRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Trophy, TrendingUp, TrendingDown, Minus, Clock, Award, ChevronRight, Info } from 'lucide-react';
 import { LeagueMembership, LeagueRanking, LeagueReward, LeagueHistory } from '@/lib/types';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import Link from 'next/link';
 
 export default function LiguesPage() {
   const { user } = useAuth();
@@ -336,7 +338,7 @@ export default function LiguesPage() {
             <CardContent className="pt-6">
               <div className="flex items-start gap-4">
                 <Trophy className="w-8 h-8 text-amber-600 flex-shrink-0 mt-1" />
-                <div>
+                <div className="flex-1">
                   <h3 className="font-bold text-slate-900 mb-2">Comment fonctionnent les ligues ?</h3>
                   <div className="space-y-2 text-sm text-slate-700">
                     <p>
@@ -349,6 +351,12 @@ export default function LiguesPage() {
                       Gagnez des points en jouant des parties. Plus votre classement est élevé, plus vos récompenses en tokens seront importantes !
                     </p>
                   </div>
+                  <Link href="/regle-ligues">
+                    <Button className="mt-4 bg-amber-600 hover:bg-amber-700">
+                      <Info className="w-4 h-4 mr-2" />
+                      En savoir plus sur les ligues
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </CardContent>
