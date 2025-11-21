@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Database, Activity, Clock, CheckCircle2, TrendingUp, AlertCircle } from 'lucide-react';
+import { Database, Activity, CheckCircle2, TrendingUp, AlertCircle, BarChart3 } from 'lucide-react';
 import { createClient } from '@supabase/supabase-js';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
+import { AdminPageLayout } from '@/components/admin/AdminPageLayout';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -106,67 +107,43 @@ export default function DashboardPage() {
     }
   };
 
-  const statCards = [
-    {
-      icon: Database,
-      label: 'Total Distributions',
-      value: stats.totalDistributions.toLocaleString(),
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50',
-      description: `${stats.usedDistributions} utilisées`,
-    },
-    {
-      icon: Activity,
-      label: 'Parties Totales',
-      value: stats.totalGames.toLocaleString(),
-      color: 'text-green-600',
-      bgColor: 'bg-green-50',
-      description: `${stats.activeGames} en cours`,
-    },
-    {
-      icon: CheckCircle2,
-      label: 'Parties Terminées',
-      value: stats.completedGames.toLocaleString(),
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50',
-      description: `${Math.round((stats.completedGames / (stats.totalGames || 1)) * 100)}% du total`,
-    },
-    {
-      icon: TrendingUp,
-      label: 'Aujourd\'hui',
-      value: stats.todayDistributions.toLocaleString(),
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-50',
-      description: 'Nouvelles distributions',
-    },
-  ];
-
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-slate-900">Tableau de bord</h1>
-        <p className="text-slate-600 mt-2">Statistiques en temps réel du système de distributions</p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {statCards.map((stat) => {
-          const Icon = stat.icon;
-          return (
-            <Card key={stat.label}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">{stat.label}</CardTitle>
-                <div className={`p-2 rounded-lg ${stat.bgColor}`}>
-                  <Icon className={`h-5 w-5 ${stat.color}`} />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold text-slate-900">{stat.value}</div>
-                <p className="text-xs text-slate-600 mt-1">{stat.description}</p>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
+    <AdminPageLayout
+      title="Tableau de bord"
+      description="Statistiques en temps réel du système de distributions"
+      icon={BarChart3}
+      loading={loading}
+      stats={[
+        {
+          label: 'Total Distributions',
+          value: stats.totalDistributions.toLocaleString(),
+          icon: Database,
+          color: 'text-blue-600',
+          description: `${stats.usedDistributions} utilisées`
+        },
+        {
+          label: 'Parties Totales',
+          value: stats.totalGames.toLocaleString(),
+          icon: Activity,
+          color: 'text-green-600',
+          description: `${stats.activeGames} en cours`
+        },
+        {
+          label: 'Parties Terminées',
+          value: stats.completedGames.toLocaleString(),
+          icon: CheckCircle2,
+          color: 'text-purple-600',
+          description: `${Math.round((stats.completedGames / (stats.totalGames || 1)) * 100)}% du total`
+        },
+        {
+          label: 'Aujourd\'hui',
+          value: stats.todayDistributions.toLocaleString(),
+          icon: TrendingUp,
+          color: 'text-orange-600',
+          description: 'Nouvelles distributions'
+        }
+      ]}
+    >
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
@@ -255,6 +232,6 @@ export default function DashboardPage() {
           </div>
         </CardContent>
       </Card>
-    </div>
+    </AdminPageLayout>
   );
 }
