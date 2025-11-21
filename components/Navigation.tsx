@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { User, Users, BookOpen, GraduationCap, FileText, Play, LogOut, LogIn, Coins, ShoppingBag } from 'lucide-react';
+import { User, Users, BookOpen, GraduationCap, FileText, Play, LogOut, LogIn, Coins, ShoppingBag, TrendingUp } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 interface UserWallet {
@@ -134,6 +134,10 @@ export function Navigation() {
           <Link href="/regles" className="text-white/90 hover:text-white font-medium transition-colors" title="Règles">
             <span className="hidden md:inline">Règles</span>
             <BookOpen className="w-5 h-5 md:hidden" />
+          </Link>
+          <Link href="/niveaux" className="text-white/90 hover:text-white font-medium transition-colors" title="Niveaux">
+            <span className="hidden md:inline">Niveaux</span>
+            <TrendingUp className="w-5 h-5 md:hidden" />
           </Link>
           <Link href="/distributions" className="text-white/90 hover:text-white font-medium transition-colors" title="Distributions">
             <span className="hidden md:inline">Distributions</span>
