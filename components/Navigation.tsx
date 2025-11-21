@@ -139,7 +139,7 @@ export function Navigation() {
             <div className="flex items-center gap-2">
               {wallet && (
                 <>
-                  <Link href="/shop" className="bg-white/20 backdrop-blur px-3 py-1.5 rounded-md flex items-center gap-2 hover:bg-white/30 transition-colors">
+                  <Link href="/boutique" className="bg-white/20 backdrop-blur px-3 py-1.5 rounded-md flex items-center gap-2 hover:bg-white/30 transition-colors">
                     <Coins className="w-5 h-5 text-yellow-300" />
                     <span className="text-white font-bold text-sm">
                       {wallet.tokens.toLocaleString()}

@@ -57,12 +57,12 @@ export default function OperationLayout({
   const menuItems = [
     { icon: LayoutDashboard, label: 'Dashboard', href: '/operation/dashboard' },
     { icon: Database, label: 'Distributions', href: '/operation/distributions' },
-    { icon: Coins, label: 'Économie', href: '/operation/economy' },
-    { icon: ShoppingBag, label: 'Boutique', href: '/operation/shop-config' },
-    { icon: Settings, label: 'Paramètres', href: '/operation/settings' },
-    { icon: Users, label: 'Membres', href: '/operation/members' },
-    { icon: Bot, label: 'Bots', href: '/operation/bots' },
-    { icon: BookOpen, label: 'Règles', href: '/operation/rules' },
+    { icon: Coins, label: 'Économie', href: '/operation/economie' },
+    { icon: ShoppingBag, label: 'Boutique', href: '/operation/config-boutique' },
+    { icon: Settings, label: 'Paramètres', href: '/operation/parametres' },
+    { icon: Users, label: 'Membres', href: '/operation/membres' },
+    { icon: Bot, label: 'Robots', href: '/operation/robots' },
+    { icon: BookOpen, label: 'Règles', href: '/operation/regles' },
   ];
 
   return (

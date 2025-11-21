@@ -117,7 +117,7 @@ export default function PlayPage() {
         toast.error(`Jetons insuffisants! Il vous faut ${room.buy_in} jetons.`, {
           action: {
             label: 'Acheter',
-            onClick: () => router.push('/shop')
+            onClick: () => router.push('/boutique')
           }
         });
         return;
@@ -162,7 +162,7 @@ export default function PlayPage() {
         return;
       }
 
-      router.push(`/table/${tableId}`);
+      router.push(`/partie/${tableId}`);
     } catch (error) {
       console.error('Error joining room:', error);
       toast.error('Une erreur est survenue');
