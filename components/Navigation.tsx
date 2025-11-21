@@ -162,12 +162,12 @@ export function Navigation() {
                     </Link>
                   </div>
                   <div className="bg-white/20 backdrop-blur px-3 py-1.5 rounded-md flex items-center gap-2">
+                    <span className="text-white font-semibold text-sm">
+                      Niveau
+                    </span>
                     <div className="w-6 h-6 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white text-xs font-bold">
                       {wallet.level}
                     </div>
-                    <span className="text-white font-semibold text-sm hidden md:inline">
-                      Niv. {wallet.level}
-                    </span>
                   </div>
                 </>
               )}

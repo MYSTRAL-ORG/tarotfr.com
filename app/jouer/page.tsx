@@ -190,6 +190,16 @@ export default function PlayPage() {
     }
   };
 
+  const getCategoryBgColor = (category: string) => {
+    switch (category) {
+      case 'DEBUTANT': return 'bg-gradient-to-br from-green-500 to-green-600';
+      case 'PRO': return 'bg-gradient-to-br from-blue-500 to-blue-600';
+      case 'LEGENDES': return 'bg-gradient-to-br from-purple-500 to-purple-600';
+      case 'CYBORG': return 'bg-gradient-to-br from-red-500 to-red-600';
+      default: return 'bg-gradient-to-br from-gray-500 to-gray-600';
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-green-800 to-green-900">
@@ -322,27 +332,27 @@ export default function PlayPage() {
                               </div>
                             </div>
 
-                            <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-lg p-4 mb-4">
-                              <div className="text-xs font-semibold text-slate-700 mb-2">Récompenses</div>
+                            <div className={`${getCategoryBgColor(room.category)} rounded-lg p-4 mb-4`}>
+                              <div className="text-xs font-semibold text-white mb-2">Récompenses</div>
                               <div className="space-y-1 text-sm">
                                 <div className="flex justify-between items-center">
-                                  <span className="text-slate-600">🥇 1ère place</span>
-                                  <span className="font-bold text-green-600">+{room.reward_first.toLocaleString()}</span>
+                                  <span className="text-white">🥇 1ère place</span>
+                                  <span className="font-bold text-white">+{room.reward_first.toLocaleString()}</span>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                  <span className="text-slate-600">🥈 2ème place</span>
-                                  <span className="font-bold text-blue-600">+{room.reward_second.toLocaleString()}</span>
+                                  <span className="text-white">🥈 2ème place</span>
+                                  <span className="font-bold text-white">+{room.reward_second.toLocaleString()}</span>
                                 </div>
                               </div>
 
-                              <div className="mt-3 pt-3 border-t border-slate-200 flex justify-between text-xs">
+                              <div className="mt-3 pt-3 border-t border-white/30 flex justify-between text-xs">
                                 <div className="flex items-center gap-1">
-                                  <Zap className="w-3 h-3 text-purple-500" />
-                                  <span className="text-slate-600">+{room.xp_reward} XP</span>
+                                  <Zap className="w-3 h-3 text-white" />
+                                  <span className="text-white">+{room.xp_reward} XP</span>
                                 </div>
                                 <div className="flex items-center gap-1">
-                                  <Trophy className="w-3 h-3 text-blue-500" />
-                                  <span className="text-slate-600">+{room.league_points} PTS</span>
+                                  <Trophy className="w-3 h-3 text-white" />
+                                  <span className="text-white">+{room.league_points} PTS</span>
                                 </div>
                               </div>
                             </div>
