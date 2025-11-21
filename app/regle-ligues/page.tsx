@@ -1,11 +1,14 @@
 'use client';
 
+import { useState } from 'react';
 import { Navigation } from '@/components/Navigation';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Trophy, TrendingUp, TrendingDown, Minus, Award, Clock, Users } from 'lucide-react';
+import { Trophy, TrendingUp, TrendingDown, Minus, Award, Clock, Users, ChevronDown, ChevronUp } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export default function LeagueRulesPage() {
+  const [expandedLeague, setExpandedLeague] = useState<number | null>(null);
   const leagues = [
     { id: 1, name: 'Ligue Bronze', color: 'from-amber-700 to-amber-900', icon: '🥉' },
     { id: 2, name: 'Ligue Argent', color: 'from-gray-400 to-gray-600', icon: '🥈' },
@@ -24,23 +27,23 @@ export default function LeagueRulesPage() {
     { id: 15, name: 'Ligue Immortelle', color: 'from-yellow-300 to-yellow-500', icon: '🏆' },
   ];
 
-  const rewardsByLeague = [
-    { league: 1, positions: 3, maxReward: 500 },
-    { league: 2, positions: 3, maxReward: 750 },
-    { league: 3, positions: 3, maxReward: 1000 },
-    { league: 4, positions: 5, maxReward: 1500 },
-    { league: 5, positions: 5, maxReward: 2000 },
-    { league: 6, positions: 7, maxReward: 3000 },
-    { league: 7, positions: 7, maxReward: 5000 },
-    { league: 8, positions: 9, maxReward: 10000 },
-    { league: 9, positions: 10, maxReward: 20000 },
-    { league: 10, positions: 10, maxReward: 20000 },
-    { league: 11, positions: 10, maxReward: 20000 },
-    { league: 12, positions: 10, maxReward: 20000 },
-    { league: 13, positions: 10, maxReward: 20000 },
-    { league: 14, positions: 10, maxReward: 20000 },
-    { league: 15, positions: 10, maxReward: 20000 },
-  ];
+  const rewardsByLeague: { [key: number]: number[] } = {
+    1: [500, 200, 100],
+    2: [750, 500, 200],
+    3: [1000, 750, 500],
+    4: [1500, 1000, 750, 500, 200],
+    5: [2000, 1500, 1000, 750, 500],
+    6: [3000, 2000, 1500, 1000, 750, 500, 200],
+    7: [5000, 3000, 2000, 1500, 1000, 750, 500],
+    8: [10000, 5000, 3000, 2000, 1500, 1000, 750, 500, 200],
+    9: [20000, 15000, 10000, 5000, 3000, 2000, 1500, 1000, 750, 500],
+    10: [20000, 15000, 10000, 5000, 3000, 2000, 1500, 1000, 750, 500],
+    11: [20000, 15000, 10000, 5000, 3000, 2000, 1500, 1000, 750, 500],
+    12: [20000, 15000, 10000, 5000, 3000, 2000, 1500, 1000, 750, 500],
+    13: [20000, 15000, 10000, 5000, 3000, 2000, 1500, 1000, 750, 500],
+    14: [20000, 15000, 10000, 5000, 3000, 2000, 1500, 1000, 750, 500],
+    15: [20000, 15000, 10000, 5000, 3000, 2000, 1500, 1000, 750, 500],
+  };
 
   const pointsSources = [
     {
@@ -235,7 +238,7 @@ export default function LeagueRulesPage() {
               <div className="text-center mb-6">
                 <h2 className="text-3xl font-bold text-slate-900 mb-2">Les 15 Ligues</h2>
                 <p className="text-lg text-slate-600">
-                  De la ligue Bronze à la ligue Immortelle
+                  De la ligue Bronze à la ligue Immortelle - Cliquez pour voir les récompenses
                 </p>
               </div>
 
@@ -243,51 +246,67 @@ export default function LeagueRulesPage() {
                 <table className="w-full bg-white rounded-lg overflow-hidden shadow-lg">
                   <thead className="bg-gradient-to-r from-slate-700 to-slate-900 text-white">
                     <tr>
-                      <th className="px-6 py-4 text-left font-bold">Ligue</th>
+                      <th className="px-6 py-4 text-center font-bold w-20">Ligue</th>
                       <th className="px-6 py-4 text-left font-bold">Nom</th>
-                      <th className="px-6 py-4 text-center font-bold">Top récompensés</th>
-                      <th className="px-6 py-4 text-right font-bold">Récompense max</th>
+                      <th className="px-6 py-4 text-center font-bold w-32">Récompenses</th>
                     </tr>
                   </thead>
                   <tbody>
                     {leagues.map((league) => {
-                      const reward = rewardsByLeague.find(r => r.league === league.id);
+                      const rewards = rewardsByLeague[league.id] || [];
+                      const isExpanded = expandedLeague === league.id;
                       return (
-                        <tr
-                          key={league.id}
-                          className="border-b border-slate-200 hover:bg-slate-50 transition-colors"
-                        >
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-3">
-                              <span className="text-2xl">{league.icon}</span>
+                        <>
+                          <tr
+                            key={league.id}
+                            className="border-b border-slate-200 hover:bg-slate-50 transition-colors cursor-pointer"
+                            onClick={() => setExpandedLeague(isExpanded ? null : league.id)}
+                          >
+                            <td className="px-6 py-4 text-center">
                               <Badge variant="outline" className="font-bold text-base">
                                 {league.id}
                               </Badge>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span className="font-semibold text-slate-900">
-                              {league.name}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 text-center">
-                            {reward && (
-                              <Badge className="bg-amber-600 hover:bg-amber-700 text-white">
-                                Top {reward.positions}
-                              </Badge>
-                            )}
-                          </td>
-                          <td className="px-6 py-4 text-right">
-                            {reward && (
-                              <div className="flex items-center justify-end gap-1">
-                                <Award className="w-5 h-5 text-amber-600" />
-                                <span className="font-bold text-green-700">
-                                  {reward.maxReward.toLocaleString()}
-                                </span>
-                              </div>
-                            )}
-                          </td>
-                        </tr>
+                            </td>
+                            <td className="px-6 py-4">
+                              <span className="font-semibold text-slate-900">
+                                {league.name}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 text-center">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="w-full"
+                              >
+                                {isExpanded ? (
+                                  <ChevronUp className="w-4 h-4 mr-2" />
+                                ) : (
+                                  <ChevronDown className="w-4 h-4 mr-2" />
+                                )}
+                                Top {rewards.length}
+                              </Button>
+                            </td>
+                          </tr>
+                          {isExpanded && (
+                            <tr key={`${league.id}-rewards`}>
+                              <td colSpan={3} className="px-6 py-4 bg-slate-50">
+                                <div className="grid grid-cols-10 gap-2">
+                                  {rewards.map((reward, idx) => (
+                                    <div
+                                      key={idx}
+                                      className="text-center p-2 bg-white rounded border border-slate-200"
+                                    >
+                                      <div className="text-xs text-slate-600 mb-1">#{idx + 1}</div>
+                                      <div className="font-bold text-amber-600">
+                                        {reward >= 1000 ? `${(reward / 1000).toFixed(0)}k` : reward}
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </>
                       );
                     })}
                   </tbody>
@@ -296,95 +315,49 @@ export default function LeagueRulesPage() {
             </Card>
 
             <Card className="p-8">
-              <div className="flex items-start gap-4 mb-6">
-                <div className="p-3 bg-yellow-600 rounded-lg">
-                  <Award className="w-8 h-8 text-white" />
-                </div>
+              <div className="space-y-6">
                 <div>
-                  <h2 className="text-3xl font-bold text-slate-900">Récompenses de fin de saison</h2>
-                  <p className="text-lg text-slate-600 mt-2">
-                    Gagnez des jetons selon votre classement final
-                  </p>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-lg border-2 border-green-200">
-                  <h3 className="font-bold text-lg text-slate-900 mb-3">Ligues Débutantes (1-3)</h3>
-                  <p className="text-slate-700 mb-3">Top 3 joueurs récompensés</p>
-                  <div className="grid grid-cols-3 gap-3">
-                    <div className="bg-white p-3 rounded text-center">
-                      <div className="text-yellow-600 font-bold text-2xl mb-1">🥇</div>
-                      <div className="text-sm text-slate-600">500-1,000</div>
-                    </div>
-                    <div className="bg-white p-3 rounded text-center">
-                      <div className="text-gray-400 font-bold text-2xl mb-1">🥈</div>
-                      <div className="text-sm text-slate-600">200-750</div>
-                    </div>
-                    <div className="bg-white p-3 rounded text-center">
-                      <div className="text-amber-700 font-bold text-2xl mb-1">🥉</div>
-                      <div className="text-sm text-slate-600">100-500</div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-gradient-to-r from-blue-50 to-cyan-50 p-6 rounded-lg border-2 border-blue-200">
-                  <h3 className="font-bold text-lg text-slate-900 mb-3">Ligues Intermédiaires (4-8)</h3>
-                  <p className="text-slate-700 mb-3">Top 5 à 9 joueurs récompensés</p>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-blue-700 mb-2">200 à 10,000 jetons</div>
-                    <p className="text-slate-600 text-sm">Récompenses progressives selon la position</p>
-                  </div>
-                </div>
-
-                <div className="bg-gradient-to-r from-purple-50 to-violet-50 p-6 rounded-lg border-2 border-purple-200">
-                  <h3 className="font-bold text-lg text-slate-900 mb-3">Ligues Élites (9-15)</h3>
-                  <p className="text-slate-700 mb-3">Top 10 joueurs récompensés</p>
-                  <div className="text-center">
-                    <div className="text-4xl font-bold text-purple-700 mb-2">500 à 20,000 jetons</div>
-                    <p className="text-slate-600 text-sm">Les plus grandes récompenses pour les meilleurs joueurs</p>
-                  </div>
-                </div>
-              </div>
-            </Card>
-
-            <div className="grid md:grid-cols-2 gap-6">
-              <Card className="p-6 bg-gradient-to-br from-slate-50 to-slate-100 border-2 border-slate-200">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 bg-slate-600 rounded-lg">
-                    <Clock className="w-6 h-6 text-white" />
-                  </div>
-                  <h3 className="text-xl font-bold text-slate-900">Durée des saisons</h3>
-                </div>
-                <div className="space-y-2 text-slate-700">
-                  <p>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-3 flex items-center gap-2">
+                    <Clock className="w-6 h-6 text-blue-600" />
+                    Durée des saisons
+                  </h3>
+                  <p className="text-lg text-slate-700 leading-relaxed">
                     Chaque saison dure <strong className="text-blue-600">7 jours (1 semaine)</strong>.
-                  </p>
-                  <p>
                     À la fin de chaque saison, les promotions et relégations sont automatiquement calculées,
                     et une nouvelle saison commence immédiatement.
                   </p>
                 </div>
-              </Card>
 
-              <Card className="p-6 bg-gradient-to-br from-slate-50 to-slate-100 border-2 border-slate-200">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 bg-slate-600 rounded-lg">
-                    <Users className="w-6 h-6 text-white" />
-                  </div>
-                  <h3 className="text-xl font-bold text-slate-900">Divisions</h3>
-                </div>
-                <div className="space-y-2 text-slate-700">
-                  <p>
+                <div>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-3 flex items-center gap-2">
+                    <Users className="w-6 h-6 text-purple-600" />
+                    Organisation en divisions
+                  </h3>
+                  <p className="text-lg text-slate-700 leading-relaxed">
                     Chaque division contient <strong className="text-purple-600">maximum 30 joueurs</strong>.
-                  </p>
-                  <p>
                     La ligue 1 peut avoir un nombre illimité de divisions pour accueillir tous les nouveaux joueurs.
                     Les ligues supérieures se remplissent au fur et à mesure des promotions.
                   </p>
                 </div>
-              </Card>
-            </div>
+
+                <div>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-3 flex items-center gap-2">
+                    <Award className="w-6 h-6 text-amber-600" />
+                    Récompenses de fin de saison
+                  </h3>
+                  <p className="text-lg text-slate-700 leading-relaxed mb-3">
+                    Les récompenses varient selon la ligue et votre position finale dans votre division :
+                  </p>
+                  <ul className="list-disc list-inside space-y-2 text-slate-700 ml-4">
+                    <li><strong>Ligues 1-3 :</strong> Top 3 joueurs récompensés (de 100 à 1,000 jetons)</li>
+                    <li><strong>Ligues 4-5 :</strong> Top 5 joueurs récompensés (de 200 à 2,000 jetons)</li>
+                    <li><strong>Ligues 6-7 :</strong> Top 7 joueurs récompensés (de 200 à 5,000 jetons)</li>
+                    <li><strong>Ligue 8 :</strong> Top 9 joueurs récompensés (de 200 à 10,000 jetons)</li>
+                    <li><strong>Ligues 9-15 :</strong> Top 10 joueurs récompensés (de 500 à 20,000 jetons)</li>
+                  </ul>
+                </div>
+              </div>
+            </Card>
 
             <Card className="p-8 bg-gradient-to-br from-amber-50 to-yellow-50 border-2 border-amber-300">
               <div className="flex items-start gap-4">
