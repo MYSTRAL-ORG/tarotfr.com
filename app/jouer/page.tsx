@@ -220,61 +220,6 @@ export default function PlayPage() {
       <Navigation />
 
       <div className="container mx-auto px-4 py-8 relative z-10">
-        {wallet && (
-          <div className="max-w-4xl mx-auto mb-8">
-            <Card className="bg-white/95 backdrop-blur p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white text-2xl font-bold">
-                    {wallet.level}
-                  </div>
-                  <div>
-                    <div className="text-sm text-slate-600">Niveau {wallet.level}</div>
-                    <div className="flex items-center gap-2 mt-1">
-                      <div className="w-48 h-3 bg-slate-200 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-gradient-to-r from-orange-400 to-orange-600 transition-all duration-500"
-                          style={{ width: `${getXPProgress()}%` }}
-                        />
-                      </div>
-                      <span className="text-xs text-slate-500">{Math.round(getXPProgress())}%</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-6">
-                  <div className="flex items-center gap-2">
-                    <Coins className="w-6 h-6 text-yellow-500" />
-                    <span className="text-2xl font-bold text-green-600">
-                      {wallet.tokens.toLocaleString()}
-                    </span>
-                  </div>
-                  <Button
-                    onClick={() => router.push('/shop')}
-                    className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600"
-                  >
-                    <ShoppingBag className="w-4 h-4 mr-2" />
-                    Boutique
-                  </Button>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-6 text-sm">
-                <div className="flex items-center gap-2">
-                  <Trophy className="w-4 h-4 text-blue-600" />
-                  <span className="text-slate-600">Points de Ligue:</span>
-                  <span className="font-semibold text-slate-900">{wallet.league_points.toLocaleString()}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Zap className="w-4 h-4 text-purple-600" />
-                  <span className="text-slate-600">XP:</span>
-                  <span className="font-semibold text-slate-900">{wallet.xp.toLocaleString()}</span>
-                </div>
-              </div>
-            </Card>
-          </div>
-        )}
-
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-8">
             <h1 className="text-5xl font-bold mb-2 text-white drop-shadow-lg">Choisir une Salle</h1>

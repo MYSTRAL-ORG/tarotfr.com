@@ -141,29 +141,6 @@ export default function ShopPage() {
       <Navigation />
 
       <div className="container mx-auto px-4 py-12 relative z-10">
-        {wallet && (
-          <div className="max-w-4xl mx-auto mb-8">
-            <Card className="bg-white/95 backdrop-blur p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-sm text-slate-600 mb-1">Votre solde actuel</div>
-                  <div className="flex items-center gap-2">
-                    <Coins className="w-8 h-8 text-yellow-500" />
-                    <span className="text-4xl font-bold text-slate-900">
-                      {wallet.tokens.toLocaleString()}
-                    </span>
-                    <span className="text-lg text-slate-600">jetons</span>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-sm text-slate-600 mb-1">Niveau</div>
-                  <div className="text-3xl font-bold text-orange-600">{wallet.level}</div>
-                </div>
-              </div>
-            </Card>
-          </div>
-        )}
-
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <h1 className="text-5xl font-bold mb-4 text-white drop-shadow-lg">Boutique</h1>
