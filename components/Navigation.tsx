@@ -131,17 +131,9 @@ export function Navigation() {
         </Link>
 
         <div className="flex items-center gap-3 md:gap-6">
-          <Link href="/regles" className="text-white/90 hover:text-white font-medium transition-colors" title="Règles">
-            <span className="hidden md:inline">Règles</span>
-            <BookOpen className="w-5 h-5 md:hidden" />
-          </Link>
           <Link href="/niveaux" className="text-white/90 hover:text-white font-medium transition-colors" title="Niveaux">
             <span className="hidden md:inline">Niveaux</span>
             <TrendingUp className="w-5 h-5 md:hidden" />
-          </Link>
-          <Link href="/distributions" className="text-white/90 hover:text-white font-medium transition-colors" title="Distributions">
-            <span className="hidden md:inline">Distributions</span>
-            <FileText className="w-5 h-5 md:hidden" />
           </Link>
           {user && (
             <Link href="/jouer" className="text-white/90 hover:text-white font-medium transition-colors" title="Jouer">

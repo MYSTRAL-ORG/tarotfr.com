@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { WebSocketProvider } from '@/contexts/WebSocketContext';
 import { Toaster } from '@/components/ui/sonner';
+import { Footer } from '@/components/Footer';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -24,10 +25,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr">
-      <body className={inter.className}>
+      <body className={`${inter.className} flex flex-col min-h-screen`}>
         <AuthProvider>
           <WebSocketProvider>
-            {children}
+            <div className="flex-1">{children}</div>
+            <Footer />
             <Toaster />
           </WebSocketProvider>
         </AuthProvider>
