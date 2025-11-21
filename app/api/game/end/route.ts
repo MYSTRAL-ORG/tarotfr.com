@@ -106,6 +106,32 @@ export async function POST(request: NextRequest) {
             },
           });
 
+        const { data: activeSeason } = await supabase
+          .from('league_seasons')
+          .select('id')
+          .eq('status', 'active')
+          .order('season_number', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (activeSeason) {
+          const { data: membership } = await supabase
+            .from('league_memberships')
+            .select('id, league_points')
+            .eq('user_id', result.userId)
+            .eq('season_id', activeSeason.id)
+            .maybeSingle();
+
+          if (membership) {
+            await supabase
+              .from('league_memberships')
+              .update({
+                league_points: membership.league_points + roomType.league_points
+              })
+              .eq('id', membership.id);
+          }
+        }
+
         rewards[result.userId] = {
           tokens: tokenReward,
           xp: roomType.xp_reward,

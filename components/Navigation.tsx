@@ -4,12 +4,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { User, Users, BookOpen, GraduationCap, FileText, Play, LogOut, LogIn, Coins, ShoppingBag, TrendingUp } from 'lucide-react';
+import { User, Users, BookOpen, GraduationCap, FileText, Play, LogOut, LogIn, Coins, ShoppingBag, TrendingUp, Trophy } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 interface UserWallet {
   tokens: number;
   level: number;
+  leaguePoints?: number;
 }
 
 export function Navigation() {
@@ -77,7 +78,20 @@ export function Navigation() {
         console.log('Wallet response data:', data);
 
         if (data.wallet) {
-          setWallet(data.wallet);
+          const leagueRes = await fetch(`/api/leagues/current?userId=${user.id}`);
+          let leaguePoints = 0;
+
+          if (leagueRes.ok) {
+            const leagueData = await leagueRes.json();
+            if (leagueData.membership) {
+              leaguePoints = leagueData.membership.league_points;
+            }
+          }
+
+          setWallet({
+            ...data.wallet,
+            leaguePoints
+          });
           console.log('Wallet loaded successfully:', data.wallet);
         } else {
           console.warn('No wallet in response:', data);
@@ -155,6 +169,12 @@ export function Navigation() {
                     <div className="w-6 h-6 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white text-xs font-bold">
                       {wallet.level}
                     </div>
+                  </Link>
+                  <Link href="/ligues" className="bg-white/20 backdrop-blur px-3 py-1.5 rounded-md flex items-center gap-2 hover:bg-white/30 transition-colors">
+                    <Trophy className="w-5 h-5 text-amber-400" />
+                    <span className="text-white font-bold text-sm">
+                      {wallet.leaguePoints !== undefined ? wallet.leaguePoints.toLocaleString() : '0'}
+                    </span>
                   </Link>
                 </>
               )}

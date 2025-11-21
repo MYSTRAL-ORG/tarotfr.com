@@ -17,7 +17,8 @@ import {
   Home,
   Database,
   Coins,
-  ShoppingBag
+  ShoppingBag,
+  Trophy
 } from 'lucide-react';
 
 export default function OperationLayout({
@@ -59,6 +60,7 @@ export default function OperationLayout({
     { icon: Database, label: 'Distributions', href: '/operation/distributions' },
     { icon: Coins, label: 'Économie', href: '/operation/economie' },
     { icon: ShoppingBag, label: 'Boutique', href: '/operation/config-boutique' },
+    { icon: Trophy, label: 'Ligues', href: '/operation/ligues' },
     { icon: Settings, label: 'Paramètres', href: '/operation/parametres' },
     { icon: Users, label: 'Membres', href: '/operation/membres' },
     { icon: Bot, label: 'Robots', href: '/operation/robots' },

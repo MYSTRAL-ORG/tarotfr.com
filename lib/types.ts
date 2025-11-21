@@ -162,3 +162,76 @@ export interface WSServerMessage extends WSMessage {
     | 'BOT_ADDED'
     | 'BOT_REMOVED';
 }
+
+export type SeasonStatus = 'active' | 'completed' | 'processing';
+export type PromotionStatus = 'promoted' | 'relegated' | 'maintained';
+
+export interface League {
+  id: number;
+  name: string;
+  description: string;
+  maxDivisions: number | null;
+  createdAt: string;
+}
+
+export interface LeagueDivision {
+  id: string;
+  leagueId: number;
+  divisionNumber: number;
+  maxPlayers: number;
+  createdAt: string;
+  league?: League;
+}
+
+export interface LeagueSeason {
+  id: string;
+  seasonNumber: number;
+  startDate: string;
+  endDate: string;
+  status: SeasonStatus;
+  createdAt: string;
+}
+
+export interface LeagueMembership {
+  id: string;
+  userId: string;
+  divisionId: string;
+  seasonId: string;
+  leaguePoints: number;
+  rank: number | null;
+  joinedAt: string;
+  updatedAt: string;
+  division?: LeagueDivision;
+  season?: LeagueSeason;
+  user?: User;
+}
+
+export interface LeagueReward {
+  id: string;
+  leagueId: number;
+  rank: number;
+  rewardTokens: number;
+}
+
+export interface LeagueHistory {
+  id: string;
+  userId: string;
+  seasonId: string;
+  leagueId: number;
+  divisionId: string;
+  finalRank: number;
+  finalPoints: number;
+  rewardTokens: number;
+  promotionStatus: PromotionStatus;
+  createdAt: string;
+  league?: League;
+  season?: LeagueSeason;
+}
+
+export interface LeagueRanking {
+  rank: number;
+  userId: string;
+  displayName: string;
+  leaguePoints: number;
+  isCurrentUser: boolean;
+}
