@@ -200,9 +200,9 @@ export default function PlayPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-800 to-green-900 relative overflow-hidden">
-      <div className="absolute inset-0 opacity-10" style={{
-        backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 50px, rgba(255,255,255,0.1) 50px, rgba(255,255,255,0.1) 100px)'
+    <div className="min-h-screen bg-gradient-to-br from-green-700 via-green-800 to-green-900 relative overflow-hidden">
+      <div className="absolute inset-0 opacity-20" style={{
+        backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.15) 40px, rgba(255,255,255,0.15) 80px)'
       }} />
 
       <Navigation />
@@ -285,8 +285,9 @@ export default function PlayPage() {
                 </Button>
 
                 <div className="flex-1 max-w-6xl">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {currentSlideRooms.map((room) => {
+                  <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      {currentSlideRooms.map((room) => {
                       const isRoomLocked = wallet ? (wallet.level < room.min_level) : false;
                       const hasEnoughTokens = wallet ? wallet.tokens >= room.buy_in : false;
 
@@ -326,20 +327,12 @@ export default function PlayPage() {
                               <div className="text-xs font-semibold text-slate-700 mb-2">Récompenses</div>
                               <div className="space-y-1 text-sm">
                                 <div className="flex justify-between items-center">
-                                  <span className="text-slate-600">🥇 1ère</span>
+                                  <span className="text-slate-600">🥇 1ère place</span>
                                   <span className="font-bold text-green-600">+{room.reward_first.toLocaleString()}</span>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                  <span className="text-slate-600">🥈 2ème</span>
+                                  <span className="text-slate-600">🥈 2ème place</span>
                                   <span className="font-bold text-blue-600">+{room.reward_second.toLocaleString()}</span>
-                                </div>
-                                <div className="flex justify-between items-center">
-                                  <span className="text-slate-600">🥉 3ème</span>
-                                  <span className="font-bold text-orange-600">+{room.reward_draw.toLocaleString()}</span>
-                                </div>
-                                <div className="flex justify-between items-center">
-                                  <span className="text-slate-600">4ème</span>
-                                  <span className="font-bold text-red-600">-{room.buy_in.toLocaleString()}</span>
                                 </div>
                               </div>
 
@@ -365,15 +358,15 @@ export default function PlayPage() {
                               </Button>
                             ) : !hasEnoughTokens ? (
                               <Button
-                                className="w-full h-12 text-sm bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600"
+                                className="w-full h-12 text-sm bg-blue-600 hover:bg-blue-700 text-white"
                                 onClick={() => router.push('/shop')}
                               >
                                 <ShoppingBag className="w-4 h-4 mr-2" />
-                                Acheter
+                                Acheter des jetons
                               </Button>
                             ) : (
                               <Button
-                                className="w-full h-12 text-sm bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
+                                className="w-full h-12 text-sm bg-red-600 hover:bg-red-700 text-white"
                                 onClick={() => handleJoinRoom(room)}
                                 disabled={joining}
                               >
@@ -384,6 +377,7 @@ export default function PlayPage() {
                         </Card>
                       );
                     })}
+                    </div>
                   </div>
                 </div>
 

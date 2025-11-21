@@ -156,7 +156,6 @@ export function Navigation() {
               </Link>
               <Button variant="outline" size="sm" onClick={logout} className="bg-white hover:bg-blue-50 text-gray-900 border-white hover:border-blue-200" title="Déconnexion">
                 <LogOut className="w-4 h-4" />
-                <span className="hidden md:inline md:ml-2">Déconnexion</span>
               </Button>
             </div>
           ) : (
