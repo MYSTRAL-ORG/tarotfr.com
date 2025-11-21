@@ -3,11 +3,10 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigation } from '@/components/Navigation';
-import { Footer } from '@/components/Footer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Trophy, TrendingUp, TrendingDown, Minus, Clock, Award, ChevronRight, Info } from 'lucide-react';
+import { Trophy, TrendingUp, TrendingDown, Minus, Clock, Award, Info } from 'lucide-react';
 import { LeagueMembership, LeagueRanking, LeagueReward, LeagueHistory } from '@/lib/types';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Link from 'next/link';
@@ -24,7 +23,6 @@ export default function LiguesPage() {
   useEffect(() => {
     async function fetchLeagueData() {
       try {
-        // Try to get user's current league membership
         if (user) {
           const currentRes = await fetch(`/api/leagues/current?userId=${user.id}`);
           if (currentRes.ok) {
@@ -73,7 +71,6 @@ export default function LiguesPage() {
           }
         }
 
-        // If no membership found, fetch first division of league 1 as example
         if (!membership) {
           const exampleRes = await fetch('/api/leagues/rankings?leagueId=1&divisionNumber=1');
           if (exampleRes.ok) {
@@ -99,15 +96,15 @@ export default function LiguesPage() {
   };
 
   const getZoneColor = (zone: string) => {
-    if (zone === 'promotion') return 'text-green-600 bg-green-50 border-green-200';
-    if (zone === 'maintain') return 'text-blue-600 bg-blue-50 border-blue-200';
-    return 'text-red-600 bg-red-50 border-red-200';
+    if (zone === 'promotion') return 'bg-green-50 border-green-500';
+    if (zone === 'maintain') return 'bg-blue-50 border-blue-500';
+    return 'bg-red-50 border-red-500';
   };
 
   const getZoneIcon = (zone: string) => {
-    if (zone === 'promotion') return <TrendingUp className="w-4 h-4" />;
-    if (zone === 'maintain') return <Minus className="w-4 h-4" />;
-    return <TrendingDown className="w-4 h-4" />;
+    if (zone === 'promotion') return <TrendingUp className="w-5 h-5 text-green-600" />;
+    if (zone === 'maintain') return <Minus className="w-5 h-5 text-blue-600" />;
+    return <TrendingDown className="w-5 h-5 text-red-600" />;
   };
 
   const getPromotionStatusBadge = (status: string) => {
@@ -122,33 +119,31 @@ export default function LiguesPage() {
 
   if (!user) {
     return (
-      <>
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
         <Navigation />
-        <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 flex items-center justify-center">
+        <div className="flex items-center justify-center min-h-[60vh]">
           <Card>
             <CardContent className="pt-6">
               <p className="text-center text-slate-600">Connectez-vous pour voir les ligues</p>
             </CardContent>
           </Card>
         </div>
-        <Footer />
-      </>
+      </div>
     );
   }
 
   if (loading) {
     return (
-      <>
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
         <Navigation />
-        <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 flex items-center justify-center">
+        <div className="flex items-center justify-center min-h-[60vh]">
           <Card>
             <CardContent className="pt-6">
               <p className="text-center text-slate-600">Chargement...</p>
             </CardContent>
           </Card>
         </div>
-        <Footer />
-      </>
+      </div>
     );
   }
 
@@ -157,27 +152,23 @@ export default function LiguesPage() {
   const zone = getPromotionZone(userRank);
 
   return (
-    <>
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
       <Navigation />
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
-        {/* Hero Section */}
-        <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white py-16">
-          <div className="container mx-auto px-4 max-w-6xl">
-            <div className="flex items-center justify-center gap-4 mb-6">
-              <Trophy className="w-16 h-16 text-amber-400" />
-              <h1 className="text-5xl font-bold">Ligues Compétitives</h1>
-            </div>
-            <p className="text-center text-xl text-slate-300 max-w-3xl mx-auto">
+
+      <div className="container mx-auto px-4 py-12">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h1 className="text-5xl font-bold mb-4 text-slate-900">
+              Ligues Compétitives
+            </h1>
+            <p className="text-xl text-slate-600">
               {membership
                 ? 'Affrontez les meilleurs joueurs chaque semaine pour gravir les échelons'
                 : 'Aperçu de la Ligue Bronze - Division 1'
               }
             </p>
           </div>
-        </div>
 
-        {/* Content Section */}
-        <div className="container mx-auto px-4 max-w-6xl py-8">
           <div className="space-y-8">
             {membership ? (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -252,88 +243,88 @@ export default function LiguesPage() {
 
               <TabsContent value="rankings" className="mt-6">
                 <Card>
-                <CardHeader>
-                  <CardTitle>
-                    {membership ? 'Classement de votre division' : 'Exemple de classement - Ligue Bronze Division 1'}
-                  </CardTitle>
-                  <CardDescription>
-                    Top 10 montent | Milieu 10 restent | Bottom 10 descendent
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {rankings.length === 0 ? (
-                    <div className="text-center py-12">
-                      <Trophy className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-                      <p className="text-slate-600 mb-2">Aucun joueur dans cette division pour le moment</p>
-                      <p className="text-sm text-slate-500">
-                        Cette division sera remplie au fur et à mesure que les joueurs rejoignent les ligues
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      {rankings.map((ranking) => {
-                      const zone = getPromotionZone(ranking.rank);
-                      const reward = rewards.find(r => r.rank === ranking.rank);
-
-                      return (
-                        <div
-                          key={ranking.userId}
-                          className={`flex items-center justify-between p-4 rounded-lg border-2 transition-all ${
-                            ranking.isCurrentUser
-                              ? 'bg-blue-50 border-blue-500 shadow-md'
-                              : 'bg-white border-slate-200 hover:border-slate-300'
-                          }`}
-                        >
-                          <div className="flex items-center gap-4 flex-1">
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${
-                              ranking.rank === 1 ? 'bg-yellow-500 text-white' :
-                              ranking.rank === 2 ? 'bg-slate-300 text-white' :
-                              ranking.rank === 3 ? 'bg-amber-700 text-white' :
-                              'bg-slate-100 text-slate-700'
-                            }`}>
-                              {ranking.rank}
-                            </div>
-                            <div className="flex-1">
-                              <p className={`font-semibold ${ranking.isCurrentUser ? 'text-blue-900' : 'text-slate-900'}`}>
-                                {ranking.displayName}
-                                {ranking.isCurrentUser && ' (Vous)'}
-                              </p>
-                              <p className="text-sm text-slate-600">{ranking.leaguePoints} points</p>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            {reward && (
-                              <div className="flex items-center gap-1 text-amber-600 font-bold">
-                                <Award className="w-4 h-4" />
-                                {reward.rewardTokens}
-                              </div>
-                            )}
-                            <div className={`px-3 py-1 rounded-full border-2 ${getZoneColor(zone)}`}>
-                              {getZoneIcon(zone)}
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                    </div>
-                  )}
-
-                  {rewards.length > 0 && (
-                    <div className="mt-6 p-4 bg-slate-50 rounded-lg">
-                      <h4 className="font-semibold text-slate-900 mb-3">Récompenses de fin de saison</h4>
-                      <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
-                        {rewards.slice(0, 10).map((reward) => (
-                          <div key={reward.rank} className="text-center p-2 bg-white rounded border border-slate-200">
-                            <p className="text-xs text-slate-600">#{reward.rank}</p>
-                            <p className="font-bold text-amber-600">{reward.rewardTokens}</p>
-                          </div>
-                        ))}
+                  <CardHeader>
+                    <CardTitle>
+                      {membership ? 'Classement de votre division' : 'Exemple de classement - Ligue Bronze Division 1'}
+                    </CardTitle>
+                    <CardDescription>
+                      Top 10 montent | Milieu 10 restent | Bottom 10 descendent
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    {rankings.length === 0 ? (
+                      <div className="text-center py-12">
+                        <Trophy className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+                        <p className="text-slate-600 mb-2">Aucun joueur dans cette division pour le moment</p>
+                        <p className="text-sm text-slate-500">
+                          Cette division sera remplie au fur et à mesure que les joueurs rejoignent les ligues
+                        </p>
                       </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
+                    ) : (
+                      <div className="space-y-2">
+                        {rankings.map((ranking) => {
+                          const zone = getPromotionZone(ranking.rank);
+                          const reward = rewards.find(r => r.rank === ranking.rank);
+
+                          return (
+                            <div
+                              key={ranking.userId}
+                              className={`flex items-center justify-between p-4 rounded-lg border-2 transition-all ${
+                                ranking.isCurrentUser
+                                  ? 'bg-blue-50 border-blue-500 shadow-md'
+                                  : 'bg-white border-slate-200 hover:border-slate-300'
+                              }`}
+                            >
+                              <div className="flex items-center gap-4 flex-1">
+                                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${
+                                  ranking.rank === 1 ? 'bg-yellow-500 text-white' :
+                                  ranking.rank === 2 ? 'bg-slate-300 text-white' :
+                                  ranking.rank === 3 ? 'bg-amber-700 text-white' :
+                                  'bg-slate-100 text-slate-700'
+                                }`}>
+                                  {ranking.rank}
+                                </div>
+                                <div className="flex-1">
+                                  <p className={`font-semibold ${ranking.isCurrentUser ? 'text-blue-900' : 'text-slate-900'}`}>
+                                    {ranking.displayName}
+                                    {ranking.isCurrentUser && ' (Vous)'}
+                                  </p>
+                                  <p className="text-sm text-slate-600">{ranking.leaguePoints} points</p>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-3">
+                                {reward && (
+                                  <div className="flex items-center gap-1 text-amber-600 font-bold">
+                                    <Award className="w-4 h-4" />
+                                    {reward.rewardTokens}
+                                  </div>
+                                )}
+                                <div className={`px-3 py-1 rounded-full border-2 ${getZoneColor(zone)}`}>
+                                  {getZoneIcon(zone)}
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    {rewards.length > 0 && (
+                      <div className="mt-6 p-4 bg-slate-50 rounded-lg">
+                        <h4 className="font-semibold text-slate-900 mb-3">Récompenses de fin de saison</h4>
+                        <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+                          {rewards.slice(0, 10).map((reward) => (
+                            <div key={reward.rank} className="text-center p-2 bg-white rounded border border-slate-200">
+                              <p className="text-xs text-slate-600">#{reward.rank}</p>
+                              <p className="font-bold text-amber-600">{reward.rewardTokens}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
 
               <TabsContent value="history" className="mt-6">
                 <Card>
@@ -403,7 +394,6 @@ export default function LiguesPage() {
           </div>
         </div>
       </div>
-      <Footer />
-    </>
+    </div>
   );
 }
