@@ -288,6 +288,13 @@ export default function PlayPage() {
 
                 <div className="flex-1 max-w-6xl">
                   <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className="flex-1 h-px bg-white/30"></div>
+                      <h2 className="text-2xl font-bold text-white tracking-wider">
+                        {currentCategory}
+                      </h2>
+                      <div className="flex-1 h-px bg-white/30"></div>
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       {currentSlideRooms.map((room) => {
                       const isRoomLocked = wallet ? (wallet.level < room.min_level) : false;
@@ -299,9 +306,6 @@ export default function PlayPage() {
 
                           <div className="p-6">
                             <div className="text-center mb-4">
-                              <div className="inline-block px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-medium mb-2">
-                                {room.category}
-                              </div>
                               <h3 className="text-2xl font-bold text-slate-900 mb-1">{room.name}</h3>
                               <div className="text-xs text-slate-500">4 joueurs</div>
                             </div>
