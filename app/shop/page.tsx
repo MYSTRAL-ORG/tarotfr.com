@@ -172,11 +172,11 @@ export default function ShopPage() {
 
                   <div className="p-6">
                     <div className="text-center mb-4">
-                      <div className={`relative w-24 h-36 mx-auto mb-3 rounded-lg overflow-hidden ${theme.bgColor} shadow-lg`}>
+                      <div className={`relative w-full h-32 mb-3 overflow-hidden ${theme.bgColor}`}>
                         <img
                           src={`/img/cards/trumps/${theme.card}.png`}
                           alt={theme.name}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover object-top"
                         />
                       </div>
                       <h3 className="text-2xl font-bold text-slate-900 mb-1">{theme.name}</h3>
