@@ -172,10 +172,11 @@ export default function ShopPage() {
 
                   <div className="p-6">
                     <div className="text-center mb-4">
-                      <div className="relative w-full mb-3 bg-gradient-to-br from-green-700 via-green-800 to-green-900 p-2.5 rounded-lg" style={{
-                        backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.05) 40px, rgba(255,255,255,0.05) 80px)'
+                      <div className="relative w-full mb-3 bg-gradient-to-br from-green-700 via-green-800 to-green-900 rounded-lg" style={{
+                        backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.05) 40px, rgba(255,255,255,0.05) 80px)',
+                        padding: '10px'
                       }}>
-                        <div className="relative w-full h-28 overflow-hidden rounded-lg">
+                        <div className="relative w-full h-32 overflow-hidden rounded-md">
                           <img
                             src={`/img/cards/trumps/${theme.card}.png`}
                             alt={theme.name}
