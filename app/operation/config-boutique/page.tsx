@@ -24,6 +24,7 @@ interface ShopItem {
 export default function ShopConfigPage() {
   const [shopItems, setShopItems] = useState<ShopItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
 
   useEffect(() => {
     fetchShopItems();
@@ -43,7 +44,9 @@ export default function ShopConfigPage() {
   };
 
   const updateShopItem = async (item: ShopItem) => {
+    if (updating) return;
     try {
+      setUpdating(true);
       const res = await fetch('/api/admin/shop-items', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -53,10 +56,11 @@ export default function ShopConfigPage() {
       if (!res.ok) throw new Error('Failed to update');
 
       toast.success('Article mis à jour');
-      fetchShopItems();
     } catch (error) {
       console.error('Error updating shop item:', error);
       toast.error('Erreur lors de la mise à jour');
+    } finally {
+      setUpdating(false);
     }
   };
 

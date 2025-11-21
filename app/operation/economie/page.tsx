@@ -36,6 +36,7 @@ export default function EconomyPage() {
   const [roomTypes, setRoomTypes] = useState<RoomType[]>([]);
   const [levelConfig, setLevelConfig] = useState<LevelConfig[]>([]);
   const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -62,7 +63,9 @@ export default function EconomyPage() {
   };
 
   const updateRoomType = async (roomType: RoomType) => {
+    if (updating) return;
     try {
+      setUpdating(true);
       const res = await fetch('/api/admin/room-types', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -72,15 +75,18 @@ export default function EconomyPage() {
       if (!res.ok) throw new Error('Failed to update');
 
       toast.success('Type de salle mis à jour');
-      fetchData();
     } catch (error) {
       console.error('Error updating room type:', error);
       toast.error('Erreur lors de la mise à jour');
+    } finally {
+      setUpdating(false);
     }
   };
 
   const updateLevelConfig = async (level: LevelConfig) => {
+    if (updating) return;
     try {
+      setUpdating(true);
       const res = await fetch('/api/admin/level-config', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -90,10 +96,11 @@ export default function EconomyPage() {
       if (!res.ok) throw new Error('Failed to update');
 
       toast.success('Configuration niveau mise à jour');
-      fetchData();
     } catch (error) {
       console.error('Error updating level config:', error);
       toast.error('Erreur lors de la mise à jour');
+    } finally {
+      setUpdating(false);
     }
   };
 
