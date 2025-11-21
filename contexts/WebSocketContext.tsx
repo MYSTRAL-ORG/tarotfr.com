@@ -47,8 +47,9 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
   const connect = useCallback(() => {
     if (wsRef.current?.readyState === WebSocket.OPEN) return;
 
-    setStatus('connecting');
-    const ws = new WebSocket(WS_URL);
+    try {
+      setStatus('connecting');
+      const ws = new WebSocket(WS_URL);
 
     ws.onopen = () => {
       console.log('WebSocket connected');
@@ -99,6 +100,11 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
     };
 
     wsRef.current = ws;
+    } catch (error) {
+      console.error('Failed to create WebSocket connection:', error);
+      setStatus('disconnected');
+      setError('Failed to connect to game server');
+    }
   }, []);
 
   useEffect(() => {

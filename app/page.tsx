@@ -25,25 +25,44 @@ export default function Home() {
   }, []);
 
   const checkLandingMode = async () => {
+    const timeout = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Timeout')), 5000)
+    );
+
     try {
-      const { data } = await supabase
+      const query = supabase
         .from('site_settings')
         .select('landing_page_mode')
         .limit(1)
         .maybeSingle();
 
-      if (data) {
-        setLandingMode(data.landing_page_mode);
+      const { data, error } = await Promise.race([query, timeout]) as any;
+
+      if (error) {
+        console.error('Error fetching landing mode:', error);
+        setLandingMode(false);
+      } else if (data) {
+        setLandingMode(data.landing_page_mode || false);
+      } else {
+        setLandingMode(false);
       }
     } catch (error) {
       console.error('Error checking landing mode:', error);
+      setLandingMode(false);
     } finally {
       setLoading(false);
     }
   };
 
   if (loading) {
-    return null;
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-green-600 mx-auto"></div>
+          <p className="mt-4 text-slate-600">Chargement...</p>
+        </div>
+      </div>
+    );
   }
 
   if (landingMode && !isAdmin) {
