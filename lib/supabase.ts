@@ -12,6 +12,14 @@ export const supabase = createSupabaseClient(supabaseUrl, supabaseAnonKey, {
     persistSession: false,
     autoRefreshToken: false,
   },
+  global: {
+    fetch: (url, options = {}) => {
+      return fetch(url, {
+        ...options,
+        signal: AbortSignal.timeout(10000),
+      });
+    },
+  },
 });
 
 export function createClient() {
@@ -19,6 +27,14 @@ export function createClient() {
     auth: {
       persistSession: false,
       autoRefreshToken: false,
+    },
+    global: {
+      fetch: (url, options = {}) => {
+        return fetch(url, {
+          ...options,
+          signal: AbortSignal.timeout(10000),
+        });
+      },
     },
   });
 }

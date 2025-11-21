@@ -33,7 +33,15 @@ export default function ShopConfigPage() {
   const fetchShopItems = async () => {
     try {
       setLoading(true);
-      const res = await fetch('/api/admin/shop-items');
+      const res = await fetch('/api/admin/shop-items', {
+        cache: 'force-cache',
+        next: { revalidate: 60 }
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to fetch shop items');
+      }
+
       const data = await res.json();
       setShopItems(data.shopItems || []);
     } catch (error) {

@@ -46,9 +46,19 @@ export default function EconomyPage() {
     try {
       setLoading(true);
       const [roomsRes, levelsRes] = await Promise.all([
-        fetch('/api/admin/room-types'),
-        fetch('/api/admin/level-config')
+        fetch('/api/admin/room-types', {
+          cache: 'force-cache',
+          next: { revalidate: 60 }
+        }),
+        fetch('/api/admin/level-config', {
+          cache: 'force-cache',
+          next: { revalidate: 60 }
+        })
       ]);
+
+      if (!roomsRes.ok || !levelsRes.ok) {
+        throw new Error('Failed to fetch data');
+      }
 
       const roomsData = await roomsRes.json();
       const levelsData = await levelsRes.json();
