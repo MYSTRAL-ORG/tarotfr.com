@@ -17,6 +17,8 @@ export function Navigation() {
   const [onlinePlayers, setOnlinePlayers] = useState(0);
   const [wallet, setWallet] = useState<UserWallet | null>(null);
 
+  console.log('Navigation render - user:', user, 'wallet:', wallet);
+
   useEffect(() => {
     const calculateOnlinePlayers = () => {
       const now = new Date();
@@ -51,6 +53,25 @@ export function Navigation() {
   }, []);
 
   useEffect(() => {
+    console.log('useEffect triggered - user:', user);
+
+    async function fetchWallet() {
+      if (!user) return;
+
+      try {
+        console.log('Fetching wallet for user:', user.id);
+        const res = await fetch(`/api/wallet/${user.id}`);
+        const data = await res.json();
+        console.log('Wallet response:', data);
+        if (data.wallet) {
+          setWallet(data.wallet);
+          console.log('Wallet loaded:', data.wallet);
+        }
+      } catch (error) {
+        console.error('Error fetching wallet:', error);
+      }
+    }
+
     if (user) {
       fetchWallet();
       const interval = setInterval(fetchWallet, 10000);
@@ -59,21 +80,6 @@ export function Navigation() {
       setWallet(null);
     }
   }, [user]);
-
-  async function fetchWallet() {
-    if (!user) return;
-
-    try {
-      const res = await fetch(`/api/wallet/${user.id}`);
-      const data = await res.json();
-      if (data.wallet) {
-        setWallet(data.wallet);
-        console.log('Wallet loaded:', data.wallet);
-      }
-    } catch (error) {
-      console.error('Error fetching wallet:', error);
-    }
-  }
 
   return (
     <nav className="border-b-4 border-red-600 bg-gradient-to-br from-green-700 via-green-800 to-green-900 relative overflow-hidden">
