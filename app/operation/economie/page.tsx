@@ -50,8 +50,16 @@ export default function EconomyPage() {
         fetch('/api/admin/level-config')
       ]);
 
-      if (!roomsRes.ok || !levelsRes.ok) {
-        throw new Error('Failed to fetch data');
+      if (!roomsRes.ok) {
+        const errorText = await roomsRes.text();
+        console.error('Room types error:', roomsRes.status, errorText);
+        throw new Error(`Failed to fetch room types: ${roomsRes.status}`);
+      }
+
+      if (!levelsRes.ok) {
+        const errorText = await levelsRes.text();
+        console.error('Levels error:', levelsRes.status, errorText);
+        throw new Error(`Failed to fetch levels: ${levelsRes.status}`);
       }
 
       const roomsData = await roomsRes.json();
@@ -59,9 +67,9 @@ export default function EconomyPage() {
 
       setRoomTypes(roomsData.roomTypes || []);
       setLevelConfig(levelsData.levels || []);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching data:', error);
-      toast.error('Erreur lors du chargement des données');
+      toast.error(`Erreur: ${error.message || 'Erreur de chargement'}`);
     } finally {
       setLoading(false);
     }

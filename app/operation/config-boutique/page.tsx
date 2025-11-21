@@ -36,14 +36,16 @@ export default function ShopConfigPage() {
       const res = await fetch('/api/admin/shop-items');
 
       if (!res.ok) {
-        throw new Error('Failed to fetch shop items');
+        const errorText = await res.text();
+        console.error('Shop items error:', res.status, errorText);
+        throw new Error(`Failed to fetch shop items: ${res.status}`);
       }
 
       const data = await res.json();
       setShopItems(data.shopItems || []);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching shop items:', error);
-      toast.error('Erreur lors du chargement des articles');
+      toast.error(`Erreur: ${error.message || 'Erreur de chargement'}`);
     } finally {
       setLoading(false);
     }
