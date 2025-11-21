@@ -15,7 +15,9 @@ import {
   Menu,
   X,
   Home,
-  Database
+  Database,
+  Coins,
+  ShoppingBag
 } from 'lucide-react';
 
 export default function OperationLayout({
@@ -55,6 +57,8 @@ export default function OperationLayout({
   const menuItems = [
     { icon: LayoutDashboard, label: 'Dashboard', href: '/operation/dashboard' },
     { icon: Database, label: 'Distributions', href: '/operation/distributions' },
+    { icon: Coins, label: 'Économie', href: '/operation/economy' },
+    { icon: ShoppingBag, label: 'Boutique', href: '/operation/shop-config' },
     { icon: Settings, label: 'Paramètres', href: '/operation/settings' },
     { icon: Users, label: 'Membres', href: '/operation/members' },
     { icon: Bot, label: 'Bots', href: '/operation/bots' },
